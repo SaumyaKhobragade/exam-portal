@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Secure Online Coding Exam Platform</title>
-  <style>
-    * {
+* {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -33,6 +26,7 @@
       font-weight: 700;
       margin-bottom: 10px;
       letter-spacing: 2px;
+      -webkit-user-select: none;
       user-select: none;
     }
 
@@ -59,6 +53,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      -webkit-user-select: none;
       user-select: none;
     }
 
@@ -88,6 +83,7 @@
       text-align: center;
       font-size: 0.85rem;
       opacity: 0.6;
+      -webkit-user-select: none;
       user-select: none;
     }
 
@@ -101,22 +97,3 @@
         max-width: 300px;
       }
     }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="logo">CodeSecure</div>
-    <div class="tagline">
-      Secure &amp; Fair Online Coding Examination Platform
-    </div>
-    <div class="buttons">
-      <a href="/login" class="btn btn-login">Login</a>
-      <a href="/register" class="btn btn-register">Register</a>
-    </div>
-  </div>
-
-  <footer>
-    &copy; 2025 iTechRoots Hackathon • Built with ❤️
-  </footer>
-</body>
-</html>
