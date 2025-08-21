@@ -37,7 +37,7 @@ This project is a secure online coding examination platform designed for institu
 
 ### Clone the repo
 ```
-git clone https://github.com/saumyakhobragade/online-examination-platform.git
+git clone https://github.com/SaumyaKhobragade/exam-portal.git
 cd online-examination-platform
 ```
 
