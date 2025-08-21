@@ -12,7 +12,7 @@ dotenv.config({
 });
 
 app.get('/', (req,res)=>{
-    app.render('index', { title: 'Home' });
+    app.render('landingpage');
 })
 
 // Register routes
