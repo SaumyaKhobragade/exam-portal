@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeSecure - Login & Register</title>
+  <link rel="stylesheet" href="/stylesheets/loginregister.css" />
+</head>
+<body>
+  <div class="main-container">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure</div>
+      <nav class="navigation-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/about" class="nav-link">About</a>
+        <a href="/contact" class="nav-link">Contact</a>
+        <a href="/login" class="nav-link">Login</a>
+      </nav>
+      <div class="user-actions">
+        <a href="/support" class="action-btn">Support</a>
+        <a href="/register" class="action-btn register-btn">Register</a>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="auth-grid">
+        <section class="welcome-card">
+          <h1 class="welcome-title">Welcome to CodeSecure</h1>
+          <p class="welcome-description">Secure & Fair Online Coding Examination Platform</p>
+        </section>
+
+        <section class="auth-toggle-section">
+          <div class="toggle-buttons">
+            <a href="#" class="toggle-btn active" data-form="login">Login</a>
+            <a href="#" class="toggle-btn" data-form="register">Register</a>
+          </div>
+        </section>
+
+        <section class="auth-forms-section">
+          <div class="form-container login-form active">
+            <h2 class="form-title">Login to Your Account</h2>
+            <form class="auth-form">
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-input" placeholder="Enter your email" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" placeholder="Enter your password" required>
+              </div>
+              <div class="form-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" class="form-checkbox">
+                  <span class="checkmark"></span>
+                  Remember me
+                </label>
+                <a href="#" class="forgot-link">Forgot Password?</a>
+              </div>
+              <div class="submit-btn-container">
+                <a href="/dashboard" class="submit-btn">Login</a>
+              </div>
+            </form>
+          </div>
+
+          <div class="form-container register-form">
+            <h2 class="form-title">Create New Account</h2>
+            <form class="auth-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">First Name</label>
+                  <input type="text" class="form-input" placeholder="First name" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Last Name</label>
+                  <input type="text" class="form-input" placeholder="Last name" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-input" placeholder="Enter your email" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" placeholder="Create a password" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" class="form-input" placeholder="Confirm your password" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Role</label>
+                <select class="form-input">
+                  <option>Student</option>
+                  <option>Instructor</option>
+                  <option>Administrator</option>
+                </select>
+              </div>
+              <div class="form-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" class="form-checkbox" required>
+                  <span class="checkmark"></span>
+                  I agree to the Terms of Service and Privacy Policy
+                </label>
+              </div>
+              <div class="submit-btn-container">
+                <a href="/dashboard" class="submit-btn">Create Account</a>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="auth-benefits">
+          <h3 class="benefits-title">Why Choose CodeSecure?</h3>
+          <div class="benefits-grid">
+            <div class="benefit-item">
+              <div class="benefit-icon">🔒</div>
+              <h4 class="benefit-title">Secure Exams</h4>
+              <p class="benefit-text">Advanced proctoring and anti-cheating measures</p>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">⚡</div>
+              <h4 class="benefit-title">Real-time Coding</h4>
+              <p class="benefit-text">Live code execution and instant feedback</p>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">📊</div>
+              <h4 class="benefit-title">Detailed Analytics</h4>
+              <p class="benefit-text">Comprehensive performance tracking and insights</p>
+            </div>
+            <div class="benefit-item">
+              <div class="benefit-icon">🎯</div>
+              <h4 class="benefit-title">Fair Assessment</h4>
+              <p class="benefit-text">Standardized evaluation for all candidates</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const toggleBtns = document.querySelectorAll('.toggle-btn');
+      const loginForm = document.querySelector('.login-form');
+      const registerForm = document.querySelector('.register-form');
+
+      toggleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const formType = this.getAttribute('data-form');
+          
+          toggleBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          
+          if (formType === 'login') {
+            loginForm.classList.add('active');
+            registerForm.classList.remove('active');
+          } else {
+            registerForm.classList.add('active');
+            loginForm.classList.remove('active');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

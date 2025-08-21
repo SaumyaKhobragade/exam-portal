@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeSecure - Coding IDE</title>
+  <link rel="stylesheet" href="/stylesheets/ide.css" />
+</head>
+<body>
+  <div class="main-container">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure IDE</div>
+      <nav class="navigation-menu">
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/exams" class="nav-link">Exams</a>
+        <a href="/results" class="nav-link">Results</a>
+      </nav>
+      <div class="user-actions">
+        <a href="#" class="action-btn" onclick="saveCode(); return false;">Save</a>
+        <a href="#" class="action-btn run-btn" onclick="runCode(); return false;">Run Code</a>
+        <a href="#" class="action-btn submit-btn" onclick="submitCode(); return false;">Submit</a>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="ide-layout">
+        <!-- Question Navigation Bar with Progress -->
+        <section class="question-nav">
+          <div class="question-progress">
+            <div class="progress-info">
+              <span class="current-question">Question 1 of 5</span>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 20%"></div>
+              </div>
+            </div>
+            <div class="question-buttons">
+              <button class="question-btn" onclick="previousQuestion()" disabled>← Previous</button>
+              <button class="question-btn" onclick="nextQuestion()">Next →</button>
+            </div>
+          </div>
+          <div class="exam-timer">
+            <span class="timer-label">Time Remaining:</span>
+            <span class="timer">45:32</span>
+          </div>
+          <!-- Question Boxes -->
+          <div class="question-boxes">
+            <div class="question-box completed" onclick="goToQuestion(1)">
+              <span class="question-number">1</span>
+              <span class="question-icon">✓</span>
+            </div>
+            <div class="question-box current" onclick="goToQuestion(2)">
+              <span class="question-number">2</span>
+              <span class="question-icon">⏳</span>
+            </div>
+            <div class="question-box" onclick="goToQuestion(3)">
+              <span class="question-number">3</span>
+              <span class="question-icon">✕</span>
+            </div>
+            <div class="question-box" onclick="goToQuestion(4)">
+              <span class="question-number">4</span>
+              <span class="question-icon">✕</span>
+            </div>
+            <div class="question-box" onclick="goToQuestion(5)">
+              <span class="question-number">5</span>
+              <span class="question-icon">✕</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Main IDE Content -->
+        <div class="ide-content">
+          <!-- Problem Section -->
+          <section class="problem-section" id="problemSection">
+            <div class="problem-header">
+              <h2 class="problem-title">Two Sum Problem</h2>
+              <div class="problem-meta">
+                <span class="difficulty-badge medium">Medium</span>
+                <span class="problem-points">25 Points</span>
+              </div>
+            </div>
+            
+            <div class="problem-content">
+              <div class="problem-description">
+                <h3 class="section-subtitle">Problem Description</h3>
+                <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to target.</p>
+                <p>You may assume that each input would have exactly one solution, and you may not use the same element twice.</p>
+                <p>You can return the answer in any order.</p>
+              </div>
+
+              <div class="problem-examples">
+                <h3 class="section-subtitle">Examples</h3>
+                <div class="example-item">
+                  <h4 class="example-title">Example 1:</h4>
+                  <div class="code-block">
+                    <strong>Input:</strong> nums = [2,7,11,15], target = 9<br>
+                    <strong>Output:</strong> [0,1]<br>
+                    <strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we return [0, 1].
+                  </div>
+                </div>
+                <div class="example-item">
+                  <h4 class="example-title">Example 2:</h4>
+                  <div class="code-block">
+                    <strong>Input:</strong> nums = [3,2,4], target = 6<br>
+                    <strong>Output:</strong> [1,2]
+                  </div>
+                </div>
+              </div>
+
+              <div class="problem-constraints">
+                <h3 class="section-subtitle">Constraints</h3>
+                <ul>
+                  <li>2 ≤ nums.length ≤ 10<sup>4</sup></li>
+                  <li>-10<sup>9</sup> ≤ nums[i] ≤ 10<sup>9</sup></li>
+                  <li>-10<sup>9</sup> ≤ target ≤ 10<sup>9</sup></li>
+                  <li>Only one valid answer exists.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Resizable Slider -->
+          <div class="resizer" id="resizer"></div>
+
+          <!-- Code Section -->
+          <section class="code-section" id="codeSection">
+            <div class="code-header">
+              <div class="language-selector">
+                <select class="language-select">
+                  <option value="javascript">JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                  <option value="cpp">C++</option>
+                  <option value="csharp">C#</option>
+                </select>
+              </div>
+              <div class="code-actions">
+                <a href="#" class="code-btn reset-btn" onclick="resetCode(); return false;">Reset</a>
+                <a href="#" class="code-btn format-btn" onclick="formatCode(); return false;">Format</a>
+              </div>
+            </div>
+
+            <div class="code-editor-container">
+              <div class="line-numbers">
+                <div class="line-number">1</div>
+                <div class="line-number">2</div>
+                <div class="line-number">3</div>
+                <div class="line-number">4</div>
+                <div class="line-number">5</div>
+                <div class="line-number">6</div>
+                <div class="line-number">7</div>
+                <div class="line-number">8</div>
+                <div class="line-number">9</div>
+                <div class="line-number">10</div>
+                <div class="line-number">11</div>
+                <div class="line-number">12</div>
+                <div class="line-number">13</div>
+                <div class="line-number">14</div>
+                <div class="line-number">15</div>
+              </div>
+              <textarea class="code-editor" placeholder="Write your solution here...">/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function(nums, target) {
+    // Your solution here
+    
+};
+
+// Test cases
+console.log(twoSum([2,7,11,15], 9)); // Expected: [0,1]
+console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
+            </div>
+          </section>
+        </div>
+
+        <!-- Tabbed Console and Test Results Section -->
+        <section class="tabbed-section">
+          <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('console')">
+              <span class="tab-icon">🖥️</span>
+              Console
+            </button>
+            <button class="tab-btn" onclick="switchTab('tests')">
+              <span class="tab-icon">🧪</span>
+              Test Results
+            </button>
+          </div>
+
+          <!-- Console Tab Content -->
+          <div class="tab-content active" id="consoleTab">
+            <div class="tab-header">
+              <h3 class="tab-title">Console Output</h3>
+              <a href="#" class="clear-btn" onclick="clearConsole(); return false;">Clear</a>
+            </div>
+            <div class="console-output">
+              <div class="console-line">Welcome to CodeSecure IDE</div>
+              <div class="console-line">Ready to run your code...</div>
+              <div class="console-cursor">></div>
+            </div>
+          </div>
+
+          <!-- Test Results Tab Content -->
+          <div class="tab-content" id="testsTab">
+            <div class="tab-header">
+              <h3 class="tab-title">Test Results</h3>
+              <a href="#" class="run-tests-btn" onclick="runTests(); return false;">Run Tests</a>
+            </div>
+            <div class="test-cases">
+              <div class="test-case">
+                <div class="test-header">
+                  <span class="test-name">Test Case 1</span>
+                  <span class="test-status pending">Pending</span>
+                </div>
+                <div class="test-details">
+                  <p><strong>Input:</strong> nums = [2,7,11,15], target = 9</p>
+                  <p><strong>Expected:</strong> [0,1]</p>
+                  <p><strong>Output:</strong> -</p>
+                </div>
+              </div>
+              <div class="test-case">
+                <div class="test-header">
+                  <span class="test-name">Test Case 2</span>
+                  <span class="test-status pending">Pending</span>
+                </div>
+                <div class="test-details">
+                  <p><strong>Input:</strong> nums = [3,2,4], target = 6</p>
+                  <p><strong>Expected:</strong> [1,2]</p>
+                  <p><strong>Output:</strong> -</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Timer functionality
+    let timeRemaining = 45 * 60 + 32; // 45:32 in seconds
+    
+    function updateTimer() {
+      const minutes = Math.floor(timeRemaining / 60);
+      const seconds = timeRemaining % 60;
+      const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+      
+      const timerElements = document.querySelectorAll('.timer');
+      timerElements.forEach(el => el.textContent = formattedTime);
+      
+      if (timeRemaining > 0) {
+        timeRemaining--;
+      }
+    }
+    
+    setInterval(updateTimer, 1000);
+
+    // Code editor line numbers
+    const editor = document.querySelector('.code-editor');
+    const lineNumbers = document.querySelector('.line-numbers');
+    
+    function updateLineNumbers() {
+      const lines = editor.value.split('\n');
+      const lineCount = lines.length;
+      
+      lineNumbers.innerHTML = '';
+      for (let i = 1; i <= Math.max(lineCount, 15); i++) {
+        const lineDiv = document.createElement('div');
+        lineDiv.className = 'line-number';
+        lineDiv.textContent = i;
+        lineNumbers.appendChild(lineDiv);
+      }
+    }
+    
+    editor.addEventListener('input', updateLineNumbers);
+    editor.addEventListener('keydown', function(e) {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        this.value = this.value.substring(0, start) + '    ' + this.value.substring(end);
+        this.selectionStart = this.selectionEnd = start + 4;
+      }
+    });
+
+    // Resizable slider functionality
+    let isResizing = false;
+    const resizer = document.getElementById('resizer');
+    const problemSection = document.getElementById('problemSection');
+    const codeSection = document.getElementById('codeSection');
+    
+    resizer.addEventListener('mousedown', function(e) {
+      isResizing = true;
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', stopResize);
+    });
+    
+    function handleMouseMove(e) {
+      if (!isResizing) return;
+      
+      const container = document.querySelector('.ide-content');
+      const containerRect = container.getBoundingClientRect();
+      const mouseX = e.clientX - containerRect.left;
+      const containerWidth = containerRect.width;
+      const percentage = (mouseX / containerWidth) * 100;
+      
+      if (percentage >= 20 && percentage <= 80) {
+        problemSection.style.width = percentage + '%';
+        codeSection.style.width = (100 - percentage) + '%';
+      }
+    }
+    
+    function stopResize() {
+      isResizing = false;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', stopResize);
+    }
+
+    // Tab switching functionality
+    let activeTab = 'console';
+    
+    function switchTab(tabName) {
+      // Remove active class from all tabs and content
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      // Add active class to selected tab and content
+      event.target.classList.add('active');
+      document.getElementById(tabName + 'Tab').classList.add('active');
+      
+      activeTab = tabName;
+    }
+
+    // Question navigation
+    let currentQuestion = 2; // Starting at question 2 as shown in the design
+    const totalQuestions = 5;
+    
+    function nextQuestion() {
+      if (currentQuestion < totalQuestions) {
+        currentQuestion++;
+        updateQuestionDisplay();
+      }
+    }
+    
+    function previousQuestion() {
+      if (currentQuestion > 1) {
+        currentQuestion--;
+        updateQuestionDisplay();
+      }
+    }
+    
+    function goToQuestion(questionNum) {
+      currentQuestion = questionNum;
+      updateQuestionDisplay();
+    }
+    
+    function updateQuestionDisplay() {
+      document.querySelector('.current-question').textContent = `Question ${currentQuestion} of ${totalQuestions}`;
+      const progress = (currentQuestion / totalQuestions) * 100;
+      document.querySelector('.progress-fill').style.width = progress + '%';
+      
+      // Update button states
+      document.querySelector('.question-buttons .question-btn:first-child').disabled = currentQuestion === 1;
+      document.querySelector('.question-buttons .question-btn:last-child').disabled = currentQuestion === totalQuestions;
+      
+      // Update question boxes
+      document.querySelectorAll('.question-box').forEach((box, index) => {
+        box.classList.remove('current');
+        if (index === currentQuestion - 1) {
+          box.classList.add('current');
+        }
+      });
+    }
+
+    // IDE functionality functions
+    function saveCode() {
+      const code = document.querySelector('.code-editor').value;
+      localStorage.setItem('savedCode', code);
+      showNotification('Code saved successfully!');
+    }
+
+    function runCode() {
+      const consoleOutput = document.querySelector('.console-output');
+      consoleOutput.innerHTML = '<div class="console-line">Running code...</div>';
+      
+      setTimeout(() => {
+        consoleOutput.innerHTML += '<div class="console-line">Code executed successfully!</div>';
+        consoleOutput.innerHTML += '<div class="console-cursor">></div>';
+      }, 1000);
+      
+      // Switch to console tab to show output
+      switchTab('console');
+    }
+
+    function submitCode() {
+      if (confirm('Are you sure you want to submit your code? This action cannot be undone.')) {
+        showNotification('Code submitted successfully!');
+        // Mark current question as completed
+        const currentBox = document.querySelector('.question-box.current');
+        if (currentBox) {
+          currentBox.classList.remove('current');
+          currentBox.classList.add('completed');
+          currentBox.querySelector('.question-icon').textContent = '✓';
+        }
+      }
+    }
+
+    function resetCode() {
+      if (confirm('Are you sure you want to reset your code? All changes will be lost.')) {
+        document.querySelector('.code-editor').value = `/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */
+var twoSum = function(nums, target) {
+    // Your solution here
+    
+};
+
+// Test cases
+console.log(twoSum([2,7,11,15], 9)); // Expected: [0,1]
+console.log(twoSum([3,2,4], 6));     // Expected: [1,2]`;
+        updateLineNumbers();
+      }
+    }
+
+    function formatCode() {
+      const editor = document.querySelector('.code-editor');
+      let code = editor.value;
+      
+      // Simple formatting - add proper indentation
+      const lines = code.split('\n');
+      let indentLevel = 0;
+      const formattedLines = lines.map(line => {
+        const trimmed = line.trim();
+        
+        if (trimmed.includes('}')) {
+          indentLevel = Math.max(0, indentLevel - 1);
+        }
+        
+        const formatted = '    '.repeat(indentLevel) + trimmed;
+        
+        if (trimmed.includes('{')) {
+          indentLevel++;
+        }
+        
+        return formatted;
+      });
+      
+      editor.value = formattedLines.join('\n');
+      updateLineNumbers();
+    }
+
+    function runTests() {
+      const testCases = document.querySelectorAll('.test-case');
+      testCases.forEach((testCase, index) => {
+        const status = testCase.querySelector('.test-status');
+        status.textContent = 'Running...';
+        status.className = 'test-status running';
+        
+        setTimeout(() => {
+          status.textContent = Math.random() > 0.5 ? 'Passed' : 'Failed';
+          status.className = 'test-status ' + (status.textContent === 'Passed' ? 'passed' : 'failed');
+        }, 1000 + index * 500);
+      });
+      
+      // Switch to tests tab to show results
+      switchTab('tests');
+    }
+
+    function clearConsole() {
+      const consoleOutput = document.querySelector('.console-output');
+      consoleOutput.innerHTML = '<div class="console-line">Console cleared</div><div class="console-cursor">></div>';
+    }
+
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Load saved code on page load
+    window.addEventListener('load', function() {
+      const savedCode = localStorage.getItem('savedCode');
+      if (savedCode) {
+        document.querySelector('.code-editor').value = savedCode;
+        updateLineNumbers();
+      }
+    });
+  </script>
+
+  <style>
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</body>
+</html>

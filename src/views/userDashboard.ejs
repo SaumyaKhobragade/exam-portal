@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeSecure - User Dashboard</title>
+  <link rel="stylesheet" href="/stylesheets/userDashboard.css" />
+</head>
+<body>
+  <div class="main-container">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure</div>
+      <nav class="navigation-menu">
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/exams" class="nav-link">Exams</a>
+        <a href="/results" class="nav-link">Results</a>
+        <a href="/profile" class="nav-link">Profile</a>
+      </nav>
+      <div class="user-actions">
+        <a href="/settings" class="action-btn">Settings</a>
+        <a href="/logout" class="action-btn logout-btn">Logout</a>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="dashboard-grid">
+        <section class="welcome-card">
+          <h1 class="welcome-title">Welcome Back, John!</h1>
+          <p class="welcome-description">Ready to take your next coding challenge?</p>
+          <div class="quick-stats">
+            <div class="quick-stat">
+              <span class="stat-value">15</span>
+              <span class="stat-name">Exams Completed</span>
+            </div>
+            <div class="quick-stat">
+              <span class="stat-value">87%</span>
+              <span class="stat-name">Average Score</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="progress-section">
+          <h2 class="section-title">Your Progress</h2>
+          <div class="progress-cards">
+            <div class="progress-card">
+              <div class="progress-header">
+                <h3 class="progress-title">JavaScript Fundamentals</h3>
+                <span class="progress-percentage">85%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+              </div>
+              <p class="progress-description">17 of 20 topics completed</p>
+            </div>
+            <div class="progress-card">
+              <div class="progress-header">
+                <h3 class="progress-title">Data Structures</h3>
+                <span class="progress-percentage">60%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 60%"></div>
+              </div>
+              <p class="progress-description">12 of 20 topics completed</p>
+            </div>
+            <div class="progress-card">
+              <div class="progress-header">
+                <h3 class="progress-title">Algorithms</h3>
+                <span class="progress-percentage">40%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 40%"></div>
+              </div>
+              <p class="progress-description">8 of 20 topics completed</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="exam-list">
+          <h2 class="section-title">Available Exams</h2>
+          <div class="exam-items">
+            <div class="exam-card">
+              <div class="exam-header">
+                <h3 class="exam-name">React Development</h3>
+                <span class="exam-duration">90 min</span>
+              </div>
+              <p class="exam-description">Advanced React concepts and component development</p>
+              <div class="exam-meta">
+                <span class="exam-difficulty difficulty-medium">Medium</span>
+                <span class="exam-questions">25 Questions</span>
+              </div>
+              <a href="/exams/start" class="start-exam-btn">Start Exam</a>
+            </div>
+            <div class="exam-card">
+              <div class="exam-header">
+                <h3 class="exam-name">Algorithm Design</h3>
+                <span class="exam-duration">120 min</span>
+              </div>
+              <p class="exam-description">Problem solving and algorithmic thinking assessment</p>
+              <div class="exam-meta">
+                <span class="exam-difficulty difficulty-hard">Hard</span>
+                <span class="exam-questions">15 Questions</span>
+              </div>
+              <a href="/exams/start" class="start-exam-btn">Start Exam</a>
+            </div>
+            <div class="exam-card">
+              <div class="exam-header">
+                <h3 class="exam-name">Python Basics</h3>
+                <span class="exam-duration">45 min</span>
+              </div>
+              <p class="exam-description">Fundamentals of Python programming language</p>
+              <div class="exam-meta">
+                <span class="exam-difficulty difficulty-easy">Easy</span>
+                <span class="exam-questions">20 Questions</span>
+              </div>
+              <a href="/exams/start" class="start-exam-btn">Start Exam</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="recent-results">
+          <h2 class="section-title">Recent Results</h2>
+          <div class="results-list">
+            <div class="result-item">
+              <div class="result-info">
+                <h3 class="result-exam">JavaScript Fundamentals</h3>
+                <p class="result-date">Completed 2 days ago</p>
+              </div>
+              <div class="result-score high-score">92%</div>
+            </div>
+            <div class="result-item">
+              <div class="result-info">
+                <h3 class="result-exam">Data Structures</h3>
+                <p class="result-date">Completed 1 week ago</p>
+              </div>
+              <div class="result-score medium-score">78%</div>
+            </div>
+            <div class="result-item">
+              <div class="result-info">
+                <h3 class="result-exam">SQL Queries</h3>
+                <p class="result-date">Completed 2 weeks ago</p>
+              </div>
+              <div class="result-score high-score">95%</div>
+            </div>
+            <div class="result-item">
+              <div class="result-info">
+                <h3 class="result-exam">Web Development</h3>
+                <p class="result-date">Completed 3 weeks ago</p>
+              </div>
+              <div class="result-score medium-score">83%</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="achievements-section">
+          <h2 class="section-title">Achievements</h2>
+          <div class="achievements-grid">
+            <div class="achievement-card earned">
+              <div class="achievement-icon">🏆</div>
+              <h3 class="achievement-title">First Exam</h3>
+              <p class="achievement-desc">Complete your first exam</p>
+            </div>
+            <div class="achievement-card earned">
+              <div class="achievement-icon">⭐</div>
+              <h3 class="achievement-title">High Scorer</h3>
+              <p class="achievement-desc">Score 90% or higher</p>
+            </div>
+            <div class="achievement-card">
+              <div class="achievement-icon">🔥</div>
+              <h3 class="achievement-title">Streak Master</h3>
+              <p class="achievement-desc">Complete 5 exams in a row</p>
+            </div>
+            <div class="achievement-card">
+              <div class="achievement-icon">💎</div>
+              <h3 class="achievement-title">Perfect Score</h3>
+              <p class="achievement-desc">Score 100% on any exam</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeSecure - Dashboard</title>
+  <link rel="stylesheet" href="/stylesheets/newpage.css" />
+</head>
+<body>
+  <div class="main-container">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure</div>
+      <nav class="navigation-menu">
+        <a href="#" class="nav-link">Dashboard</a>
+        <a href="#" class="nav-link">Exams</a>
+        <a href="#" class="nav-link">Results</a>
+        <a href="#" class="nav-link">Profile</a>
+      </nav>
+      <div class="user-actions">
+        <a href="/settings" class="action-btn">Settings</a>
+        <a href="/logout" class="action-btn logout-btn">Logout</a>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="dashboard-grid">
+        <section class="welcome-card">
+          <h1 class="welcome-title">Welcome Back</h1>
+          <p class="welcome-description">Ready to take your next coding challenge?</p>
+        </section>
+
+        <section class="stats-section">
+          <div class="stat-card">
+            <div class="stat-number">12</div>
+            <div class="stat-label">Exams Completed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">85%</div>
+            <div class="stat-label">Average Score</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Pending Exams</div>
+          </div>
+        </section>
+
+        <section class="exam-list">
+          <h2 class="section-title">Available Exams</h2>
+          <div class="exam-items">
+            <div class="exam-card">
+              <div class="exam-header">
+                <h3 class="exam-name">JavaScript Fundamentals</h3>
+                <span class="exam-duration">60 min</span>
+              </div>
+              <p class="exam-description">Test your knowledge of JavaScript basics and ES6 features</p>
+              <a href="/exams/javascript-fundamentals" class="start-exam-btn">Start Exam</a>
+            </div>
+            <div class="exam-card">
+              <div class="exam-header">
+                <h3 class="exam-name">React Development</h3>
+                <span class="exam-duration">90 min</span>
+              </div>
+              <p class="exam-description">Advanced React concepts and component development</p>
+              <a href="/exams/javascript-fundamentals" class="start-exam-btn">Start Exam</a>
+            </div>
+            <div class="exam-card">
+              <div class="exam-header">
+                <h3 class="exam-name">Algorithm Design</h3>
+                <span class="exam-duration">120 min</span>
+              </div>
+              <p class="exam-description">Problem solving and algorithmic thinking assessment</p>
+              <a href="/exams/javascript-fundamentals" class="start-exam-btn">Start Exam</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

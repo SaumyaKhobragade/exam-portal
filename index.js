@@ -14,6 +14,22 @@ dotenv.config({
 app.get('/', (req,res)=>{
     res.render('landingpage');
 })
+app.get('/about', (req,res)=>{
+    res.render('about');
+})
+app.get('/contact', (req,res)=>{
+    res.render('contact');
+})
+app.get('/ide', (req,res)=>{
+    res.render('ide');
+})
+app.get('/login', (req,res)=>{
+    res.render('loginregister');
+})
+app.get('/admin', (req,res)=>{
+    res.render('userDashboard');
+})
+
 
 // Register routes
 app.use('/api/v1/users', userRouter);

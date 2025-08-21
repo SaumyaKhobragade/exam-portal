@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeSecure - Contact Us</title>
+  <link rel="stylesheet" href="/stylesheets/contact.css" />
+</head>
+<body>
+  <div class="main-container">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure</div>
+      <nav class="navigation-menu">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/about" class="nav-link">About</a>
+        <a href="/contact" class="nav-link">Contact</a>
+        <a href="/login" class="nav-link">Login</a>
+      </nav>
+      <div class="user-actions">
+        <a href="/support" class="action-btn">Support</a>
+        <a href="/login" class="action-btn login-btn">Login</a>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="contact-grid">
+        <section class="welcome-card">
+          <h1 class="welcome-title">Contact Us</h1>
+          <p class="welcome-description">Get in touch with our team for support and inquiries</p>
+        </section>
+
+        <section class="contact-info-section">
+          <div class="info-card">
+            <div class="info-icon">📧</div>
+            <div class="info-content">
+              <h3 class="info-title">Email</h3>
+              <p class="info-text">support@codesecure.com</p>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📞</div>
+            <div class="info-content">
+              <h3 class="info-title">Phone</h3>
+              <p class="info-text">+1 (555) 123-4567</p>
+            </div>
+          </div>
+          <div class="info-card">
+            <div class="info-icon">📍</div>
+            <div class="info-content">
+              <h3 class="info-title">Address</h3>
+              <p class="info-text">123 Tech Street, Silicon Valley, CA 94043</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="contact-form-section">
+          <h2 class="section-title">Send us a Message</h2>
+          <form class="contact-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-input" placeholder="Enter your first name" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-input" placeholder="Enter your last name" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <select class="form-input">
+                <option>General Inquiry</option>
+                <option>Technical Support</option>
+                <option>Billing Question</option>
+                <option>Feature Request</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-input message-input" placeholder="Write your message here..." rows="5" required></textarea>
+            </div>
+            <a href="#" class="submit-btn" onclick="this.closest('form').submit(); return false;">Send Message</a>
+          </form>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
