@@ -3,6 +3,10 @@ import connectDB from './src/db/index.js';
 import app from './app.js';
 import userRouter from "./src/routes/user.routes.js";
 
+
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 dotenv.config({
     path: '.env'
 });
