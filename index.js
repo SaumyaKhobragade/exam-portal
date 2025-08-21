@@ -5,14 +5,14 @@ import userRouter from "./src/routes/user.routes.js";
 
 
 app.set('view engine', 'ejs');
-app.set('views', './views');
+app.set('views', './src/views');
 
 dotenv.config({
     path: '.env'
 });
 
 app.get('/', (req,res)=>{
-    app.render('landingpage');
+    res.render('landingpage');
 })
 
 // Register routes
