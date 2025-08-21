@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Secure Online Coding Exam Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4a90e2, #357ABD);
+      color: #fff;
+    }
+
+    .container {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      user-select: none;
+    }
+
+    .tagline {
+      font-size: 1.3rem;
+      margin-bottom: 40px;
+      opacity: 0.85;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 20px;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .btn-login {
+      background-color: #fff;
+      color: #357ABD;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.5);
+    }
+    .btn-login:hover {
+      background-color: #e6e6e6;
+      color: #1a4a85;
+    }
+
+    .btn-register {
+      background-color: transparent;
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    .btn-register:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    footer {
+      position: absolute;
+      bottom: 15px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      opacity: 0.6;
+      user-select: none;
+    }
+
+    @media (max-width: 480px) {
+      .buttons {
+        flex-direction: column;
+        gap: 15px;
+      }
+      .btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">CodeSecure</div>
+    <div class="tagline">
+      Secure &amp; Fair Online Coding Examination Platform
+    </div>
+    <div class="buttons">
+      <a href="/login" class="btn btn-login">Login</a>
+      <a href="/register" class="btn btn-register">Register</a>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 iTechRoots Hackathon • Built with ❤️
+  </footer>
+</body>
+</html>
