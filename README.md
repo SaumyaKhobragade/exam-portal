@@ -103,7 +103,7 @@ This project is licensed under the MIT License.
 
 For questions or support, please contact:
 
-- Saumya Khobragade - khobragadesaumya@gmail.com
+- Saumya Khobragade, Saptanshu Wanjari, Hardik Sharma - khobragadesaumya@gmail.com
 
 ---
 
