@@ -103,7 +103,7 @@ This project is licensed under the MIT License.
 
 For questions or support, please contact:
 
-- Your Name - your.email@example.com
+- Saumya Khobragade - khobragadesaumya@gmail.com
 
 ---
 
