@@ -37,7 +37,7 @@ This project is a secure online coding examination platform designed for institu
 
 ### Clone the repo
 ```
-git clone https://github.com/yourusername/online-examination-platform.git
+git clone https://github.com/saumyakhobragade/online-examination-platform.git
 cd online-examination-platform
 ```
 
@@ -103,7 +103,9 @@ This project is licensed under the MIT License.
 
 For questions or support, please contact:
 
-- Saumya Khobragade, Saptanshu Wanjari, Hardik Sharma - khobragadesaumya@gmail.com
+- Saumya Khobragade - khobragadesaumya@gmail.com
+- Saptanshu Wanjari - saptanshuwanjari63@gmail.com
+- Hardik Sharma - 26hardiksharma@gmail.com
 
 ---
 
