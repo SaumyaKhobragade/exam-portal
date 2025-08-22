@@ -115,20 +115,16 @@
           <h2 class="section-title">Platform Statistics</h2>
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-number">50,000+</div>
+              <div class="stat-number"><%= stats.studentsAssessed >= 1000 ? (stats.studentsAssessed/1000).toFixed(0) + 'K+' : stats.studentsAssessed %></div>
               <div class="stat-label">Students Assessed</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">500+</div>
+              <div class="stat-number"><%= stats.institutions %>+</div>
               <div class="stat-label">Educational Institutions</div>
             </div>
             <div class="stat-card">
-              <div class="stat-number">1M+</div>
+              <div class="stat-number"><%= stats.codeSubmissions >= 1000000 ? (stats.codeSubmissions/1000000).toFixed(1) + 'M+' : stats.codeSubmissions >= 1000 ? (stats.codeSubmissions/1000).toFixed(0) + 'K+' : stats.codeSubmissions %></div>
               <div class="stat-label">Code Submissions</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-number">99.9%</div>
-              <div class="stat-label">Platform Uptime</div>
             </div>
           </div>
         </section>

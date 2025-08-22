@@ -30,7 +30,6 @@ app.get('/', async (req, res) => {
             stats: {
                 studentsAssessed: stats.studentsAssessed,
                 institutions: stats.institutions,
-                uptime: stats.uptime,
                 totalExams: stats.totalExams,
                 activeUsers: stats.activeUsers,
                 heroTitle: stats.heroTitle,
@@ -53,8 +52,29 @@ app.get('/', async (req, res) => {
         });
     }
 })
-app.get('/about', (req,res)=>{
-    res.render('about');
+app.get('/about', async (req, res) => {
+    try {
+        // Get real-time statistics for the about page
+        const stats = await HomepageStats.getRealTimeStats();
+        
+        res.render('about', {
+            stats: {
+                studentsAssessed: stats.studentsAssessed,
+                institutions: stats.institutions,
+                codeSubmissions: stats.codeSubmissions
+            }
+        });
+    } catch (error) {
+        console.error('Error loading about page stats:', error);
+        // Fallback to default values if database fails
+        res.render('about', {
+            stats: {
+                studentsAssessed: 0,
+                institutions: 0,
+                codeSubmissions: 0
+            }
+        });
+    }
 })
 app.get('/contact', (req,res)=>{
     res.render('contact');

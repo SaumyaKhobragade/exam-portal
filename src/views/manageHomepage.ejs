@@ -275,12 +275,12 @@
                         <div class="stat-label">Institutions (Total Admins)</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-value"><%= stats.uptime %>%</div>
-                        <div class="stat-label">Uptime</div>
+                        <div class="stat-value"><%= stats.codeSubmissions >= 1000000 ? (stats.codeSubmissions/1000000).toFixed(1) + 'M+' : stats.codeSubmissions >= 1000 ? (stats.codeSubmissions/1000).toFixed(0) + 'K+' : stats.codeSubmissions || 0 %></div>
+                        <div class="stat-label">Code Submissions</div>
                     </div>
                 </div>
                 <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                    <i class="fas fa-info-circle"></i> Students and Institutions are automatically calculated from your database. You can only edit Uptime and Hero content below.
+                    <i class="fas fa-info-circle"></i> Students, Institutions, and Code Submissions are automatically calculated from your database. You can edit Uptime and Hero content below.
                 </p>
             </div>
 

@@ -91,13 +91,46 @@ homepageStatsSchema.statics.getRealTimeStats = async function() {
         // Get current stats document for other data (uptime, hero content)
         let stats = await this.getCurrentStats();
         
-        // Try to get exam count, but don't fail if Exam model isn't available
+        // Try to get exam count and code submissions, but don't fail if Exam model isn't available
         let totalExams = 0;
+        let totalCodeSubmissions = 0;
         try {
             const Exam = mongoose.model('Exam');
             totalExams = await Exam.countDocuments();
+            
+            // Calculate total code submissions by counting all answers from all participants
+            const examsWithParticipants = await Exam.aggregate([
+                {
+                    $unwind: {
+                        path: "$participants",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$participants.answers",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalSubmissions: {
+                            $sum: {
+                                $cond: [
+                                    { $ne: ["$participants.answers.code", null] },
+                                    1,
+                                    0
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]);
+            
+            totalCodeSubmissions = examsWithParticipants.length > 0 ? examsWithParticipants[0].totalSubmissions : 0;
         } catch (examError) {
-            console.log('Exam model not available, setting totalExams to 0');
+            console.log('Exam model not available, setting exam stats to 0');
         }
         
         // Return stats with real-time data
@@ -106,6 +139,7 @@ homepageStatsSchema.statics.getRealTimeStats = async function() {
             institutions: totalAdmins, // Admins represent institutions
             uptime: stats.uptime,
             totalExams: totalExams,
+            codeSubmissions: totalCodeSubmissions,
             activeUsers: totalUsers + totalAdmins,
             heroTitle: stats.heroTitle,
             heroDescription: stats.heroDescription,
@@ -117,7 +151,11 @@ homepageStatsSchema.statics.getRealTimeStats = async function() {
     } catch (error) {
         console.error('Error fetching real-time homepage stats:', error);
         // Fallback to stored stats if real-time calculation fails
-        return await this.getCurrentStats();
+        const fallbackStats = await this.getCurrentStats();
+        return {
+            ...fallbackStats.toObject(),
+            codeSubmissions: 0
+        };
     }
 };
 
