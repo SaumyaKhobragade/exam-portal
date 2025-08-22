@@ -11,6 +11,7 @@ import runCode from './src/utils/judge0.js';
 import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
 import { handleLogout } from './src/middlewares/logout.middleware.js';
 import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
+import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
 
 
 app.set('view engine', 'ejs');
