@@ -11,6 +11,8 @@ import runCode from './src/utils/judge0.js';
 import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
 import { handleLogout } from './src/middlewares/logout.middleware.js';
 import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
+import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
+import HomepageStats from './src/models/homepageStats.model.js';
 
 
 
@@ -18,11 +20,60 @@ dotenv.config({
     path: '.env'
 });
 
-app.get('/', (req,res)=>{
-    res.render('landingpage');
+app.get('/', async (req, res) => {
+    try {
+        // Get real-time homepage stats from database
+        const stats = await HomepageStats.getRealTimeStats();
+        
+        res.render('landingpage', { 
+            stats: {
+                studentsAssessed: stats.studentsAssessed,
+                institutions: stats.institutions,
+                totalExams: stats.totalExams,
+                activeUsers: stats.activeUsers,
+                heroTitle: stats.heroTitle,
+                heroDescription: stats.heroDescription
+            }
+        });
+    } catch (error) {
+        console.error('Error loading homepage stats:', error);
+        // Fallback to default values if database fails
+        res.render('landingpage', {
+            stats: {
+                studentsAssessed: 0,
+                institutions: 0,
+                uptime: 99.9,
+                totalExams: 0,
+                activeUsers: 0,
+                heroTitle: "Secure & Fair Online Coding Examinations",
+                heroDescription: "The most advanced platform for conducting secure coding assessments with real-time monitoring, AI-powered proctoring, and comprehensive analytics."
+            }
+        });
+    }
 })
-app.get('/about', (req,res)=>{
-    res.render('about');
+app.get('/about', async (req, res) => {
+    try {
+        // Get real-time statistics for the about page
+        const stats = await HomepageStats.getRealTimeStats();
+        
+        res.render('about', {
+            stats: {
+                studentsAssessed: stats.studentsAssessed,
+                institutions: stats.institutions,
+                codeSubmissions: stats.codeSubmissions
+            }
+        });
+    } catch (error) {
+        console.error('Error loading about page stats:', error);
+        // Fallback to default values if database fails
+        res.render('about', {
+            stats: {
+                studentsAssessed: 0,
+                institutions: 0,
+                codeSubmissions: 0
+            }
+        });
+    }
 })
 app.get('/contact', (req,res)=>{
     res.render('contact');
@@ -69,12 +120,74 @@ app.get('/owner-dashboard', noCacheMiddleware, verifyOwnerSession, (req,res)=>{
     res.render('ownerDashboard', { user: req.user });
 });
 
-app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, (req,res)=>{
-    res.render('userDashboard',{user: req.user});
+app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
+    try {
+        // Import the Exam model
+        const Exam = (await import('./src/models/exam.model.js')).default;
+        const Admin = (await import('./src/models/admin.model.js')).default;
+        
+        // Get user's domain
+        const userDomain = req.user.domain;
+        
+        // Find admins from the same organization (domain)
+        const organizationAdmins = await Admin.find({ domain: userDomain }).select('_id');
+        const adminIds = organizationAdmins.map(admin => admin._id);
+        
+        // Find exams created by admins from the same organization
+        const organizationExams = await Exam.find({
+            adminId: { $in: adminIds },
+            status: { $in: ['active', 'draft'] } // Only show active or draft exams
+        })
+        .populate('adminId', 'username fullname')
+        .sort({ startDateTime: 1 }) // Sort by start time
+        .select('title description startDateTime duration status createdAt totalMarks questions');
+        
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: organizationExams 
+        });
+    } catch (error) {
+        console.error('Error fetching organization exams:', error);
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: [] 
+        });
+    }
 });
 
-app.get('/dashboard', noCacheMiddleware, verifyJWTSession, (req,res)=>{
-    res.render('userDashboard', { user: req.user });
+app.get('/dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
+    try {
+        // Import the Exam model
+        const Exam = (await import('./src/models/exam.model.js')).default;
+        const Admin = (await import('./src/models/admin.model.js')).default;
+        
+        // Get user's domain
+        const userDomain = req.user.domain;
+        
+        // Find admins from the same organization (domain)
+        const organizationAdmins = await Admin.find({ domain: userDomain }).select('_id');
+        const adminIds = organizationAdmins.map(admin => admin._id);
+        
+        // Find exams created by admins from the same organization
+        const organizationExams = await Exam.find({
+            adminId: { $in: adminIds },
+            status: { $in: ['active', 'draft'] } // Only show active or draft exams
+        })
+        .populate('adminId', 'username fullname')
+        .sort({ startDateTime: 1 }) // Sort by start time
+        .select('title description startDateTime duration status createdAt totalMarks questions');
+        
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: organizationExams 
+        });
+    } catch (error) {
+        console.error('Error fetching organization exams:', error);
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: [] 
+        });
+    }
 });
 
 // Judge0 code execution route
@@ -111,6 +224,9 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/owner', ownerRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/exam-requests', examRequestRouter);
+
+// Global error handling middleware (must be after all routes)
+app.use(errorHandler);
 
 connectDB()
     .then(() => {

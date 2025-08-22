@@ -3,6 +3,7 @@ import {ApiError} from "../utils/apiError.js"
 import {ApiResponse} from "../utils/apiResponse.js"
 import User from "../models/user.model.js"
 import Admin from "../models/admin.model.js"
+import ApprovedDomain from "../models/approvedDomain.model.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 const registerUser = asyncHandler(async (req,res)=>{
@@ -80,11 +81,27 @@ const registerUser = asyncHandler(async (req,res)=>{
 
 // Simple registration without file upload
 const simpleRegisterUser = asyncHandler(async (req, res) => {
-    const { username, email, password, fullname, role } = req.body;
+    const { username, email, password, fullname } = req.body;
     
     // Validation
     if([fullname, email, username, password].some((field) => field?.trim() === "")){
         throw new ApiError(400, "All fields are required");
+    }
+    
+    // Extract domain from email
+    const emailDomain = email.split('@')[1];
+    if (!emailDomain) {
+        throw new ApiError(400, "Invalid email format");
+    }
+    
+    // Check if domain is approved
+    const approvedDomain = await ApprovedDomain.findOne({ 
+        domain: emailDomain, 
+        isActive: true 
+    });
+    
+    if(!approvedDomain){
+        throw new ApiError(403, `Domain not approved: The email domain '${emailDomain}' is not registered with us. Please check your email address or contact your organization administrator.`);
     }
     
     // Check if user already exists in both collections
@@ -108,7 +125,7 @@ const simpleRegisterUser = asyncHandler(async (req, res) => {
         email,
         password,
         username: username.toLowerCase(),
-        role: role || 'student'
+        domain: emailDomain
     });
     
     // Get user for token generation (without excluding password for methods)

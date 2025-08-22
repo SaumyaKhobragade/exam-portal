@@ -4,6 +4,7 @@ import {ApiResponse} from "../utils/apiResponse.js"
 import User from "../models/user.model.js"
 import Admin from "../models/admin.model.js"
 import Owner from "../models/owner.model.js"
+import ApprovedDomain from "../models/approvedDomain.model.js"
 
 // Create Owner account (only one owner should exist)
 const createOwnerAccount = asyncHandler(async (req, res) => {
@@ -69,6 +70,12 @@ const createAdminByOwner = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required");
     }
     
+    // Extract domain from email
+    const emailDomain = email.split('@')[1];
+    if (!emailDomain) {
+        throw new ApiError(400, "Invalid email format");
+    }
+    
     // Verify requester is owner
     const owner = await Owner.findById(ownerId);
     if(!owner){
@@ -102,8 +109,23 @@ const createAdminByOwner = asyncHandler(async (req, res) => {
         username: username.toLowerCase(),
         role: 'admin',
         organization,
+        domain: emailDomain,
         createdBy: ownerId
     });
+    
+    // Create or update approved domain
+    await ApprovedDomain.findOneAndUpdate(
+        { domain: emailDomain },
+        {
+            domain: emailDomain,
+            organizationName: organization,
+            contactPerson: fullname,
+            approvedBy: ownerId,
+            adminId: admin._id,
+            isActive: true
+        },
+        { upsert: true, new: true }
+    );
     
     // Add admin to owner's created admins list
     await Owner.findByIdAndUpdate(
@@ -242,11 +264,33 @@ const updateOwnerPassword = asyncHandler(async (req, res) => {
     );
 });
 
+// Get approved domains
+const getApprovedDomains = asyncHandler(async (req, res) => {
+    const ownerId = req.user._id;
+    
+    // Verify requester is owner
+    const owner = await Owner.findById(ownerId);
+    if(!owner){
+        throw new ApiError(403, "Only owner can view approved domains");
+    }
+    
+    // Get all approved domains with organization info
+    const approvedDomains = await ApprovedDomain.find({ isActive: true })
+        .populate('adminId', 'fullname email')
+        .select('domain organizationName contactPerson createdAt')
+        .sort({ createdAt: -1 });
+    
+    return res.status(200).json(
+        new ApiResponse(200, approvedDomains, "Approved domains retrieved successfully")
+    );
+});
+
 export { 
     createOwnerAccount,
     createAdminByOwner,
     getAdminsByOwner,
     deleteAdminByOwner,
     getOwnerDashboardStats,
-    updateOwnerPassword
+    updateOwnerPassword,
+    getApprovedDomains
 };

@@ -339,51 +339,16 @@
             </div>
         </div>
 
-        <!-- Admin Management Section -->
-        <div class="admin-management-section">
-            <h2 class="section-title">👨‍💼 Admin Management</h2>
-            
-            <form id="createAdminForm" class="admin-form">
-                <div class="form-group">
-                    <label class="form-label">Username</label>
-                    <input type="text" class="form-input" id="adminUsername" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" class="form-input" id="adminFullname" required>
-                </div>
-                <div class="form-group full-width">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" class="form-input" id="adminEmail" required>
-                </div>
-                <div class="form-group full-width">
-                    <label class="form-label">University/Organization</label>
-                    <input type="text" class="form-input" id="adminOrganization" placeholder="Enter university or organization name" required>
-                </div>
-                <div class="form-group full-width">
-                    <label class="form-label">Password</label>
-                    <input type="password" class="form-input" id="adminPassword" required>
-                </div>
-                <div class="form-group full-width">
-                    <button type="submit" class="btn btn-primary">Create Admin Account</button>
-                </div>
-            </form>
-            
-            <div id="message" class="message" style="display: none;"></div>
-            
-            <div class="admin-list">
-                <h3>Current Admins</h3>
-                <div id="adminsList">
-                    <p>Loading admins...</p>
-                </div>
-            </div>
-        </div>
-
         <!-- Exam Request Management Section -->
         <div class="dashboard-section">
-            <h2>📋 Exam Request Management</h2>
-            
-            <div class="stats-grid">
+            <div class="exam-requests-section upgraded-section">
+                <div class="section-header upgraded-header">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3039/3039434.png" alt="Exam Requests" style="width:32px;opacity:0.85;">
+                        <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#4a4a4a;">📋 Exam Request Management</h2>
+                    </div>
+                </div>
+                <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-number" id="pendingRequests">0</div>
                     <div class="stat-label">Pending Requests</div>
@@ -397,7 +362,6 @@
                     <div class="stat-label">Total Requests</div>
                 </div>
             </div>
-
             <div class="exam-requests-section upgraded-section">
                 <div class="section-header upgraded-header">
                     <div style="display:flex;align-items:center;gap:12px;">
@@ -419,6 +383,18 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Admin Management Section -->
+        <div class="admin-management-section">
+            <h2 class="section-title">👨‍💼 Admin Management</h2>
+            <div class="admin-list">
+                <h3>Current Admins</h3>
+                <div id="adminsList">
+                    <p>Loading admins...</p>
+                </div>
+            </div>
+        </div>
     <style>
     .upgraded-section {
         background: #f7f9fb;
@@ -456,84 +432,22 @@
         </div>
     </div>
 
+
     <!-- Exam Request Review Modal -->
     <div id="reviewModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Review Exam Request</h3>
-                <span class="close" onclick="closeReviewModal()">&times;</span>
+                <h2 id="reviewModalTitle">Review Exam Request</h2>
+                <span class="close" id="closeReviewModal">&times;</span>
             </div>
-            <div class="modal-body">
-                <div id="reviewRequestDetails"></div>
-                
-                <div class="form-group" style="display:flex;gap:8px;align-items:center;justify-content:center;">
-                    <label style="margin-right:10px;">Decision:</label>
-                    <div style="display:flex;gap:8px;">
-                        <button id="acceptBtn" class="square-btn accept" title="Accept" type="button"><span>&#10003;</span></button>
-                        <button id="rejectBtn" class="square-btn reject" title="Reject" type="button"><span>&#10007;</span></button>
-                    </div>
-                </div>
-                <div id="confirmDecisionGroup" style="display:none;flex-direction:column;align-items:center;gap:8px;margin-top:10px;">
-                    <span id="confirmText"></span>
-                    <div style="display:flex;gap:12px;">
-                        <button id="confirmYesBtn" class="btn btn-primary" type="button">Yes</button>
-                        <button id="confirmNoBtn" class="btn btn-secondary" type="button">No</button>
-                    </div>
-                </div>
-                <div id="confirmDecisionGroup" style="display:none;justify-content:center;gap:16px;margin-top:10px;">
-                    <span id="confirmText"></span>
-                    <button id="confirmYesBtn" class="btn btn-primary" type="button">Yes</button>
-                    <button id="confirmNoBtn" class="btn btn-secondary" type="button">No</button>
-                </div>
-                
-                
+            <div class="modal-body" id="reviewModalBody">
+                <!-- Exam request details will be dynamically inserted here by JS -->
             </div>
-            <div class="modal-footer" style="display:flex;justify-content:center;gap:16px;">
-                <button class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeReviewModalBtn">Close</button>
+                <button class="btn btn-primary" id="approveRequestBtn">Approve</button>
+                <button class="btn btn-danger" id="rejectRequestBtn">Reject</button>
             </div>
-        <style>
-        .square-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            background: #f1f1f1;
-            color: #333;
-            transition: background 0.2s, color 0.2s;
-            cursor: pointer;
-        }
-        .square-btn.accept {
-            background: #28a745;
-            color: #fff;
-        }
-        .square-btn.reject {
-            background: #dc3545;
-            color: #fff;
-        }
-        .square-btn.accept:hover {
-            background: #218838;
-        }
-        .square-btn.reject:hover {
-            background: #c82333;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-        }
-        #confirmDecisionGroup {
-            display: flex;
-            align-items: center;
-        }
-        #confirmText {
-            font-weight: 500;
-            margin-right: 10px;
-        }
-        </style>
         </div>
     </div>
 

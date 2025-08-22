@@ -116,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
-      const role = document.getElementById('userRole').value;
       const messageDiv = document.getElementById('registerMessage');
       
       if (password !== confirmPassword) {
@@ -136,17 +135,26 @@ document.addEventListener('DOMContentLoaded', function() {
             username: username,
             email: email,
             password: password,
-            fullname: `${firstName} ${lastName}`,
-            role: role
+            fullname: `${firstName} ${lastName}`
           })
         });
         
-        const data = await response.json();
+        let data;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error('Failed to parse response:', parseError);
+          messageDiv.style.display = 'block';
+          messageDiv.style.color = 'red';
+          messageDiv.textContent = 'Server error. Please try again.';
+          return;
+        }
         
         if (response.ok) {
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = 'green';
-          messageDiv.textContent = 'Registration successful! Redirecting to dashboard...';
+          // Show success popup before redirecting
+          const emailDomain = email.split('@')[1];
+          showOrganizationPopup('success', 'Registration Successful!', 
+            `Welcome! Your ${emailDomain} domain registration is approved. You will be redirected to your dashboard shortly.`);
           
           // Redirect to user dashboard after successful registration
           setTimeout(() => {
@@ -155,13 +163,24 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
               window.location.href = '/user-dashboard';
             }
-          }, 1500);
+          }, 2000);
         } else {
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = data.message || 'Registration failed';
+          // Handle error responses
+          console.log('Error response data:', data);
+          
+          // Check if it's a domain validation error
+          if (data.message && (data.message.includes('Domain not approved') || data.message.includes('not registered with us'))) {
+            const emailDomain = email.split('@')[1];
+            showOrganizationPopup('error', 'Email Domain Not Registered', 
+              `The domain '${emailDomain}' is not registered with us. Please check your email address and ensure you're using your institutional email.`);
+          } else {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = data.message || 'Registration failed';
+          }
         }
       } catch (error) {
+        console.error('Network error:', error);
         messageDiv.style.display = 'block';
         messageDiv.style.color = 'red';
         messageDiv.textContent = 'Network error. Please try again.';
@@ -188,3 +207,64 @@ function showMessage(message, type = 'info') {
     }
   }
 }
+
+// Organization Validation Popup Functions
+function showOrganizationPopup(type, title, message) {
+  const popup = document.getElementById('organizationPopup');
+  const icon = document.getElementById('popupIcon');
+  const titleElement = document.getElementById('popupTitle');
+  const messageElement = document.getElementById('popupMessage');
+  const actionsElement = document.getElementById('popupActions');
+  
+  // Set content
+  titleElement.textContent = title;
+  messageElement.textContent = message;
+  
+  // Set icon and actions based on type
+  if (type === 'error') {
+    icon.textContent = '❌';
+    icon.className = 'popup-icon error';
+    messageElement.className = 'popup-message error-domain';
+    actionsElement.innerHTML = `
+      <button class="popup-btn secondary" onclick="closeOrganizationPopup()">Check Email</button>
+      <button class="popup-btn primary" onclick="contactSupport()">Contact Support</button>
+    `;
+  } else if (type === 'success') {
+    icon.textContent = '✅';
+    icon.className = 'popup-icon success';
+    messageElement.className = 'popup-message';
+    actionsElement.innerHTML = `
+      <button class="popup-btn primary" onclick="closeOrganizationPopup()">Continue</button>
+    `;
+  }
+  
+  // Show popup
+  popup.classList.add('show');
+}
+
+function closeOrganizationPopup() {
+  const popup = document.getElementById('organizationPopup');
+  popup.classList.remove('show');
+  
+  // Focus back on the email input for domain issues
+  const emailInput = document.getElementById('registerEmail');
+  if (emailInput) {
+    emailInput.focus();
+    emailInput.select();
+  }
+}
+
+function contactSupport() {
+  // Redirect to contact page
+  window.location.href = '/contact';
+}
+
+// Close popup when clicking outside
+document.addEventListener('click', function(event) {
+  const popup = document.getElementById('organizationPopup');
+  const popupContent = document.querySelector('.popup-content');
+  
+  if (popup && popup.classList.contains('show') && !popupContent.contains(event.target)) {
+    closeOrganizationPopup();
+  }
+});

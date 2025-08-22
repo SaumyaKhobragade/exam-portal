@@ -42,6 +42,32 @@
             <input type="number" name="duration" min="1" max="300" required>
           </label>
         </div>
+
+        <div class="inline-grid">
+          <label>
+            Programming Language *
+            <select name="programmingLanguage" required>
+              <option value="python">Python 3</option>
+              <option value="java">Java</option>
+              <option value="cpp">C++</option>
+              <option value="c">C</option>
+              <option value="javascript">JavaScript (Node.js)</option>
+              <option value="go">Go</option>
+              <option value="rust">Rust</option>
+              <option value="csharp">C#</option>
+            </select>
+          </label>
+          <label>
+            Test Case Validation
+            <select name="validateTestCases">
+              <option value="false">Skip Validation (Recommended)</option>
+              <option value="true">Enable Validation (Beta)</option>
+            </select>
+            <!-- <small style="color: #666; font-size: 0.9rem; display: block; margin-top: 0.5rem;">
+              Validation checks test case structure. Enable only if you want to test with Judge0 API.
+            </small> -->
+          </label>
+        </div>
         
         <label>
           Exam Description *

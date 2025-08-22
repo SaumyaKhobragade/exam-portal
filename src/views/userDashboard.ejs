@@ -39,81 +39,76 @@
           </div>
         </section>
 
-        <section class="progress-section">
-          <h2 class="section-title">Your Progress</h2>
-          <div class="progress-cards">
-            <div class="progress-card">
-              <div class="progress-header">
-                <h3 class="progress-title">JavaScript Fundamentals</h3>
-                <span class="progress-percentage">85%</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 85%"></div>
-              </div>
-              <p class="progress-description">17 of 20 topics completed</p>
-            </div>
-            <div class="progress-card">
-              <div class="progress-header">
-                <h3 class="progress-title">Data Structures</h3>
-                <span class="progress-percentage">60%</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 60%"></div>
-              </div>
-              <p class="progress-description">12 of 20 topics completed</p>
-            </div>
-            <div class="progress-card">
-              <div class="progress-header">
-                <h3 class="progress-title">Algorithms</h3>
-                <span class="progress-percentage">40%</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 40%"></div>
-              </div>
-              <p class="progress-description">8 of 20 topics completed</p>
-            </div>
-          </div>
-        </section>
-
         <section class="exam-list">
-          <h2 class="section-title">Available Exams</h2>
+          <h2 class="section-title">Available Exams from Your Organization</h2>
           <div class="exam-items">
-            <div class="exam-card">
-              <div class="exam-header">
-                <h3 class="exam-name">React Development</h3>
-                <span class="exam-duration">90 min</span>
+            <% if (exams && exams.length > 0) { %>
+              <% exams.forEach(exam => { %>
+                <div class="exam-card">
+                  <div class="exam-header">
+                    <h3 class="exam-name"><%= exam.title %></h3>
+                    <span class="exam-duration"><%= exam.duration %> min</span>
+                  </div>
+                  <% if (exam.description) { %>
+                    <p class="exam-description"><%= exam.description %></p>
+                  <% } %>
+                  <div class="exam-meta">
+                    <span class="exam-status status-<%= exam.status %>"><%= exam.status.toUpperCase() %></span>
+                    <% if (exam.questions && exam.questions.length > 0) { %>
+                      <span class="exam-questions"><%= exam.questions.length %> Questions</span>
+                    <% } %>
+                    <% if (exam.totalMarks) { %>
+                      <span class="exam-marks"><%= exam.totalMarks %> Points</span>
+                    <% } %>
+                  </div>
+                  <div class="exam-schedule">
+                    <div class="schedule-info">
+                      <strong>Start Time:</strong> 
+                      <%= new Date(exam.startDateTime).toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }) %>
+                    </div>
+                    <% if (exam.adminId && exam.adminId.fullname) { %>
+                      <div class="created-by">
+                        <small>Created by: <%= exam.adminId.fullname %></small>
+                      </div>
+                    <% } %>
+                  </div>
+                  <% 
+                    const now = new Date();
+                    const startTime = new Date(exam.startDateTime);
+                    const endTime = new Date(startTime.getTime() + (exam.duration * 60000));
+                    const canStart = now >= startTime && now <= endTime && exam.status === 'active';
+                    const isPast = now > endTime;
+                    const isFuture = now < startTime;
+                  %>
+                  
+                  <% if (canStart) { %>
+                    <a href="/exams/start/<%= exam._id %>" class="start-exam-btn">Start Exam</a>
+                  <% } else if (isPast) { %>
+                    <button class="start-exam-btn disabled" disabled>Exam Ended</button>
+                  <% } else if (isFuture) { %>
+                    <button class="start-exam-btn disabled" disabled>
+                      Starts <%= startTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                    </button>
+                  <% } else if (exam.status === 'draft') { %>
+                    <button class="start-exam-btn disabled" disabled>Draft - Not Available</button>
+                  <% } else { %>
+                    <button class="start-exam-btn disabled" disabled>Not Available</button>
+                  <% } %>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <div class="no-exams-message">
+                <h3>No Exams Available</h3>
+                <p>Your organization hasn't created any exams yet. Check back later!</p>
               </div>
-              <p class="exam-description">Advanced React concepts and component development</p>
-              <div class="exam-meta">
-                <span class="exam-difficulty difficulty-medium">Medium</span>
-                <span class="exam-questions">25 Questions</span>
-              </div>
-              <a href="/exams/start" class="start-exam-btn">Start Exam</a>
-            </div>
-            <div class="exam-card">
-              <div class="exam-header">
-                <h3 class="exam-name">Algorithm Design</h3>
-                <span class="exam-duration">120 min</span>
-              </div>
-              <p class="exam-description">Problem solving and algorithmic thinking assessment</p>
-              <div class="exam-meta">
-                <span class="exam-difficulty difficulty-hard">Hard</span>
-                <span class="exam-questions">15 Questions</span>
-              </div>
-              <a href="/exams/start" class="start-exam-btn">Start Exam</a>
-            </div>
-            <div class="exam-card">
-              <div class="exam-header">
-                <h3 class="exam-name">Python Basics</h3>
-                <span class="exam-duration">45 min</span>
-              </div>
-              <p class="exam-description">Fundamentals of Python programming language</p>
-              <div class="exam-meta">
-                <span class="exam-difficulty difficulty-easy">Easy</span>
-                <span class="exam-questions">20 Questions</span>
-              </div>
-              <a href="/exams/start" class="start-exam-btn">Start Exam</a>
-            </div>
+            <% } %>
           </div>
         </section>
 
@@ -151,7 +146,7 @@
           </div>
         </section>
 
-        <section class="achievements-section">
+        <!-- <section class="achievements-section">
           <h2 class="section-title">Achievements</h2>
           <div class="achievements-grid">
             <div class="achievement-card earned">
@@ -175,7 +170,7 @@
               <p class="achievement-desc">Score 100% on any exam</p>
             </div>
           </div>
-        </section>
+        </section> -->
       </div>
     </main>
   </div>

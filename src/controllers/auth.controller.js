@@ -159,12 +159,12 @@ const logoutUser = asyncHandler(async (req, res) => {
             sameSite: 'lax'
         }
 
-        // For browser requests, redirect to login page
+        // For browser requests, redirect to logout success page with popup
         if (req.headers.accept && req.headers.accept.includes('text/html')) {
             return res
                 .clearCookie("accessToken", options)
                 .clearCookie("refreshToken", options)
-                .redirect('/login');
+                .redirect('/logout-success');
         }
 
         // For API requests, return JSON response
