@@ -17,6 +17,9 @@ body, html {
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: #333;
 }
 
@@ -97,10 +100,21 @@ body, html {
   flex: 1;
   padding: 2rem;
   background: rgba(255, 255, 255, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 90%;
+}
+
+.content-area > * {
+  margin-bottom: 2.5rem;
+}
+
+.content-area > *:last-child {
+  margin-bottom: 0;
 }
 
 .dashboard-grid {
-  max-width: 1400px;
+  max-width: 1000px;
   margin: 0 auto;
   display: grid;
   gap: 2rem;
@@ -206,40 +220,79 @@ body, html {
 
 .quick-actions {
   grid-area: actions;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  padding: 2rem;
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(53, 122, 189, 0.05));
+  border-radius: 20px;
+  padding: 2.5rem;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+<<<<<<< HEAD
   margin-top: 2.5rem;
+=======
+  max-width: 100%;
+  border: 1px solid rgba(74, 144, 226, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-actions::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(53, 122, 189, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+>>>>>>> eb394b27dc4c69464c986ad9ed2482c6972cf8ce
 }
 
 .actions-grid {
   display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .action-card {
-  background: #f8f9fa;
-  border: none;
-  border-radius: 12px;
-  padding: 1.5rem;
-  text-align: left;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(74, 144, 226, 0.15);
+  border-radius: 15px;
+  padding: 1.8rem;
+  text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   border-left: 4px solid #4a90e2;
   text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 130px;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .action-card:hover {
-  background: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transform: translateX(5px);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 8px 25px rgba(74, 144, 226, 0.2);
+  transform: translateY(-8px) scale(1.02);
+  border-left-color: #357ABD;
+}
+
+.action-card:hover {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 8px 25px rgba(74, 144, 226, 0.2);
+  transform: translateY(-8px) scale(1.02);
+  border-left-color: #357ABD;
 }
 
 .action-icon {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
+  color: #4a90e2;
 }
 
 .action-title {
@@ -491,21 +544,43 @@ body, html {
 }
 
 .activity-score {
-  background: #d4edda;
+  background: linear-gradient(135deg, #d4edda, #c3e6cb);
   color: #155724;
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid #b8dacc;
+  box-shadow: 0 2px 4px rgba(21, 87, 36, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .activity-status {
-  background: #cce7f0;
+  background: linear-gradient(135deg, #cce7f0, #b8dce8);
   color: #0c5460;
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid #a8d1dc;
+  box-shadow: 0 2px 4px rgba(12, 84, 96, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.activity-status.created {
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  color: #856404;
+  border-color: #ffd93d;
+  box-shadow: 0 2px 4px rgba(133, 100, 4, 0.1);
+}
+
+.activity-status.in-progress {
+  background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+  color: #0c5460;
+  border-color: #87ceeb;
+  box-shadow: 0 2px 4px rgba(12, 84, 96, 0.1);
 }
 
 @media (max-width: 1200px) {
@@ -544,6 +619,11 @@ body, html {
 
   .stats-section {
     grid-template-columns: 1fr;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr;
+    max-width: 300px;
   }
 
   .welcome-card {
@@ -598,4 +678,135 @@ body, html {
     flex-direction: column;
     text-align: center;
   }
+}
+
+/* Organization Info Section */
+.organization-info {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  max-width: 100%;
+  width: 100%;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.organization-info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #4a90e2, #357ABD, #4a90e2);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.org-name {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #357ABD;
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(53, 122, 189, 0.1);
+}
+
+.org-subtitle {
+  font-size: 1.15rem;
+  color: #666;
+  opacity: 0.9;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* Exam Management Section */
+.exam-management {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.exam-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.exam-card:hover {
+  transform: translateY(-5px);
+}
+
+.exam-card h3 {
+  font-size: 1.5rem;
+  color: #357ABD;
+  margin-bottom: 1rem;
+}
+
+.exam-card p {
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.btn {
+  background: #4a90e2;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #357ABD;
+}
+
+.btn-success {
+  background: #28a745;
+}
+
+.btn-success:hover {
+  background: #218838;
+}
+
+/* Assigned Exams Section */
+.assigned-exams {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.assigned-exams h2 {
+  font-size: 1.8rem;
+  color: #357ABD;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.exam-list {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #666;
 }

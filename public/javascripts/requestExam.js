@@ -6,18 +6,6 @@ document.getElementById('requestForm').addEventListener('submit', async function
     const messageDiv = document.getElementById('message');
     const submitBtn = this.querySelector('.submit-btn');
     
-    // Validate exam date is not in the past
-    const examDate = new Date(data.examDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (examDate < today) {
-        messageDiv.style.display = 'block';
-        messageDiv.className = 'message error';
-        messageDiv.textContent = 'Exam date cannot be in the past';
-        return;
-    }
-    
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting...';
     
