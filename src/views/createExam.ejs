@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Exam - Exam Portal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="/stylesheets/createExam.css" />
+</head>
+<body>
+  <div class="main-container">
+    <header class="header-section">
+      <div class="brand-logo">Exam Portal - Admin</div>
+      <nav class="navigation-menu">
+        <a href="/admin-dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/exams/create" class="nav-link active">Create Exam</a>
+        <a href="#" class="nav-link" onclick="showResults()">Results</a>
+        <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
+      </nav>
+      <div class="user-actions">
+        <span id="adminName">Admin</span>
+        <a href="/logout" class="action-btn logout-btn">Logout</a>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="container">
+        <div class="page-header">
+          <h1>Create New Exam</h1>
+          <p class="page-description">Set up a new examination for your organization with coding challenges and detailed configurations.</p>
+        </div>
+        
+        <form id="createExamForm" method="POST" action="/admin/exams">
+      <fieldset>
+        <legend>Exam Details</legend>
+        <div class="inline-grid">
+          <label>
+            Exam Title *
+            <input type="text" name="examTitle" required>
+          </label>
+          <label>
+            Duration (minutes) *
+            <input type="number" name="duration" min="1" max="300" required>
+          </label>
+        </div>
+        
+        <label>
+          Exam Description *
+          <textarea name="examDescription" rows="3" required></textarea>
+        </label>
+        
+        <label>
+          Instructions
+          <textarea name="instructions" rows="4" placeholder="Enter exam instructions for students..."></textarea>
+        </label>
+        
+        <label>
+          Start Date & Time *
+          <input type="datetime-local" name="startDateTime" required>
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Questions (1-10)</legend>
+        <div id="questionsContainer">
+          <!-- Questions will be dynamically added here -->
+        </div>
+        
+        <button type="button" id="addQuestionBtn" class="add-testcase-btn bottom">
+          + Add Question
+        </button>
+      </fieldset>
+
+        <div class="form-actions">
+          <button type="submit" class="primary">Create Exam</button>
+          <a href="/admin-dashboard" class="secondary">Cancel</a>
+        </div>
+      </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="/javascripts/createExam.js"></script>
+</body>
+</html>
