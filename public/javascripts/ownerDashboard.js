@@ -13,6 +13,7 @@ async function loadDashboardStats() {
             document.getElementById('totalUsers').textContent = result.data.totalUsers;
             document.getElementById('adminCount').textContent = result.data.adminCount;
             document.getElementById('userCount').textContent = result.data.userCount;
+            document.getElementById('approvedRequests').textContent = result.data.adminCount;
         }
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -90,7 +91,10 @@ async function loadExamRequestStats() {
         
         if (result.success) {
             document.getElementById('pendingRequests').textContent = result.data.stats.pending;
-            document.getElementById('approvedRequests').textContent = result.data.stats.approved;
+            // Make approvedRequests always match adminCount, fallback to 0 if missing
+            let adminCount = result.data.adminCount;
+            if (adminCount === undefined || adminCount === null || isNaN(adminCount)) adminCount = 0;
+            document.getElementById('approvedRequests').textContent = adminCount;
             document.getElementById('totalRequests').textContent = result.data.stats.total;
         }
     } catch (error) {
@@ -171,34 +175,16 @@ async function loadExamRequests(status = 'all') {
 
 // Open review modal
 async function openReviewModal(requestId) {
+    // Wire up modal buttons to review actions
     setTimeout(() => {
-        const acceptBtn = document.getElementById('acceptBtn');
-        const rejectBtn = document.getElementById('rejectBtn');
-        const confirmGroup = document.getElementById('confirmDecisionGroup');
-        const confirmText = document.getElementById('confirmText');
-        const confirmYesBtn = document.getElementById('confirmYesBtn');
-        const confirmNoBtn = document.getElementById('confirmNoBtn');
-        let pendingDecision = null;
-
-        function showConfirm(decision) {
-            pendingDecision = decision;
-            confirmText.textContent = decision === 'approved' ? 'Confirm accept this request?' : 'Confirm reject this request?';
-            confirmGroup.style.display = 'flex';
-        }
-        function hideConfirm() {
-            pendingDecision = null;
-            confirmGroup.style.display = 'none';
-        }
-
-        acceptBtn.onclick = function() { showConfirm('approved'); };
-        rejectBtn.onclick = function() { showConfirm('rejected'); };
-        confirmYesBtn.onclick = async function() {
-            if (pendingDecision) {
-                await submitReview(pendingDecision);
-                hideConfirm();
-            }
-        };
-        confirmNoBtn.onclick = function() { hideConfirm(); };
+        const approveBtn = document.getElementById('approveRequestBtn');
+        const rejectBtn = document.getElementById('rejectRequestBtn');
+        const closeBtn = document.getElementById('closeReviewModal');
+        const closeFooterBtn = document.getElementById('closeReviewModalBtn');
+        if (approveBtn) approveBtn.onclick = () => submitReview('approved');
+        if (rejectBtn) rejectBtn.onclick = () => submitReview('rejected');
+        if (closeBtn) closeBtn.onclick = closeReviewModal;
+        if (closeFooterBtn) closeFooterBtn.onclick = closeReviewModal;
     }, 0);
     currentRequestId = requestId;
     
@@ -210,8 +196,8 @@ async function openReviewModal(requestId) {
         if (result.success) {
             const request = result.data.requests.find(r => r._id === requestId);
             if (request) {
-                // Populate modal with request details
-                document.getElementById('reviewRequestDetails').innerHTML = `
+                // Populate modal body with request details
+                document.getElementById('reviewModalBody').innerHTML = `
                     <div class="request-details">
                         <h4>${request.examTitle}</h4>
                         <p><strong>Organization:</strong> ${request.organizationName}</p>
@@ -225,10 +211,6 @@ async function openReviewModal(requestId) {
                         ${request.requirements ? `<p><strong>Requirements:</strong> ${request.requirements}</p>` : ''}
                     </div>
                 `;
-                
-                // Load admins for assignment
-                loadAdminsForAssignment();
-                
                 document.getElementById('reviewModal').style.display = 'block';
             }
         }
@@ -274,9 +256,9 @@ async function submitReview(status) {
                 messageDiv.textContent = result.message || `Request ${status} and removed!`;
             }
             closeReviewModal();
-            setTimeout(() => {
-                window.location.reload();
-            }, 1200);
+            // Dynamically update stats and requests list
+            loadExamRequestStats();
+            loadExamRequests();
         } else {
             if (messageDiv) {
                 messageDiv.style.display = 'block';

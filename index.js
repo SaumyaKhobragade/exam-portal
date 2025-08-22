@@ -11,6 +11,7 @@ import runCode from './src/utils/judge0.js';
 import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
 import { handleLogout } from './src/middlewares/logout.middleware.js';
 import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
+import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
 
 
 
@@ -111,6 +112,9 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/owner', ownerRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/exam-requests', examRequestRouter);
+
+// Global error handling middleware (must be after all routes)
+app.use(errorHandler);
 
 connectDB()
     .then(() => {

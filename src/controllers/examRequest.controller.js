@@ -6,6 +6,7 @@ import { sendExamAcceptedMail } from "../utils/sendExamAcceptedMail.js";
 import { sendExamRejectedMail } from "../utils/sendExamRejectedMail.js";
 import Owner from "../models/owner.model.js"
 import Admin from "../models/admin.model.js"
+import ApprovedDomain from "../models/approvedDomain.model.js"
 
 // Create new exam request
 const createExamRequest = asyncHandler(async (req, res) => {
@@ -121,16 +122,31 @@ const reviewExamRequest = asyncHandler(async (req, res) => {
     }
 
     if (status === 'approved') {
+        // Extract domain from email
+        const emailDomain = examRequest.email.split('@')[1];
+        
         // Create admin account from request
         try {
-            await Admin.create({
+            const admin = await Admin.create({
                 username: examRequest.email.split('@')[0],
                 email: examRequest.email,
                 fullname: examRequest.contactPerson,
                 avatar: '',
                 password: examRequest.password,
-                organization: examRequest.organizationName
+                organization: examRequest.organizationName,
+                domain: emailDomain
             });
+            
+            // Store approved domain
+            await ApprovedDomain.create({
+                domain: emailDomain,
+                organizationName: examRequest.organizationName,
+                contactPerson: examRequest.contactPerson,
+                approvedBy: req.user._id, // Owner ID from middleware
+                adminId: admin._id,
+                isActive: true
+            });
+            
         } catch (err) {
             console.error('Error creating admin from accepted request:', err);
         }

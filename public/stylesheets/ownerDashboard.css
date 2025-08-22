@@ -183,6 +183,7 @@
 
 .exam-requests-section {
     margin-top: 20px;
+    margin-bottom: 30px; /* Match rest of the page */
 }
 
 .section-header {
@@ -206,8 +207,9 @@
     background: white;
     border: 1px solid #e1e5e9;
     border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+        margin-top: 64px; /* More space above Admin Management */
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logout Successful - Exam Portal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4a90e2, #357ABD);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logout-popup {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      max-width: 400px;
+      width: 90%;
+      animation: popupSlideIn 0.5s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logout-popup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4a90e2, #357ABD, #4a90e2);
+      background-size: 200% 100%;
+      animation: gradientShift 2s ease-in-out infinite;
+    }
+
+    @keyframes popupSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      color: #28a745;
+      margin-bottom: 1.5rem;
+      animation: iconBounce 0.6s ease-out 0.2s both;
+    }
+
+    @keyframes iconBounce {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .logout-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #357ABD;
+      margin-bottom: 1rem;
+      animation: textSlideIn 0.6s ease-out 0.4s both;
+    }
+
+    .logout-message {
+      font-size: 1.1rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+      animation: textSlideIn 0.6s ease-out 0.6s both;
+    }
+
+    @keyframes textSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .redirect-info {
+      font-size: 0.9rem;
+      color: #999;
+      margin-bottom: 1rem;
+      animation: textSlideIn 0.6s ease-out 0.8s both;
+    }
+
+    .manual-link {
+      display: inline-block;
+      background: linear-gradient(135deg, #4a90e2, #357ABD);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      animation: buttonSlideIn 0.6s ease-out 1s both;
+    }
+
+    .manual-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+    }
+
+    @keyframes buttonSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .countdown {
+      font-weight: 700;
+      color: #4a90e2;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      .logout-popup {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .success-icon {
+        font-size: 3rem;
+      }
+
+      .logout-title {
+        font-size: 1.5rem;
+      }
+
+      .logout-message {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="logout-popup">
+    <div class="success-icon">✅</div>
+    <h1 class="logout-title">Logout Successful!</h1>
+    <p class="logout-message">
+      You have been securely logged out from the Exam Portal.
+      Thank you for using our platform!
+    </p>
+    <p class="redirect-info">
+      Redirecting to login page in <span class="countdown" id="countdown">3</span> seconds...
+    </p>
+    <a href="/login" class="manual-link">Go to Login Now</a>
+  </div>
+
+  <script>
+    // Countdown and auto-redirect functionality
+    let countdown = 3;
+    const countdownElement = document.getElementById('countdown');
+    
+    function updateCountdown() {
+      countdownElement.textContent = countdown;
+      
+      if (countdown <= 0) {
+        window.location.href = '/login';
+        return;
+      }
+      
+      countdown--;
+      setTimeout(updateCountdown, 1000);
+    }
+    
+    // Start countdown after a short delay
+    setTimeout(updateCountdown, 1000);
+    
+    // Add keyboard support - press Enter or Space to go to login immediately
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        window.location.href = '/login';
+      }
+    });
+
+    // Prevent back button from going to authenticated pages
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener('popstate', function() {
+      window.history.pushState(null, null, window.location.href);
+      window.location.href = '/login';
+    });
+  </script>
+</body>
+</html>
