@@ -5,6 +5,8 @@ import app from './app.js';
 import userRouter from "./src/routes/user.routes.js";
 import authRouter from "./src/routes/auth.routes.js";
 import ownerRouter from "./src/routes/owner.routes.js";
+import adminRouter from "./src/routes/admin.routes.js";
+import examRequestRouter from "./src/routes/examRequest.routes.js";
 import runCode from './src/utils/judge0.js';
 import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
 
@@ -31,6 +33,11 @@ app.get('/ide', (req,res)=>{
 app.get('/login', (req,res)=>{
     res.render('loginregister');
 })
+
+// Request exam hosting page
+app.get('/request-exam', (req,res)=>{
+    res.render('requestExam');
+});
 
 // Logout route to clear cookies
 app.get('/logout', (req, res) => {
@@ -112,6 +119,8 @@ app.post('/api/v1/execute', async (req, res) => {
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/owner', ownerRouter);
+app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/exam-requests', examRequestRouter);
 
 connectDB()
     .then(() => {

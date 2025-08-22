@@ -252,7 +252,244 @@
                 </div>
             </div>
         </div>
+
+        <!-- Exam Request Management Section -->
+        <div class="dashboard-section">
+            <h2>📋 Exam Request Management</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingRequests">0</div>
+                    <div class="stat-label">Pending Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedRequests">0</div>
+                    <div class="stat-label">Approved Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRequests">0</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+            </div>
+
+            <div class="exam-requests-section">
+                <div class="section-header">
+                    <h3>Recent Exam Requests</h3>
+                    <div class="filter-buttons">
+                        <button class="btn" onclick="loadExamRequests('all')" id="filterAll">All</button>
+                        <button class="btn" onclick="loadExamRequests('pending')" id="filterPending">Pending</button>
+                        <button class="btn" onclick="loadExamRequests('approved')" id="filterApproved">Approved</button>
+                        <button class="btn" onclick="loadExamRequests('rejected')" id="filterRejected">Rejected</button>
+                    </div>
+                </div>
+                
+                <div id="examRequestsList">
+                    <p>Loading exam requests...</p>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Exam Request Review Modal -->
+    <div id="reviewModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Review Exam Request</h3>
+                <span class="close" onclick="closeReviewModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="reviewRequestDetails"></div>
+                
+                <div class="form-group">
+                    <label for="reviewStatus">Decision:</label>
+                    <select id="reviewStatus" class="form-control">
+                        <option value="">Select Decision</option>
+                        <option value="approved">Approve</option>
+                        <option value="rejected">Reject</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="adminAssignmentGroup" style="display: none;">
+                    <label for="assignedAdmin">Assign Admin:</label>
+                    <select id="assignedAdmin" class="form-control">
+                        <option value="">Select Admin</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reviewNotes">Review Notes:</label>
+                    <textarea id="reviewNotes" class="form-control" placeholder="Add your review comments..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .exam-requests-section {
+            margin-top: 20px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-buttons .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+        
+        .request-item {
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .request-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .request-org {
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .request-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .request-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        
+        .detail-value {
+            color: #333;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+    </style>
 
     <script>
         // Load dashboard stats
@@ -374,10 +611,229 @@
             }
         }
 
+        // Exam Request Management Functions
+        let currentRequestId = null;
+
+        // Load exam request statistics
+        async function loadExamRequestStats() {
+            try {
+                const response = await fetch('/api/v1/exam-requests/stats');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('pendingRequests').textContent = result.data.stats.pending;
+                    document.getElementById('approvedRequests').textContent = result.data.stats.approved;
+                    document.getElementById('totalRequests').textContent = result.data.stats.total;
+                }
+            } catch (error) {
+                console.error('Error loading exam request stats:', error);
+            }
+        }
+
+        // Load exam requests with optional status filter
+        async function loadExamRequests(status = 'all') {
+            try {
+                let url = '/api/v1/exam-requests/all';
+                if (status !== 'all') {
+                    url += `?status=${status}`;
+                }
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const requestsList = document.getElementById('examRequestsList');
+                    
+                    if (result.data.requests.length === 0) {
+                        requestsList.innerHTML = '<p>No exam requests found.</p>';
+                        return;
+                    }
+                    
+                    requestsList.innerHTML = result.data.requests.map(request => `
+                        <div class="request-item">
+                            <div class="request-header">
+                                <div>
+                                    <div class="request-title">${request.examTitle}</div>
+                                    <div class="request-org">${request.organizationName}</div>
+                                </div>
+                                <span class="request-status status-${request.status}">${request.status.toUpperCase()}</span>
+                            </div>
+                            
+                            <div class="request-details">
+                                <div class="detail-item">
+                                    <span class="detail-label">Contact Person</span>
+                                    <span class="detail-value">${request.contactPerson}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Email</span>
+                                    <span class="detail-value">${request.email}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Exam Date</span>
+                                    <span class="detail-value">${new Date(request.examDate).toLocaleDateString()}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Expected Students</span>
+                                    <span class="detail-value">${request.expectedStudents}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Exam Type</span>
+                                    <span class="detail-value">${request.examType}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Duration</span>
+                                    <span class="detail-value">${request.duration} minutes</span>
+                                </div>
+                            </div>
+                            
+                            <div class="request-actions">
+                                ${request.status === 'pending' ? 
+                                    `<button class="btn btn-primary" onclick="openReviewModal('${request._id}')">Review Request</button>` : 
+                                    `<button class="btn" onclick="viewRequestDetails('${request._id}')">View Details</button>`
+                                }
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading exam requests:', error);
+                document.getElementById('examRequestsList').innerHTML = '<p>Error loading exam requests.</p>';
+            }
+        }
+
+        // Open review modal
+        async function openReviewModal(requestId) {
+            currentRequestId = requestId;
+            
+            try {
+                // Get request details
+                const response = await fetch(`/api/v1/exam-requests/all`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const request = result.data.requests.find(r => r._id === requestId);
+                    if (request) {
+                        // Populate modal with request details
+                        document.getElementById('reviewRequestDetails').innerHTML = `
+                            <div class="request-details">
+                                <h4>${request.examTitle}</h4>
+                                <p><strong>Organization:</strong> ${request.organizationName}</p>
+                                <p><strong>Contact:</strong> ${request.contactPerson} (${request.email})</p>
+                                <p><strong>Date:</strong> ${new Date(request.examDate).toLocaleDateString()}</p>
+                                <p><strong>Duration:</strong> ${request.duration} minutes</p>
+                                <p><strong>Expected Students:</strong> ${request.expectedStudents}</p>
+                                <p><strong>Type:</strong> ${request.examType}</p>
+                                ${request.description ? `<p><strong>Description:</strong> ${request.description}</p>` : ''}
+                                ${request.requirements ? `<p><strong>Requirements:</strong> ${request.requirements}</p>` : ''}
+                            </div>
+                        `;
+                        
+                        // Load admins for assignment
+                        loadAdminsForAssignment();
+                        
+                        document.getElementById('reviewModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading request details:', error);
+            }
+        }
+
+        // Load admins for assignment dropdown
+        async function loadAdminsForAssignment() {
+            try {
+                const response = await fetch('/api/v1/owner/admins');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const adminSelect = document.getElementById('assignedAdmin');
+                    adminSelect.innerHTML = '<option value="">Select Admin</option>' + 
+                        result.data.map(admin => `
+                            <option value="${admin._id}">${admin.fullname} (${admin.organization})</option>
+                        `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading admins:', error);
+            }
+        }
+
+        // Handle review status change
+        document.getElementById('reviewStatus').addEventListener('change', function() {
+            const adminGroup = document.getElementById('adminAssignmentGroup');
+            if (this.value === 'approved') {
+                adminGroup.style.display = 'block';
+            } else {
+                adminGroup.style.display = 'none';
+            }
+        });
+
+        // Submit review
+        async function submitReview() {
+            const status = document.getElementById('reviewStatus').value;
+            const reviewNotes = document.getElementById('reviewNotes').value;
+            const assignedAdminId = document.getElementById('assignedAdmin').value;
+            
+            if (!status) {
+                alert('Please select a decision');
+                return;
+            }
+            
+            if (status === 'approved' && !assignedAdminId) {
+                alert('Please assign an admin for approved requests');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/v1/exam-requests/${currentRequestId}/review`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status,
+                        reviewNotes,
+                        assignedAdminId: status === 'approved' ? assignedAdminId : undefined
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(`Request ${status} successfully!`);
+                    closeReviewModal();
+                    loadExamRequests();
+                    loadExamRequestStats();
+                } else {
+                    alert(result.message || 'Failed to submit review');
+                }
+            } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('Network error. Please try again.');
+            }
+        }
+
+        // Close review modal
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+            document.getElementById('reviewStatus').value = '';
+            document.getElementById('reviewNotes').value = '';
+            document.getElementById('assignedAdmin').value = '';
+            document.getElementById('adminAssignmentGroup').style.display = 'none';
+            currentRequestId = null;
+        }
+
+        // View request details (for non-pending requests)
+        function viewRequestDetails(requestId) {
+            // This would open a read-only modal with full request details
+            alert('View details feature - would show full request information');
+        }
+
         // Load data on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadDashboardStats();
             loadAdmins();
+            loadExamRequestStats();
+            loadExamRequests();
         });
     </script>
 </body>
