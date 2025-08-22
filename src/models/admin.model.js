@@ -44,6 +44,13 @@ const adminSchema = new mongoose.Schema({
         trim: true,
         index: true
     },
+    domain:{
+        type: String,
+        required: true,
+        lowercase: true,
+        trim: true,
+        index: true
+    },
     permissions:{
         type: [String],
         default: ['read', 'write', 'delete', 'manage_users', 'manage_exams']

@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import c from 'config';
 import adminRoutes from './src/routes/adminRoutes.js';
+import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
 
 const app = express();
 
@@ -18,5 +19,8 @@ app.use(cookieParser());
 
 // Use admin routes
 app.use('/', adminRoutes);
+
+// Global error handling middleware (must be last)
+app.use(errorHandler);
 
 export default app;

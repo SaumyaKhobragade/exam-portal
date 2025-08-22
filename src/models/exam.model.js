@@ -142,6 +142,33 @@ const examSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         }
+    },
+    // Judge0 Test Case Validation Fields
+    programmingLanguage: {
+        type: String,
+        enum: ['python', 'java', 'cpp', 'c', 'javascript', 'go', 'rust', 'csharp'],
+        default: 'python'
+    },
+    validationResults: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
+    },
+    validationStatus: {
+        type: String,
+        enum: ['pending', 'passed', 'failed', 'error', 'skipped'],
+        default: 'pending'
+    },
+    lastValidated: {
+        type: Date,
+        default: null
+    },
+    validationError: {
+        type: String,
+        default: null
+    },
+    hasValidationWarnings: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true
