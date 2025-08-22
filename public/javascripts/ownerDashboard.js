@@ -43,9 +43,9 @@ async function loadAdmins() {
             adminsList.innerHTML = result.data.map(admin => `
                 <div class="admin-item">
                     <div class="admin-info">
-                        <div class="admin-name">${admin.fullname} (@${admin.username})</div>
-                        <div class="admin-email">${admin.email}</div>
-                        <div class="admin-organization">${admin.organization}</div>
+                        <div class="admin-name">${admin.fullname || 'N/A'} (@${admin.username || 'N/A'})</div>
+                        <div class="admin-email">${admin.email || 'N/A'}</div>
+                        <div class="admin-organization">${admin.organization || admin.domain || 'N/A'}</div>
                     </div>
                     <button class="btn btn-danger" onclick="deleteAdmin('${admin._id}')">Delete</button>
                 </div>
@@ -131,8 +131,8 @@ async function loadExamRequests(status = 'all') {
                 <div class="request-item">
                     <div class="request-header">
                         <div>
-                            <div class="request-title">${request.examTitle}</div>
-                            <div class="request-org">${request.organizationName}</div>
+                            <div class="request-title">${request.organizationName || 'N/A'}</div>
+                            <div class="request-org">Contact: ${request.contactPerson || 'N/A'}</div>
                         </div>
                         <span class="request-status status-${request.status}">${request.status.toUpperCase()}</span>
                     </div>
@@ -140,27 +140,23 @@ async function loadExamRequests(status = 'all') {
                     <div class="request-details">
                         <div class="detail-item">
                             <span class="detail-label">Contact Person</span>
-                            <span class="detail-value">${request.contactPerson}</span>
+                            <span class="detail-value">${request.contactPerson || 'N/A'}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Email</span>
-                            <span class="detail-value">${request.email}</span>
+                            <span class="detail-value">${request.email || 'N/A'}</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Exam Date</span>
-                            <span class="detail-value">${new Date(request.examDate).toLocaleDateString()}</span>
+                            <span class="detail-label">Designation</span>
+                            <span class="detail-value">${request.designation || 'N/A'}</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Expected Students</span>
-                            <span class="detail-value">${request.expectedStudents}</span>
+                            <span class="detail-label">Phone</span>
+                            <span class="detail-value">${request.phone || 'N/A'}</span>
                         </div>
                         <div class="detail-item">
-                            <span class="detail-label">Exam Type</span>
-                            <span class="detail-value">${request.examType}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Duration</span>
-                            <span class="detail-value">${request.duration} minutes</span>
+                            <span class="detail-label">Submitted</span>
+                            <span class="detail-value">${request.createdAt ? new Date(request.createdAt).toLocaleDateString() : 'N/A'}</span>
                         </div>
                     </div>
                     
@@ -205,16 +201,12 @@ async function openReviewModal(requestId) {
                 // Populate modal body with request details
                 document.getElementById('reviewModalBody').innerHTML = `
                     <div class="request-details">
-                        <h4>${request.examTitle}</h4>
-                        <p><strong>Organization:</strong> ${request.organizationName}</p>
-                        <p><strong>Contact:</strong> ${request.contactPerson} (${request.email})</p>
-                        <div style="height:16px;"></div>
-                        <p><strong>Date:</strong> ${new Date(request.examDate).toLocaleDateString()}</p>
-                        <p><strong>Duration:</strong> ${request.duration} minutes</p>
-                        <p><strong>Expected Students:</strong> ${request.expectedStudents}</p>
-                        <p><strong>Type:</strong> ${request.examType}</p>
+                        <h4>${request.organizationName || 'N/A'}</h4>
+                        <p><strong>Contact:</strong> ${request.contactPerson || 'N/A'} (${request.email || 'N/A'})</p>
+                        <p><strong>Designation:</strong> ${request.designation || 'N/A'}</p>
+                        <p><strong>Phone:</strong> ${request.phone || 'N/A'}</p>
+                        <p><strong>Submitted:</strong> ${request.createdAt ? new Date(request.createdAt).toLocaleDateString() : 'N/A'}</p>
                         ${request.description ? `<p><strong>Description:</strong> ${request.description}</p>` : ''}
-                        ${request.requirements ? `<p><strong>Requirements:</strong> ${request.requirements}</p>` : ''}
                     </div>
                 `;
                 document.getElementById('reviewModal').style.display = 'block';
@@ -235,7 +227,7 @@ async function loadAdminsForAssignment() {
             const adminSelect = document.getElementById('assignedAdmin');
             adminSelect.innerHTML = '<option value="">Select Admin</option>' + 
                 result.data.map(admin => `
-                    <option value="${admin._id}">${admin.fullname} (${admin.organization})</option>
+                    <option value="${admin._id}">${admin.fullname || 'N/A'} (${admin.organization || admin.domain || 'N/A'})</option>
                 `).join('');
         }
     } catch (error) {

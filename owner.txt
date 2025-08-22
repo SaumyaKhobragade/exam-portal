@@ -1,6 +1,5 @@
-email: owner@examportal.com
-password: OwnerPass789
-
+Email: newowner@codesecure.com
+Password: NewOwner@123456
 
 admin
 email: as@gmail.com

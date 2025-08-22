@@ -3,6 +3,7 @@ import {ApiError} from "../utils/apiError.js"
 import {ApiResponse} from "../utils/apiResponse.js"
 import Admin from "../models/admin.model.js"
 import ExamRequest from "../models/examRequest.model.js"
+import Exam from "../models/exam.model.js"
 
 // Get admin profile
 const getAdminProfile = asyncHandler(async (req, res) => {
@@ -135,9 +136,128 @@ const updateAdminProfile = asyncHandler(async (req, res) => {
     );
 });
 
+// Get all exams created by the admin
+const getAdminExams = asyncHandler(async (req, res) => {
+    const adminId = req.user._id;
+    
+    // Verify requester is admin
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+        throw new ApiError(403, "Only admin can view their exams");
+    }
+
+    const exams = await Exam.find({ adminId: adminId })
+        .sort({ createdAt: -1 })
+        .select('title description startDateTime duration status questions totalMarks createdAt');
+
+    return res.status(200).json(
+        new ApiResponse(200, exams, "Admin exams retrieved successfully")
+    );
+});
+
+// Activate an exam (change status from draft to active)
+const activateExam = asyncHandler(async (req, res) => {
+    const adminId = req.user._id;
+    const { examId } = req.params;
+    
+    // Verify requester is admin
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+        throw new ApiError(403, "Only admin can activate exams");
+    }
+
+    // Find the exam and verify ownership
+    const exam = await Exam.findOne({ _id: examId, adminId: adminId });
+    if (!exam) {
+        throw new ApiError(404, "Exam not found or you don't have permission to modify it");
+    }
+
+    // Check if exam is in draft status
+    if (exam.status !== 'draft') {
+        throw new ApiError(400, "Only draft exams can be activated");
+    }
+
+    // Activate the exam
+    exam.status = 'active';
+    await exam.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, exam, "Exam activated successfully")
+    );
+});
+
+// Deactivate an exam (change status from active to draft)
+const deactivateExam = asyncHandler(async (req, res) => {
+    const adminId = req.user._id;
+    const { examId } = req.params;
+    
+    // Verify requester is admin
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+        throw new ApiError(403, "Only admin can deactivate exams");
+    }
+
+    // Find the exam and verify ownership
+    const exam = await Exam.findOne({ _id: examId, adminId: adminId });
+    if (!exam) {
+        throw new ApiError(404, "Exam not found or you don't have permission to modify it");
+    }
+
+    // Check if exam is in active status
+    if (exam.status !== 'active') {
+        throw new ApiError(400, "Only active exams can be deactivated");
+    }
+
+    // Deactivate the exam
+    exam.status = 'draft';
+    await exam.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, exam, "Exam deactivated successfully")
+    );
+});
+
+// Delete an exam
+const deleteExam = asyncHandler(async (req, res) => {
+    const adminId = req.user._id;
+    const { examId } = req.params;
+    
+    // Verify requester is admin
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+        throw new ApiError(403, "Only admin can delete exams");
+    }
+
+    // Find the exam and verify ownership
+    const exam = await Exam.findOne({ _id: examId, adminId: adminId });
+    if (!exam) {
+        throw new ApiError(404, "Exam not found or you don't have permission to delete it");
+    }
+
+    // Don't allow deletion of active exams that are currently running
+    const now = new Date();
+    const startTime = new Date(exam.startDateTime);
+    const endTime = new Date(startTime.getTime() + (exam.duration * 60000));
+    
+    if (exam.status === 'active' && now >= startTime && now <= endTime) {
+        throw new ApiError(400, "Cannot delete an exam that is currently running");
+    }
+
+    // Delete the exam
+    await Exam.findByIdAndDelete(examId);
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Exam deleted successfully")
+    );
+});
+
 export {
     getAdminProfile,
     getAssignedExams,
     getAdminStats,
-    updateAdminProfile
+    updateAdminProfile,
+    getAdminExams,
+    activateExam,
+    deactivateExam,
+    deleteExam
 };

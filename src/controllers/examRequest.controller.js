@@ -195,7 +195,7 @@ const getAdminExamRequests = asyncHandler(async (req, res) => {
         status: 'approved'
     })
         .populate('reviewedBy', 'username fullname')
-        .sort({ examDate: 1 });
+        .sort({ createdAt: -1 });
 
     return res.status(200).json(
         new ApiResponse(200, examRequests, "Admin exam requests retrieved successfully")
@@ -237,7 +237,7 @@ const getExamRequestStats = asyncHandler(async (req, res) => {
     const recentRequests = await ExamRequest.find()
         .sort({ createdAt: -1 })
         .limit(5)
-        .select('organizationName examTitle status createdAt');
+        .select('organizationName contactPerson status createdAt');
 
     return res.status(200).json(
         new ApiResponse(200, {

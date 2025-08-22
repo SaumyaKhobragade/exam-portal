@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CodeSecure - Coding IDE</title>
+  <title>CodeSecure - <% if (typeof exam !== 'undefined' && exam) { %><%= exam.title %><% } else { %>Coding IDE<% } %></title>
   <link rel="stylesheet" href="/stylesheets/ide.css" />
 </head>
 <body>
   <div class="main-container">
     <header class="header-section">
       <div class="brand-logo">CodeSecure IDE</div>
+      <% if (typeof exam !== 'undefined' && exam) { %>
+        <div class="exam-info">
+          <span class="exam-title"><%= exam.title %></span>
+          <span class="exam-points"><%= exam.totalMarks || 'N/A' %> Points</span>
+        </div>
+      <% } %>
     </header>
 
     <main class="content-area">
@@ -18,24 +24,38 @@
         <section class="question-nav">
           <div class="progress-section">
             <div class="progress-info">
-              <span class="current-question">Question 2 of 5</span>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 40%"></div>
-              </div>
+              <% if (typeof exam !== 'undefined' && exam && exam.questions) { %>
+                <span class="current-question">Question <span id="currentQuestionNum">1</span> of <%= exam.questions.length %></span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: <%= Math.round((1 / exam.questions.length) * 100) %>%"></div>
+                </div>
+              <% } else { %>
+                <span class="current-question">Question 2 of 5</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 40%"></div>
+                </div>
+              <% } %>
             </div>
             <div class="question-buttons">
-              <button class="question-btn" onclick="previousQuestion()" disabled>← Previous</button>
+              <button class="question-btn" onclick="previousQuestion()" <% if (typeof exam === 'undefined' || !exam) { %>disabled<% } %>>← Previous</button>
               <button class="question-btn" onclick="nextQuestion()">Next →</button>
             </div>
           </div>
           <div class="user-actions">
             <a href="#" class="action-btn" onclick="saveCode(); return false;">Save</a>
             <a href="#" class="action-btn run-btn" onclick="runCode(); return false;">Run Code</a>
+            <a href="#" class="action-btn test-btn" onclick="runTests(); return false;">Run Tests</a>
             <a href="#" class="action-btn submit-btn" onclick="submitCode(); return false;">Submit</a>
           </div>
           <div class="exam-timer">
             <span class="timer-label">Time Remaining:</span>
-            <span class="timer">45:32</span>
+            <span class="timer" id="examTimer">
+              <% if (typeof timeRemaining !== 'undefined' && timeRemaining) { %>
+                <%= Math.floor(timeRemaining / 60) %>:<%= String(timeRemaining % 60).padStart(2, '0') %>
+              <% } else { %>
+                45:32
+              <% } %>
+            </span>
           </div>
         </section>
 
@@ -44,49 +64,94 @@
           <!-- Problem Section -->
           <section class="problem-section" id="problemSection">
             <div class="problem-header">
-              <h2 class="problem-title">Two Sum Problem</h2>
-              <div class="problem-meta">
-                <span class="difficulty-badge medium">Medium</span>
-                <span class="problem-points">25 Points</span>
-              </div>
+              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions.length > 0) { %>
+                <h2 class="problem-title" id="problemTitle"><%= exam.questions[0].title || 'Coding Question' %></h2>
+                <div class="problem-meta">
+                  <span class="difficulty-badge medium">Medium</span>
+                  <span class="problem-points" id="problemPoints"><%= exam.questions[0].points || 25 %> Points</span>
+                </div>
+              <% } else { %>
+                <h2 class="problem-title">Two Sum Problem</h2>
+                <div class="problem-meta">
+                  <span class="difficulty-badge medium">Medium</span>
+                  <span class="problem-points">25 Points</span>
+                </div>
+              <% } %>
             </div>
             
-            <div class="problem-content">
-              <div class="problem-description">
-                <h3 class="section-subtitle">Problem Description</h3>
-                <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to target.</p>
-                <p>You may assume that each input would have exactly one solution, and you may not use the same element twice.</p>
-                <p>You can return the answer in any order.</p>
-              </div>
+            <div class="problem-content" id="problemContent">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions.length > 0) { %>
+                <div class="problem-description">
+                  <h3 class="section-subtitle">Problem Description</h3>
+                  <div id="problemDescription"><%- exam.questions[0].description || 'No description available.' %></div>
+                </div>
 
-              <div class="problem-examples">
-                <h3 class="section-subtitle">Examples</h3>
-                <div class="example-item">
-                  <h4 class="example-title">Example 1:</h4>
-                  <div class="code-block">
-                    <strong>Input:</strong> nums = [2,7,11,15], target = 9<br>
-                    <strong>Output:</strong> [0,1]<br>
-                    <strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we return [0, 1].
+                <% if (exam.questions[0].examples && exam.questions[0].examples.length > 0) { %>
+                  <div class="problem-examples" id="problemExamples">
+                    <h3 class="section-subtitle">Examples</h3>
+                    <% exam.questions[0].examples.forEach((example, index) => { %>
+                      <div class="example-item">
+                        <h4 class="example-title">Example <%= index + 1 %>:</h4>
+                        <div class="code-block">
+                          <strong>Input:</strong> <%= example.input %><br>
+                          <strong>Output:</strong> <%= example.output %><br>
+                          <% if (example.explanation) { %>
+                            <strong>Explanation:</strong> <%= example.explanation %>
+                          <% } %>
+                        </div>
+                      </div>
+                    <% }); %>
+                  </div>
+                <% } %>
+
+                <% if (exam.questions[0].constraints && exam.questions[0].constraints.length > 0) { %>
+                  <div class="problem-constraints" id="problemConstraints">
+                    <h3 class="section-subtitle">Constraints</h3>
+                    <ul>
+                      <% exam.questions[0].constraints.forEach(constraint => { %>
+                        <li><%- constraint %></li>
+                      <% }); %>
+                    </ul>
+                  </div>
+                <% } %>
+              <% } else { %>
+                <!-- Default problem content for demo -->
+                <div class="problem-description">
+                  <h3 class="section-subtitle">Problem Description</h3>
+                  <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to target.</p>
+                  <p>You may assume that each input would have exactly one solution, and you may not use the same element twice.</p>
+                  <p>You can return the answer in any order.</p>
+                </div>
+
+                <div class="problem-examples">
+                  <h3 class="section-subtitle">Examples</h3>
+                  <div class="example-item">
+                    <h4 class="example-title">Example 1:</h4>
+                    <div class="code-block">
+                      <strong>Input:</strong> nums = [2,7,11,15], target = 9<br>
+                      <strong>Output:</strong> [0,1]<br>
+                      <strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we return [0, 1].
+                    </div>
+                  </div>
+                  <div class="example-item">
+                    <h4 class="example-title">Example 2:</h4>
+                    <div class="code-block">
+                      <strong>Input:</strong> nums = [3,2,4], target = 6<br>
+                      <strong>Output:</strong> [1,2]
+                    </div>
                   </div>
                 </div>
-                <div class="example-item">
-                  <h4 class="example-title">Example 2:</h4>
-                  <div class="code-block">
-                    <strong>Input:</strong> nums = [3,2,4], target = 6<br>
-                    <strong>Output:</strong> [1,2]
-                  </div>
-                </div>
-              </div>
 
-              <div class="problem-constraints">
-                <h3 class="section-subtitle">Constraints</h3>
-                <ul>
-                  <li>2 ≤ nums.length ≤ 10<sup>4</sup></li>
-                  <li>-10<sup>9</sup> ≤ nums[i] ≤ 10<sup>9</sup></li>
-                  <li>-10<sup>9</sup> ≤ target ≤ 10<sup>9</sup></li>
-                  <li>Only one valid answer exists.</li>
-                </ul>
-              </div>
+                <div class="problem-constraints">
+                  <h3 class="section-subtitle">Constraints</h3>
+                  <ul>
+                    <li>2 ≤ nums.length ≤ 10<sup>4</sup></li>
+                    <li>-10<sup>9</sup> ≤ nums[i] ≤ 10<sup>9</sup></li>
+                    <li>-10<sup>9</sup> ≤ target ≤ 10<sup>9</sup></li>
+                    <li>Only one valid answer exists.</li>
+                  </ul>
+                </div>
+              <% } %>
             </div>
           </section>
 
@@ -181,40 +246,46 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
               <h3 class="tab-title">Test Results</h3>
               <a href="#" class="run-tests-btn" onclick="runTests(); return false;">Run Tests</a>
             </div>
-            <div class="test-cases">
-              <div class="test-case">
-                <div class="test-header">
-                  <span class="test-name">Test Case 1</span>
-                  <span class="test-status pending">Pending</span>
+            <div class="test-cases" id="testCasesContainer">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions[0] && exam.questions[0].testCases) { %>
+                <% exam.questions[0].testCases.forEach((testCase, index) => { %>
+                  <div class="test-case" data-test-index="<%= index %>">
+                    <div class="test-header">
+                      <span class="test-name">Test Case <%= index + 1 %></span>
+                      <span class="test-status pending">Pending</span>
+                    </div>
+                    <div class="test-details">
+                      <p><strong>Input:</strong> <%= testCase.input %></p>
+                      <p><strong>Expected:</strong> <%= testCase.expectedOutput %></p>
+                      <p><strong>Output:</strong> -</p>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <!-- Default test cases -->
+                <div class="test-case" data-test-index="0">
+                  <div class="test-header">
+                    <span class="test-name">Test Case 1</span>
+                    <span class="test-status pending">Pending</span>
+                  </div>
+                  <div class="test-details">
+                    <p><strong>Input:</strong> nums = [2,7,11,15], target = 9</p>
+                    <p><strong>Expected:</strong> [0,1]</p>
+                    <p><strong>Output:</strong> -</p>
+                  </div>
                 </div>
-                <div class="test-details">
-                  <p><strong>Input:</strong> nums = [2,7,11,15], target = 9</p>
-                  <p><strong>Expected:</strong> [0,1]</p>
-                  <p><strong>Output:</strong> -</p>
+                <div class="test-case" data-test-index="1">
+                  <div class="test-header">
+                    <span class="test-name">Test Case 2</span>
+                    <span class="test-status pending">Pending</span>
+                  </div>
+                  <div class="test-details">
+                    <p><strong>Input:</strong> nums = [3,2,4], target = 6</p>
+                    <p><strong>Expected:</strong> [1,2]</p>
+                    <p><strong>Output:</strong> -</p>
+                  </div>
                 </div>
-              </div>
-              <div class="test-case">
-                <div class="test-header">
-                  <span class="test-name">Test Case 1</span>
-                  <span class="test-status pending">Pending</span>
-                </div>
-                <div class="test-details">
-                  <p><strong>Input:</strong> nums = [2,7,11,15], target = 9</p>
-                  <p><strong>Expected:</strong> [0,1]</p>
-                  <p><strong>Output:</strong> -</p>
-                </div>
-              </div>
-              <div class="test-case">
-                <div class="test-header">
-                  <span class="test-name">Test Case 2</span>
-                  <span class="test-status pending">Pending</span>
-                </div>
-                <div class="test-details">
-                  <p><strong>Input:</strong> nums = [3,2,4], target = 6</p>
-                  <p><strong>Expected:</strong> [1,2]</p>
-                  <p><strong>Output:</strong> -</p>
-                </div>
-              </div>
+              <% } %>
             </div>
           </div>
         </section>
@@ -222,8 +293,35 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
     </main>
   </div>
 
+  <!-- Pass exam data to JavaScript -->
+  <script>
+    // Global exam data for JavaScript
+    <% if (typeof exam !== 'undefined' && exam) { %>
+    window.examData = {
+      exam: {
+        id: '<%= exam._id %>',
+        title: '<%= exam.title %>',
+        description: '<%= exam.description || "" %>',
+        duration: <%= exam.duration %>,
+        totalMarks: <%= exam.totalMarks || 0 %>,
+        questions: <%- JSON.stringify(exam.questions || []) %>,
+        timeRemaining: <%= typeof timeRemaining !== 'undefined' ? timeRemaining : 0 %>
+      },
+      currentQuestionIndex: 0,
+      isExamMode: true
+    };
+    let timeRemaining = <%= typeof timeRemaining !== 'undefined' ? timeRemaining : 2732 %>;
+    <% } else { %>
+    window.examData = {
+      exam: null,
+      currentQuestionIndex: 0,
+      isExamMode: false
+    };
+    let timeRemaining = 45 * 60 + 32; // Default fallback time
+    <% } %>
+  </script>
+  
   <script src="/javascripts/ide.js"></script>
-
 
 </body>
 </html>

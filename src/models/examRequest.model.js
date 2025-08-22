@@ -34,40 +34,6 @@ const examRequestSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    examTitle: {
-        type: String,
-        required: false,
-        trim: true,
-        default: "TBD"
-    },
-    examDate: {
-        type: Date,
-        required: false,
-        default: Date.now
-    },
-    duration: {
-        type: Number,
-        required: false,
-        min: 0,
-        default: 0
-    },
-    expectedStudents: {
-        type: Number,
-        required: false,
-        min: 0,
-        default: 0
-    },
-    examType: {
-        type: String,
-        required: false,
-        enum: ['coding', 'mcq', 'mixed', 'theory', 'TBD'],
-        default: 'TBD'
-    },
-    requirements: {
-        type: String,
-        trim: true,
-        default: ''
-    },
     description: {
         type: String,
         required: false,
