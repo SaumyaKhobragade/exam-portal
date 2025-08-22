@@ -25,27 +25,22 @@
       <div class="landing-grid">
         <section class="hero-section">
           <div class="hero-content">
-            <h1 class="hero-title">Secure & Fair Online Coding Examinations</h1>
+            <h1 class="hero-title"><%= stats.heroTitle %></h1>
             <p class="hero-description">
-              The most advanced platform for conducting secure coding assessments with 
-              real-time monitoring, AI-powered proctoring, and comprehensive analytics.
+              <%= stats.heroDescription %>
             </p>
-            <div class="hero-actions">
-              <a href="/register" class="cta-btn primary">Get Started Free</a>
-              <a href="/demo" class="cta-btn secondary">Watch Demo</a>
-            </div>
           </div>
           <div class="hero-stats">
             <div class="hero-stat">
-              <div class="stat-number">50K+</div>
+              <div class="stat-number"><%= stats.studentsAssessed >= 1000 ? Math.floor(stats.studentsAssessed/1000) + 'K+' : stats.studentsAssessed + '+' %></div>
               <div class="stat-label">Students Assessed</div>
             </div>
             <div class="hero-stat">
-              <div class="stat-number">500+</div>
+              <div class="stat-number"><%= stats.institutions >= 1000 ? Math.floor(stats.institutions/1000) + 'K+' : stats.institutions + '+' %></div>
               <div class="stat-label">Institutions</div>
             </div>
             <div class="hero-stat">
-              <div class="stat-number">99.9%</div>
+              <div class="stat-number"><%= stats.uptime %>%</div>
               <div class="stat-label">Uptime</div>
             </div>
           </div>
