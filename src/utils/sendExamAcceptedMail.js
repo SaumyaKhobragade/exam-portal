@@ -7,16 +7,21 @@ import nodemailer from 'nodemailer';
  * @param {string} requesterName - The name of the requester
  */
 export async function sendExamAcceptedMail(toEmail, requesterName) {
+
+    // Use SendGrid SMTP credentials from .env
     const transporter = nodemailer.createTransport({
-        service: 'gmail', 
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT, 10),
+        secure: false,
         auth: {
-            user: process.env.SUPPORT_MAIL,
-            pass: process.env.SUPPORT_MAIL_PASSWORD,
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
         }
     });
 
+
     const mailOptions = {
-        from: `CodeSecure <${process.env.MAIL_USER}>`,
+        from: `CodeSecure <${process.env.FROM_EMAIL}>`,
         to: toEmail,
         subject: 'Your Exam Hosting Request Has Been Accepted',
         html: `<p>Dear ${requesterName},</p>
