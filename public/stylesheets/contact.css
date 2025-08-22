@@ -8,6 +8,9 @@ body, html {
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: #333;
 }
 
@@ -361,6 +364,7 @@ body, html {
   flex-direction: column;
   justify-content: space-between;
   min-width: 280px;
+  border: 2px solid #e1e5e9;
 }
 
 /* Layout: 1 2 3 in first row, 4 5 centered in second row */
@@ -452,6 +456,12 @@ body, html {
 .detail-icon {
   font-size: 1.5rem;
   color: #357ABD;
+  flex-shrink: 0;
+}
+
+.detail-icon-svg {
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
 }
 
