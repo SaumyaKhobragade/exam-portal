@@ -60,7 +60,14 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (error) {
         messageDiv.style.display = 'block';
         messageDiv.style.color = 'red';
-        messageDiv.textContent = 'Network error. Please try again.';
+        // Try to detect user not found from error or result
+        if (result && result.message && (result.message.toLowerCase().includes('user not found') || result.message.toLowerCase().includes('user does not exist'))) {
+          messageDiv.textContent = 'User not found';
+        } else if (error && error.message && (error.message.toLowerCase().includes('user not found') || error.message.toLowerCase().includes('user does not exist'))) {
+          messageDiv.textContent = 'User not found';
+        } else {
+          messageDiv.textContent = 'Network error. Please try again.';
+        }
       }
     });
   }

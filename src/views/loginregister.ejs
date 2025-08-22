@@ -45,7 +45,12 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
+                <div class="password-wrapper">
+                  <input type="password" class="form-input" id="loginPassword" placeholder="Enter your password" required>
+                  <button type="button" class="toggle-password-visibility" tabindex="-1" aria-label="Show password" onclick="togglePasswordVisibility('loginPassword', this)">
+                    <span class="eye-icon">👁️</span>
+                  </button>
+                </div>
               </div>
               <div class="form-options">
                 <label class="checkbox-label">
@@ -85,11 +90,33 @@
               </div>
               <div class="form-group">
                 <label class="form-label">Password</label>
-                <input type="password" class="form-input" id="registerPassword" placeholder="Create a password" required>
+                <div class="password-wrapper">
+                  <input type="password" class="form-input" id="registerPassword" placeholder="Create a password" required>
+                  <button type="button" class="toggle-password-visibility" tabindex="-1" aria-label="Show password" onclick="togglePasswordVisibility('registerPassword', this)">
+                    <span class="eye-icon"></span>
+                  </button>
+                </div>
               </div>
               <div class="form-group">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm your password" required>
+                <div class="password-wrapper">
+                  <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm your password" required>
+                  <button type="button" class="toggle-password-visibility" tabindex="-1" aria-label="Show password" onclick="togglePasswordVisibility('confirmPassword', this)">
+                    <span class="eye-icon">👁️</span>
+                  </button>
+                </div>
+<script>
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.querySelector('.eye-icon').textContent = '🙈';
+  } else {
+    input.type = 'password';
+    btn.querySelector('.eye-icon').textContent = '👁️';
+  }
+}
+</script>
               </div>
               <div class="form-options">
                 <label class="checkbox-label">
