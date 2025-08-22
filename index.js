@@ -35,6 +35,11 @@ app.get('/login', (req,res)=>{
 })
 
 // Request exam hosting page
+app.get('/request-hosting', (req,res)=>{
+    res.render('requestExam');
+});
+
+// Alternative route for backward compatibility
 app.get('/request-exam', (req,res)=>{
     res.render('requestExam');
 });

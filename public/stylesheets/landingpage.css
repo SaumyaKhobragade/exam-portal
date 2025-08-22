@@ -100,11 +100,11 @@ body, html {
 }
 
 .login-btn {
-  background-color: #6c757d;
+  background-color: #28a745;
 }
 
 .login-btn:hover {
-  background-color: #5a6268;
+  background-color: #218838;
 }
 
 .content-area {
