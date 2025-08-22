@@ -6,7 +6,7 @@ import Admin from "../models/admin.model.js"
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 const registerUser = asyncHandler(async (req,res)=>{
-    const { username, email, password, fullname, role } = req.body;
+    const { username, email, password, fullname } = req.body;
     
     // Validation
     if([fullname, email, username, password].some((field) => field?.trim() === "")){
@@ -60,7 +60,7 @@ const registerUser = asyncHandler(async (req,res)=>{
         email,
         password,
         username: username.toLowerCase(),
-        role: role || 'student'
+    // role removed
     });
     
     // Remove password and refresh token from response
