@@ -171,6 +171,35 @@ async function loadExamRequests(status = 'all') {
 
 // Open review modal
 async function openReviewModal(requestId) {
+    setTimeout(() => {
+        const acceptBtn = document.getElementById('acceptBtn');
+        const rejectBtn = document.getElementById('rejectBtn');
+        const confirmGroup = document.getElementById('confirmDecisionGroup');
+        const confirmText = document.getElementById('confirmText');
+        const confirmYesBtn = document.getElementById('confirmYesBtn');
+        const confirmNoBtn = document.getElementById('confirmNoBtn');
+        let pendingDecision = null;
+
+        function showConfirm(decision) {
+            pendingDecision = decision;
+            confirmText.textContent = decision === 'approved' ? 'Confirm accept this request?' : 'Confirm reject this request?';
+            confirmGroup.style.display = 'flex';
+        }
+        function hideConfirm() {
+            pendingDecision = null;
+            confirmGroup.style.display = 'none';
+        }
+
+        acceptBtn.onclick = function() { showConfirm('approved'); };
+        rejectBtn.onclick = function() { showConfirm('rejected'); };
+        confirmYesBtn.onclick = async function() {
+            if (pendingDecision) {
+                await submitReview(pendingDecision);
+                hideConfirm();
+            }
+        };
+        confirmNoBtn.onclick = function() { hideConfirm(); };
+    }, 0);
     currentRequestId = requestId;
     
     try {
@@ -187,6 +216,7 @@ async function openReviewModal(requestId) {
                         <h4>${request.examTitle}</h4>
                         <p><strong>Organization:</strong> ${request.organizationName}</p>
                         <p><strong>Contact:</strong> ${request.contactPerson} (${request.email})</p>
+                        <div style="height:16px;"></div>
                         <p><strong>Date:</strong> ${new Date(request.examDate).toLocaleDateString()}</p>
                         <p><strong>Duration:</strong> ${request.duration} minutes</p>
                         <p><strong>Expected Students:</strong> ${request.expectedStudents}</p>
@@ -226,21 +256,12 @@ async function loadAdminsForAssignment() {
 }
 
 // Submit review
-async function submitReview() {
-    const status = document.getElementById('reviewStatus').value;
-    const reviewNotes = document.getElementById('reviewNotes').value;
+async function submitReview(status) {
     const assignedAdminId = document.getElementById('assignedAdmin').value;
-    
-    if (!status) {
-        alert('Please select a decision');
-        return;
-    }
-    
     if (status === 'approved' && !assignedAdminId) {
         alert('Please assign an admin for approved requests');
         return;
     }
-    
     try {
         const response = await fetch(`/api/v1/exam-requests/${currentRequestId}/review`, {
             method: 'PATCH',
@@ -249,13 +270,10 @@ async function submitReview() {
             },
             body: JSON.stringify({
                 status,
-                reviewNotes,
                 assignedAdminId: status === 'approved' ? assignedAdminId : undefined
             })
         });
-        
         const result = await response.json();
-        
         if (response.ok) {
             alert(`Request ${status} successfully!`);
             closeReviewModal();

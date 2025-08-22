@@ -301,31 +301,74 @@
             <div class="modal-body">
                 <div id="reviewRequestDetails"></div>
                 
-                <div class="form-group">
-                    <label for="reviewStatus">Decision:</label>
-                    <select id="reviewStatus" class="form-control">
-                        <option value="">Select Decision</option>
-                        <option value="approved">Approve</option>
-                        <option value="rejected">Reject</option>
-                    </select>
+                <div class="form-group" style="display:flex;gap:8px;align-items:center;justify-content:center;">
+                    <label style="margin-right:10px;">Decision:</label>
+                    <div style="display:flex;gap:8px;">
+                        <button id="acceptBtn" class="square-btn accept" title="Accept" type="button"><span>&#10003;</span></button>
+                        <button id="rejectBtn" class="square-btn reject" title="Reject" type="button"><span>&#10007;</span></button>
+                    </div>
+                </div>
+                <div id="confirmDecisionGroup" style="display:none;flex-direction:column;align-items:center;gap:8px;margin-top:10px;">
+                    <span id="confirmText"></span>
+                    <div style="display:flex;gap:12px;">
+                        <button id="confirmYesBtn" class="btn btn-primary" type="button">Yes</button>
+                        <button id="confirmNoBtn" class="btn btn-secondary" type="button">No</button>
+                    </div>
+                </div>
+                <div id="confirmDecisionGroup" style="display:none;justify-content:center;gap:16px;margin-top:10px;">
+                    <span id="confirmText"></span>
+                    <button id="confirmYesBtn" class="btn btn-primary" type="button">Yes</button>
+                    <button id="confirmNoBtn" class="btn btn-secondary" type="button">No</button>
                 </div>
                 
-                <div class="form-group" id="adminAssignmentGroup" style="display: none;">
-                    <label for="assignedAdmin">Assign Admin:</label>
-                    <select id="assignedAdmin" class="form-control">
-                        <option value="">Select Admin</option>
-                    </select>
-                </div>
                 
-                <div class="form-group">
-                    <label for="reviewNotes">Review Notes:</label>
-                    <textarea id="reviewNotes" class="form-control" placeholder="Add your review comments..."></textarea>
-                </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display:flex;justify-content:center;gap:16px;">
                 <button class="btn btn-secondary" onclick="closeReviewModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
             </div>
+        <style>
+        .square-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: #f1f1f1;
+            color: #333;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
+        }
+        .square-btn.accept {
+            background: #28a745;
+            color: #fff;
+        }
+        .square-btn.reject {
+            background: #dc3545;
+            color: #fff;
+        }
+        .square-btn.accept:hover {
+            background: #218838;
+        }
+        .square-btn.reject:hover {
+            background: #c82333;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+        #confirmDecisionGroup {
+            display: flex;
+            align-items: center;
+        }
+        #confirmText {
+            font-weight: 500;
+            margin-right: 10px;
+        }
+        </style>
         </div>
     </div>
 
