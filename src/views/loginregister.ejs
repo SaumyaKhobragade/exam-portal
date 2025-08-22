@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CodeSecure - Login & Register</title>
   <link rel="stylesheet" href="/stylesheets/loginregister.css" />
+  <link rel="stylesheet" href="/stylesheets/loginregister-additional.css" />
 </head>
 <body>
   <div class="main-container">
@@ -14,11 +15,9 @@
         <a href="/" class="nav-link">Home</a>
         <a href="/about" class="nav-link">About</a>
         <a href="/contact" class="nav-link">Contact</a>
-        <a href="/login" class="nav-link">Login</a>
       </nav>
       <div class="user-actions">
-        <a href="/support" class="action-btn">Support</a>
-        <a href="/register" class="action-btn register-btn">Register</a>
+        <a href="/request-hosting" class="action-btn">Request Hosting</a>
       </div>
     </header>
 
@@ -143,162 +142,7 @@
     </main>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggleBtns = document.querySelectorAll('.toggle-btn');
-      const loginForm = document.querySelector('.login-form');
-      const registerForm = document.querySelector('.register-form');
+  <script src="/javascripts/loginregister.js"></script>
 
-      toggleBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-          const formType = this.getAttribute('data-form');
-          
-          toggleBtns.forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
-          
-          if (formType === 'login') {
-            loginForm.classList.add('active');
-            registerForm.classList.remove('active');
-          } else {
-            registerForm.classList.add('active');
-            loginForm.classList.remove('active');
-          }
-        });
-      });
-
-      // Handle login form submission
-      document.getElementById('loginForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-        const messageDiv = document.getElementById('loginMessage');
-        
-        try {
-          const response = await fetch('/api/v1/auth/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-          });
-          
-          const result = await response.json();
-          
-          if (response.ok) {
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = 'green';
-            messageDiv.textContent = 'Login successful! Redirecting...';
-            
-            // Redirect based on user type
-            setTimeout(() => {
-              window.location.href = result.data.redirectTo;
-            }, 1000);
-          } else {
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = 'red';
-            messageDiv.textContent = result.message || 'Login failed';
-          }
-        } catch (error) {
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = 'Network error. Please try again.';
-        }
-      });
-
-      // Handle registration form submission
-      document.getElementById('registerForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
-        const username = document.getElementById('username').value;
-        const email = document.getElementById('registerEmail').value;
-        const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const role = document.getElementById('userRole').value;
-        const messageDiv = document.getElementById('registerMessage');
-        
-        if (password !== confirmPassword) {
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = 'Passwords do not match';
-          return;
-        }
-        
-        try {
-          const response = await fetch('/api/v1/users/register-no-upload', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              username: username,
-              email: email,
-              password: password,
-              fullname: `${firstName} ${lastName}`,
-              role: role
-            })
-          });
-          
-          const data = await response.json();
-          
-          if (response.ok) {
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = 'green';
-            messageDiv.textContent = 'Registration successful! Redirecting to dashboard...';
-            
-            // Redirect to user dashboard after successful registration
-            setTimeout(() => {
-              if (data.data && data.data.redirectTo) {
-                window.location.href = data.data.redirectTo;
-              } else {
-                window.location.href = '/user-dashboard';
-              }
-            }, 1500);
-          } else {
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = 'red';
-            messageDiv.textContent = data.message || 'Registration failed';
-          }
-        } catch (error) {
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = 'Network error. Please try again.';
-        }
-      });
-    });
-  </script>
-  
-  <style>
-    .message {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 14px;
-    }
-    
-    .submit-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-      font-size: 16px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-    
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    }
-  </style>
 </body>
 </html>

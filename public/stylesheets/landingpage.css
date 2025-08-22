@@ -56,6 +56,12 @@ body, html {
   color: #fff;
 }
 
+.nav-link.active {
+  background-color: #357ABD;
+  color: #fff;
+  font-weight: 600;
+}
+
 .user-actions {
   display: flex;
   gap: 1rem;

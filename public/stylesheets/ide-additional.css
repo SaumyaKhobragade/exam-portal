@@ -1,0 +1,60 @@
+/* IDE Additional Styles */
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Console output styling */
+.console-line.success {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.console-line.error {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.console-line.warning {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.console-output {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.console-line {
+  margin: 2px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Test status styling */
+.test-status.running {
+  color: #007bff;
+  animation: pulse 1.5s infinite;
+}
+
+.test-status.passed {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.test-status.failed {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.test-status.pending {
+  color: #6c757d;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}

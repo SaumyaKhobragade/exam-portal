@@ -19,6 +19,7 @@ body, html {
 
 .header-section {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -46,6 +47,17 @@ body, html {
   padding: 0.5rem 1rem;
   border-radius: 20px;
   transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #4a90e2;
+  color: #fff;
+}
+
+.nav-link.active {
+  background-color: #357ABD;
+  color: #fff;
+  font-weight: 600;
 }
 
 .nav-link:hover {
@@ -177,10 +189,16 @@ body, html {
 }
 
 .section-title {
-  font-size: 1.8rem;
+  font-size: 2rem;
   color: #357ABD;
-  margin-bottom: 2rem;
-  font-weight: 600;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
 }
 
 .contact-form {
@@ -302,5 +320,296 @@ body, html {
   .contact-form-section,
   .welcome-card {
     padding: 1.5rem;
+  }
+}
+
+/* Contributors Section Styles */
+.contributors-section {
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.contributors-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.contributor-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 280px;
+}
+
+/* Layout: 1 2 3 in first row, 4 5 centered in second row */
+.contributor-card:nth-child(1) {
+  grid-column: 1 / 3;
+}
+
+.contributor-card:nth-child(2) {
+  grid-column: 3 / 5;
+}
+
+.contributor-card:nth-child(3) {
+  grid-column: 5 / 7;
+}
+
+.contributor-card:nth-child(4) {
+  grid-column: 2 / 4;
+  grid-row: 2;
+}
+
+.contributor-card:nth-child(5) {
+  grid-column: 4 / 6;
+  grid-row: 2;
+}
+
+.contributor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.contributor-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.contributor-avatar {
+  font-size: 3rem;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.contributor-info {
+  flex: 1;
+}
+
+.contributor-name {
+  font-size: 1.4rem;
+  color: #357ABD;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.contributor-role {
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.contributor-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(74, 144, 226, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid #4a90e2;
+  min-height: 50px;
+}
+
+.detail-icon {
+  font-size: 1.5rem;
+  color: #357ABD;
+  flex-shrink: 0;
+}
+
+.detail-text {
+  color: #333;
+  font-weight: 500;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.team-address-card {
+  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  color: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+  margin-top: 1rem;
+}
+
+.address-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.address-icon {
+  font-size: 2.5rem;
+}
+
+.address-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.address-details {
+  padding-left: 3.5rem;
+}
+
+.address-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.95;
+}
+
+/* Medium screens - maintain 1 2 3 / 4 5 layout */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .contributors-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+    max-width: 900px;
+  }
+
+  .contributor-card:nth-child(1) {
+    grid-column: 1 / 3;
+  }
+
+  .contributor-card:nth-child(2) {
+    grid-column: 3 / 5;
+  }
+
+  .contributor-card:nth-child(3) {
+    grid-column: 5 / 7;
+  }
+
+  .contributor-card:nth-child(4) {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+
+  .contributor-card:nth-child(5) {
+    grid-column: 4 / 6;
+    grid-row: 2;
+  }
+}
+
+/* Responsive styles for contributors */
+@media (max-width: 768px) {
+  .contributors-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5rem;
+    max-width: 700px;
+  }
+
+  .contributor-card:nth-child(1) {
+    grid-column: 1 / 3;
+  }
+
+  .contributor-card:nth-child(2) {
+    grid-column: 3 / 5;
+  }
+
+  .contributor-card:nth-child(3) {
+    grid-column: 5 / 7;
+  }
+
+  .contributor-card:nth-child(4) {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+
+  .contributor-card:nth-child(5) {
+    grid-column: 4 / 6;
+    grid-row: 2;
+  }
+
+  .contributor-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .contributor-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 2.5rem;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .address-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .address-details {
+    padding-left: 0;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .contributors-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 400px;
+  }
+
+  .contributor-card:nth-child(1),
+  .contributor-card:nth-child(2),
+  .contributor-card:nth-child(3),
+  .contributor-card:nth-child(4),
+  .contributor-card:nth-child(5) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .contributor-card {
+    padding: 1.5rem;
+    height: 280px;
+  }
+
+  .team-address-card {
+    padding: 1.5rem;
+  }
+
+  .contributor-name {
+    font-size: 1.2rem;
   }
 }

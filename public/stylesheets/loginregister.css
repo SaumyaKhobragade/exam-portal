@@ -53,6 +53,17 @@ body, html {
   color: #fff;
 }
 
+.nav-link.active {
+  background-color: #357ABD;
+  color: #fff;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  background-color: #4a90e2;
+  color: #fff;
+}
+
 .user-actions {
   display: flex;
   gap: 1rem;
