@@ -266,27 +266,38 @@ async function submitReview(status) {
             body: JSON.stringify({ status })
         });
         const result = await response.json();
+        const messageDiv = document.getElementById('dashboardMessage');
         if (response.ok) {
-            alert(result.message || `Request ${status} and removed!`);
+            if (messageDiv) {
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'message success';
+                messageDiv.textContent = result.message || `Request ${status} and removed!`;
+            }
             closeReviewModal();
-            loadExamRequests();
-            loadExamRequestStats();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1200);
         } else {
-            alert(result.message || 'Failed to submit review');
+            if (messageDiv) {
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'message error';
+                messageDiv.textContent = result.message || 'Failed to submit review';
+            }
         }
     } catch (error) {
         console.error('Error submitting review:', error);
-        alert('Network error. Please try again.');
+        const messageDiv = document.getElementById('dashboardMessage');
+        if (messageDiv) {
+            messageDiv.style.display = 'block';
+            messageDiv.className = 'message error';
+            messageDiv.textContent = 'Network error. Please try again.';
+        }
     }
 }
 
 // Close review modal
 function closeReviewModal() {
     document.getElementById('reviewModal').style.display = 'none';
-    document.getElementById('reviewStatus').value = '';
-    document.getElementById('reviewNotes').value = '';
-    document.getElementById('assignedAdmin').value = '';
-    document.getElementById('adminAssignmentGroup').style.display = 'none';
     currentRequestId = null;
 }
 

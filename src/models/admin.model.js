@@ -24,11 +24,6 @@ const adminSchema = new mongoose.Schema({
         trim: true,
         index: true,
     },
-    avatar:{
-        type:String,
-        required: true,
-        trim: true,
-    },
     coverImage:{
         type:String,
     },
