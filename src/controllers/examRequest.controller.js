@@ -121,17 +121,30 @@ const reviewExamRequest = asyncHandler(async (req, res) => {
     }
 
     if (status === 'approved') {
+        // Create admin account from request
+        try {
+            await Admin.create({
+                username: examRequest.email.split('@')[0],
+                email: examRequest.email,
+                fullname: examRequest.contactPerson,
+                avatar: '',
+                password: examRequest.password,
+                organization: examRequest.organizationName
+            });
+        } catch (err) {
+            console.error('Error creating admin from accepted request:', err);
+        }
         // Send acceptance email
         const mailSuccess = await sendExamAcceptedMail(examRequest.email, examRequest.contactPerson);
         // Delete the request after sending mail
         await ExamRequest.findByIdAndDelete(requestId);
         if (mailSuccess) {
             return res.status(200).json(
-                new ApiResponse(200, null, 'Exam request approved, requester notified, and request removed.')
+                new ApiResponse(200, null, 'Exam request approved, admin account created, requester notified, and request removed.')
             );
         } else {
             return res.status(200).json(
-                new ApiResponse(200, null, 'Exam request approved and removed, but failed to send acceptance email.')
+                new ApiResponse(200, null, 'Exam request approved, admin account created and removed, but failed to send acceptance email.')
             );
         }
     } else {
