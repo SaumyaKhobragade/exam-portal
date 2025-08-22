@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="          <div class="stat-icon">📝</div>iewport" content="width=device-width, initial-scale=1" />
   <title>Admin Dashboard - Exam Portal</title>
   <link rel="stylesheet" href="/stylesheets/adminDashboard.css" />
   <link rel="stylesheet" href="/stylesheets/adminDashboard-additional.css" />
@@ -77,33 +77,51 @@
         <div class="stat-card">
           <div class="stat-icon">�</div>
           <div class="stat-content">
-            <div class="stat-number" id="totalExams">0</div>
+            <div class="stat-number" id="totalExams"><%= stats ? stats.total : 0 %></div>
             <div class="stat-label">Total Exams</div>
-            <div class="stat-change" id="examsChange">Loading...</div>
+            <div class="stat-change" id="examsChange">
+              <% if (userType === 'admin') { %>
+                Created/Assigned
+              <% } else { %>
+                Owned
+              <% } %>
+            </div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">👥</div>
+          <div class="stat-icon">�</div>
           <div class="stat-content">
-            <div class="stat-number" id="totalStudents">0</div>
-            <div class="stat-label">Students Enrolled</div>
-            <div class="stat-change" id="studentsChange">Loading...</div>
+            <div class="stat-number" id="activeExams"><%= stats ? stats.active : 0 %></div>
+            <div class="stat-label">Active Exams</div>
+            <div class="stat-change" id="activeChange">Currently Running</div>
           </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon">✅</div>
           <div class="stat-content">
-            <div class="stat-number" id="completedExams">0</div>
+            <div class="stat-number" id="completedExams"><%= stats ? stats.completed : 0 %></div>
             <div class="stat-label">Completed Exams</div>
-            <div class="stat-change" id="completedChange">Loading...</div>
+            <div class="stat-change" id="completedChange">Finished</div>
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">⭐</div>
+          <div class="stat-icon">👤</div>
           <div class="stat-content">
-            <div class="stat-number" id="avgScore">0%</div>
-            <div class="stat-label">Average Score</div>
-            <div class="stat-change" id="scoreChange">Loading...</div>
+            <div class="stat-number" id="userType">
+              <% if (userType === 'owner') { %>
+                OWNER
+              <% } else if (userType === 'admin') { %>
+                ADMIN
+              <% } else { %>
+                USER
+              <% } %>
+            </div>
+            <div class="stat-label">Role</div>
+            <div class="stat-change" id="roleInfo">
+              <% if (user) { %>
+                <%= user.username %>
+              <% } %>
+            </div>
           </div>
         </div>
       </section>

@@ -7,30 +7,73 @@ const router = express.Router();
 // Apply no-cache middleware to all admin routes
 router.use(noCacheMiddleware);
 
+// Test route to check form parsing (no auth required)
+router.post('/test-form', (req, res) => {
+    console.log('Test form - Request body received:', JSON.stringify(req.body, null, 2));
+    console.log('Test form - Content-Type:', req.get('Content-Type'));
+    res.json({ 
+        success: true, 
+        message: 'Form data received successfully',
+        data: req.body 
+    });
+});
+
 // Admin dashboard route - requires authentication and session validation
 router.get('/admin-dashboard', verifyAdminOrOwnerSession, async (req, res) => {
     try {
-        // Get actual owner ID from authenticated user
-        const ownerId = req.user._id;
+        // Get actual user ID and type from authenticated user
+        const userId = req.user._id;
+        const userType = req.userModel; // 'admin' or 'owner'
         
-        // Fetch recent exams for this owner
-        const recentExams = await Exam.find({ ownerId })
+        let examQuery = {};
+        
+        // Filter exams based on user type
+        if (userType === 'owner') {
+            // Owners see all exams they own
+            examQuery.ownerId = userId;
+        } else if (userType === 'admin') {
+            // Admins see exams they created or are assigned to
+            examQuery = {
+                $or: [
+                    { adminId: userId },
+                    { 'createdBy.userId': userId }
+                ]
+            };
+        }
+        
+        // Fetch recent exams for this user
+        const recentExams = await Exam.find(examQuery)
             .sort({ createdAt: -1 })
             .limit(5)
-            .select('title startDateTime status participants totalMarks createdAt');
+            .select('title startDateTime status participants totalMarks createdAt createdBy adminId ownerId')
+            .populate('ownerId', 'username fullname')
+            .populate('adminId', 'username fullname');
         
-        // Pass exam data to the view
+        // Get exam statistics
+        const totalExams = await Exam.countDocuments(examQuery);
+        const activeExams = await Exam.countDocuments({...examQuery, status: 'active'});
+        const completedExams = await Exam.countDocuments({...examQuery, status: 'completed'});
+        
+        // Pass exam data and statistics to the view
         res.render('adminDashboard', { 
             exams: recentExams,
+            stats: {
+                total: totalExams,
+                active: activeExams,
+                completed: completedExams
+            },
             success: req.query.success,
-            user: req.user
+            user: req.user,
+            userType: userType
         });
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
         res.render('adminDashboard', { 
             exams: [],
+            stats: { total: 0, active: 0, completed: 0 },
             error: 'Failed to load dashboard data',
-            user: req.user
+            user: req.user,
+            userType: req.userModel
         });
     }
 });
@@ -43,16 +86,34 @@ router.get('/admin/exams/create', verifyAdminOrOwnerSession, (req, res) => {
 // Get all exams for owner - requires authentication and session validation
 router.get('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
     try {
-        // Get actual owner ID from authenticated user
-        const ownerId = req.user._id;
+        // Get actual user ID and type from authenticated user
+        const userId = req.user._id;
+        const userType = req.userModel; // 'admin' or 'owner'
         
-        const exams = await Exam.find({ ownerId })
+        let examQuery = {};
+        
+        // Filter exams based on user type
+        if (userType === 'owner') {
+            examQuery.ownerId = userId;
+        } else if (userType === 'admin') {
+            examQuery = {
+                $or: [
+                    { adminId: userId },
+                    { 'createdBy.userId': userId }
+                ]
+            };
+        }
+        
+        const exams = await Exam.find(examQuery)
             .sort({ createdAt: -1 })
-            .select('title description startDateTime status participants totalMarks createdAt duration');
+            .select('title description startDateTime status participants totalMarks createdAt duration createdBy')
+            .populate('ownerId', 'username fullname')
+            .populate('adminId', 'username fullname');
         
         res.json({
             success: true,
-            exams: exams
+            exams: exams,
+            userType: userType
         });
     } catch (error) {
         console.error('Error fetching exams:', error);
@@ -67,21 +128,41 @@ router.get('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
 router.get('/admin/exams/:id', verifyAdminOrOwnerSession, async (req, res) => {
     try {
         const examId = req.params.id;
-        // Get actual owner ID from authenticated user
-        const ownerId = req.user._id;
+        // Get actual user ID and type from authenticated user
+        const userId = req.user._id;
+        const userType = req.userModel;
         
-        const exam = await Exam.findOne({ _id: examId, ownerId });
+        let examQuery = { _id: examId };
+        
+        // Filter based on user type and permissions
+        if (userType === 'owner') {
+            examQuery.ownerId = userId;
+        } else if (userType === 'admin') {
+            examQuery = {
+                _id: examId,
+                $or: [
+                    { adminId: userId },
+                    { 'createdBy.userId': userId },
+                    { ownerId: userId } // In case admin is also owner
+                ]
+            };
+        }
+        
+        const exam = await Exam.findOne(examQuery)
+            .populate('ownerId', 'username fullname')
+            .populate('adminId', 'username fullname');
         
         if (!exam) {
             return res.status(404).json({
                 success: false,
-                message: 'Exam not found'
+                message: 'Exam not found or you do not have permission to access it'
             });
         }
         
         res.json({
             success: true,
-            exam: exam
+            exam: exam,
+            userType: userType
         });
     } catch (error) {
         console.error('Error fetching exam details:', error);
@@ -95,8 +176,33 @@ router.get('/admin/exams/:id', verifyAdminOrOwnerSession, async (req, res) => {
 // Handle exam creation - requires authentication and session validation
 router.post('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
     try {
-        // Get actual owner ID from authenticated user
-        const ownerId = req.user._id;
+        // Check if basic form fields are present
+        if (!req.body || !req.body.examTitle) {
+            console.error('examTitle is missing from request body. Body:', req.body);
+            return res.status(400).json({
+                success: false,
+                message: 'Exam title is required'
+            });
+        }
+        
+        // Get actual user ID and type from authenticated user
+        const userId = req.user._id;
+        const userType = req.userModel; // 'admin' or 'owner'
+        
+        // Determine ownerId and adminId based on user type
+        let ownerId, adminId;
+        
+        if (userType === 'owner') {
+            ownerId = userId;
+            adminId = null; // Owner creates exam directly
+        } else if (userType === 'admin') {
+            // For admins, we need to find their associated owner
+            // Assuming admins are linked to an owner through a field like 'ownerId' in admin model
+            adminId = userId;
+            ownerId = req.user.ownerId || userId; // Fallback to admin ID if no owner association
+        } else {
+            throw new Error('Invalid user type for exam creation');
+        }
         
         const examData = {
             title: req.body.examTitle,
@@ -105,6 +211,12 @@ router.post('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
             startDateTime: new Date(req.body.startDateTime),
             duration: parseInt(req.body.duration),
             ownerId: ownerId,
+            adminId: adminId,
+            createdBy: {
+                userId: userId,
+                userType: userType,
+                name: req.user.fullname || req.user.username
+            },
             questions: []
         };
 
@@ -139,7 +251,8 @@ router.post('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
         const newExam = new Exam(examData);
         const savedExam = await newExam.save();
         
-        console.log('Exam created successfully:', savedExam._id);
+        console.log(`Exam created successfully by ${userType} (${req.user.username}):`, savedExam._id);
+        console.log(`Owner ID: ${ownerId}, Admin ID: ${adminId}`);
         
         // Redirect back to dashboard with success message
         res.redirect('/admin-dashboard?success=exam-created');

@@ -7,11 +7,44 @@ async function loadAdminInfo() {
     const result = await response.json();
     
     if (result.success) {
-      document.getElementById('adminName').textContent = result.data.fullname;
-      document.getElementById('organizationName').textContent = result.data.organization;
+      const adminNameElement = document.getElementById('adminName');
+      const organizationNameElement = document.getElementById('organizationName');
+      
+      if (adminNameElement) {
+        adminNameElement.textContent = result.data.fullname || result.data.username;
+      }
+      if (organizationNameElement) {
+        organizationNameElement.textContent = result.data.organization || 'Admin Dashboard';
+      }
     }
   } catch (error) {
     console.error('Error loading admin info:', error);
+  }
+}
+
+// Load exam statistics
+async function loadExamStats() {
+  try {
+    const response = await fetch('/api/v1/admin/exams');
+    const result = await response.json();
+    
+    if (result.success) {
+      // Update stats based on exam data
+      const totalExams = result.data.length;
+      const activeExams = result.data.filter(exam => exam.status === 'active').length;
+      const completedExams = result.data.filter(exam => exam.status === 'completed').length;
+      
+      // Update DOM elements if they exist
+      const totalExamsElement = document.getElementById('totalExams');
+      const activeExamsElement = document.getElementById('activeExams');
+      const completedExamsElement = document.getElementById('completedExams');
+      
+      if (totalExamsElement) totalExamsElement.textContent = totalExams;
+      if (activeExamsElement) activeExamsElement.textContent = activeExams;
+      if (completedExamsElement) completedExamsElement.textContent = completedExams;
+    }
+  } catch (error) {
+    console.error('Error loading exam stats:', error);
   }
 }
 
@@ -51,17 +84,27 @@ async function loadAssignedExams() {
   }
 }
 
-// Load dashboard statistics
+// Load dashboard statistics - Updated for role-based display
 async function loadDashboardStats() {
   try {
     const response = await fetch('/api/v1/admin/stats');
     const result = await response.json();
     
     if (result.success) {
-      document.getElementById('totalExams').textContent = result.data.totalExams || 0;
-      document.getElementById('totalStudents').textContent = result.data.totalStudents || 0;
-      document.getElementById('completedExams').textContent = result.data.completedExams || 0;
-      document.getElementById('avgScore').textContent = (result.data.avgScore || 0) + '%';
+      // Only update elements that exist (some may be replaced with EJS variables)
+      const totalExamsElement = document.getElementById('totalExams');
+      const activeExamsElement = document.getElementById('activeExams');
+      const completedExamsElement = document.getElementById('completedExams');
+      
+      if (totalExamsElement && !totalExamsElement.textContent.match(/^\d+$/)) {
+        totalExamsElement.textContent = result.data.totalExams || 0;
+      }
+      if (activeExamsElement && !activeExamsElement.textContent.match(/^\d+$/)) {
+        activeExamsElement.textContent = result.data.activeExams || 0;
+      }
+      if (completedExamsElement && !completedExamsElement.textContent.match(/^\d+$/)) {
+        completedExamsElement.textContent = result.data.completedExams || 0;
+      }
     }
   } catch (error) {
     console.error('Error loading stats:', error);
@@ -89,5 +132,5 @@ function manageExam(examId) {
 document.addEventListener('DOMContentLoaded', function() {
   loadAdminInfo();
   loadAssignedExams();
-  loadDashboardStats();
+  loadExamStats();
 });

@@ -174,29 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
             form.appendChild(questionCountInput);
 
             // Submit the form
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form)
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Success - redirect will be handled by the server
-                    window.location.href = response.url;
-                } else {
-                    // Handle error response
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Failed to create exam');
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error creating exam:', error);
-                alert('Error creating exam: ' + error.message);
-                
-                // Reset button state
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            });
+            form.submit();
         }
     }
 

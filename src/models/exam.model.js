@@ -86,6 +86,21 @@ const examSchema = new mongoose.Schema({
         ref: 'Admin',
         index: true
     },
+    createdBy: {
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true
+        },
+        userType: {
+            type: String,
+            enum: ['owner', 'admin'],
+            required: true
+        },
+        name: {
+            type: String,
+            required: true
+        }
+    },
     status: {
         type: String,
         enum: ['draft', 'active', 'completed', 'archived'],
