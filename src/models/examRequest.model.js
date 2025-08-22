@@ -89,10 +89,6 @@ const examRequestSchema = new mongoose.Schema({
     reviewNotes: {
         type: String,
         trim: true
-    },
-    assignedAdmin: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin'
     }
 }, {
     timestamps: true
