@@ -8,6 +8,9 @@ body, html {
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: #333;
   overflow-x: hidden;
   overflow-y: auto;

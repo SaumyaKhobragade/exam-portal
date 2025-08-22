@@ -8,6 +8,9 @@ body, html {
   height: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: #333;
 }
 
@@ -228,7 +231,7 @@ body, html {
 }
 
 .team-member {
-  background: #f8f9fa;
+  background: #fff;
   border-radius: 15px;
   padding: 2rem;
   text-align: center;
@@ -237,6 +240,8 @@ body, html {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  border: 2px solid #e1e5e9;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Layout: 1 2 3 in first row, 4 5 centered in second row */
@@ -271,26 +276,48 @@ body, html {
 
 .team-member:hover {
   background: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  border-color: #4a90e2;
 }
 
 .member-avatar {
   font-size: 3rem;
   margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  border: 2px solid #e1e5e9;
+  transition: all 0.3s ease;
+}
+
+.team-member:hover .member-avatar {
+  background: #4a90e2;
+  border-color: #4a90e2;
+  transform: scale(1.05);
 }
 
 .member-name {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #333;
   margin-bottom: 0.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  transition: all 0.3s ease;
 }
 
 .member-role {
   color: #4a90e2;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
 }
 
 .member-bio {
