@@ -85,7 +85,7 @@ app.get('/admin-dashboard', verifyAdminOrOwner, (req,res)=>{
 });
 
 app.get('/user-dashboard', verifyJWT, (req,res)=>{
-    res.render('userDashboard');
+    res.render('userDashboard',{user: req.user});
 });
 
 app.get('/dashboard', verifyJWT, (req,res)=>{
