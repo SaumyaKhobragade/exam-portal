@@ -40,6 +40,12 @@ body, html {
   gap: 2rem;
 }
 
+.navigation-menu.centered-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .nav-link {
   text-decoration: none;
   color: #333;
@@ -513,4 +519,65 @@ body, html {
     min-height: 250px;
     padding: 1.5rem;
   }
+}
+
+/* Footer Styles */
+.footer-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  margin-top: 2rem;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+}
+
+.footer-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #357ABD;
+  margin-bottom: 1rem;
+}
+
+.footer-tagline {
+  color: #666;
+  line-height: 1.5;
+}
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.footer-title {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.footer-link {
+  display: block;
+  color: #666;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #4a90e2;
+}
+
+.footer-bottom {
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
 }

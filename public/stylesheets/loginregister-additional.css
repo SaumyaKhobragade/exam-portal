@@ -18,10 +18,11 @@
   text-decoration: none;
   display: inline-block;
   text-align: center;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 600;
   transition: all 0.3s ease;
-  width: 100%;
+  width: 30%;
+  height: 130%;
 }
 
 .submit-btn:hover {
