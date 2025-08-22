@@ -7,6 +7,115 @@
     <link rel="stylesheet" href="/stylesheets/ownerDashboard.css">
     <link rel="stylesheet" href="/stylesheets/adminDashboard.css">
     <style>
+        /* Header section styling - matching admin dashboard */
+        .header-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .brand-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #764ba2;
+            letter-spacing: 1px;
+            flex: 1;
+        }
+
+        .navigation-menu {
+            display: flex;
+            gap: 2rem;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: #764ba2;
+            color: #fff;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .user-actions span {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #764ba2;
+            color: #fff;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .action-btn:hover {
+            background-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .logout-btn {
+            background-color: #ff4757;
+        }
+
+        .logout-btn:hover {
+            background-color: #ff3742;
+        }
+
+        /* Responsive design for header */
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+                position: relative;
+            }
+            
+            .brand-logo {
+                text-align: center;
+                flex: none;
+            }
+            
+            .navigation-menu {
+                position: static;
+                transform: none;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .user-actions {
+                justify-content: center;
+                flex: none;
+            }
+        }
+
         .owner-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -192,7 +301,22 @@
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
+    <div class="main-container">
+        <header class="header-section">
+            <div class="brand-logo">Exam Portal - Owner</div>
+            <nav class="navigation-menu">
+                <a href="/owner-dashboard" class="nav-link active">Dashboard</a>
+                <a href="#" class="nav-link" onclick="showAnalytics()">Analytics</a>
+                <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
+                <a href="#" class="nav-link" onclick="showReports()">Reports</a>
+            </nav>
+            <div class="user-actions">
+                <span id="ownerName"><%= user ? user.fullname || user.username : 'Owner' %></span>
+                <a href="/logout" class="action-btn logout-btn">Logout</a>
+            </div>
+        </header>
+
+        <div class="dashboard-container">
         <div class="owner-header">
             <div class="owner-title">👑 Owner Dashboard</div>
             <div class="owner-subtitle">Complete control and management of the CodeSecure platform</div>
@@ -576,6 +700,9 @@
         }
     </style>
 
+    </div> <!-- End of main-container -->
+
+    <script src="/javascripts/sessionProtection.js"></script>
     <script src="/javascripts/ownerDashboard.js"></script>
 </body>
 </html>

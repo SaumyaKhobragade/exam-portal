@@ -370,3 +370,16 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeCreateAdminForm();
     initializeReviewStatusHandler();
 });
+
+// Navigation functions for the header menu
+function showAnalytics() {
+    alert('Analytics feature will be implemented next! This will show detailed platform analytics and insights.');
+}
+
+function showSettings() {
+    alert('Settings feature will be implemented next! This will allow you to configure platform settings and preferences.');
+}
+
+function showReports() {
+    alert('Reports feature will be implemented next! This will provide comprehensive reports and data exports.');
+}

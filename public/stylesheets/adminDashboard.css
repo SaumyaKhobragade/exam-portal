@@ -1,3 +1,39 @@
+/* Organization Info Section (moved from adminDashboard-additional.css, styled to match the page) */
+.organization-info {
+  background: #fff;
+  color: #000;
+  padding: 2rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.org-name {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 0.8rem;
+  letter-spacing: 0.5px;
+  text-shadow: none;
+}
+
+.org-subtitle {
+  font-size: 1.15rem;
+  color: #222;
+  opacity: 1;
+  line-height: 1.6;
+  font-weight: 500;
+}
+.exam-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.exam-list > * {
+  margin-bottom: 0;
+}
 * {
   margin: 0;
   padding: 0;
@@ -58,7 +94,19 @@ body, html {
 
 .user-actions {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+#adminName {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+}
 }
 
 .action-btn {
@@ -81,10 +129,21 @@ body, html {
 
 .logout-btn {
   background-color: #ff4757;
+  color: #fff !important;
+  border: none;
+  outline: none;
+  font-weight: 700;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
-.logout-btn:hover {
+.logout-btn:hover, .logout-btn:focus {
   background-color: #ff3742;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 71, 87, 0.15);
 }
 
 .content-area {
@@ -211,27 +270,13 @@ body, html {
 
 .quick-actions {
   grid-area: actions;
-  background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(53, 122, 189, 0.05));
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
   padding: 2.5rem;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  max-width: 100%;
-  border: 1px solid rgba(74, 144, 226, 0.2);
-  position: relative;
-  overflow: hidden;
+  margin-top: 2.5rem;
 }
-
-.quick-actions::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 20%, rgba(74, 144, 226, 0.1) 0%, transparent 50%),
-              radial-gradient(circle at 80% 80%, rgba(53, 122, 189, 0.08) 0%, transparent 50%);
-  pointer-events: none;
-}
+ 
 
 .actions-grid {
   display: grid;
@@ -669,51 +714,32 @@ body, html {
 
 /* Organization Info Section */
 .organization-info {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.95));
-  border-radius: 20px;
-  padding: 2.5rem;
+  background: #fff;
+  border-radius: 15px;
+  padding: 2rem;
   margin-bottom: 2rem;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  max-width: 100%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   width: 100%;
-  -webkit-backdrop-filter: blur(15px);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
   position: relative;
   overflow: hidden;
 }
 
-.organization-info::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #4a90e2, #357ABD, #4a90e2);
-  background-size: 200% 100%;
-  animation: gradientShift 3s ease-in-out infinite;
-}
 
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
 
 .org-name {
   font-size: 2.2rem;
   font-weight: 800;
-  color: #357ABD;
+  color: #000;
   margin-bottom: 0.8rem;
   letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(53, 122, 189, 0.1);
+  text-shadow: none;
 }
 
 .org-subtitle {
   font-size: 1.15rem;
-  color: #666;
-  opacity: 0.9;
+  color: #222;
+  opacity: 1;
   line-height: 1.6;
   font-weight: 500;
 }
