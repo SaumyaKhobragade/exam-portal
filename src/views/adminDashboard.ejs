@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="          <div class="stat-icon">📝</div>iewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin Dashboard - Exam Portal</title>
   <link rel="stylesheet" href="/stylesheets/adminDashboard.css" />
   <link rel="stylesheet" href="/stylesheets/adminDashboard-additional.css" />
@@ -71,6 +71,8 @@
           <p>Loading assigned exams...</p>
         </div>
       </div>
+
+      <div style="height: 32px;"></div>
 
       <!-- Stats Section -->
       <section class="stats-section">
@@ -152,137 +154,6 @@
         </div>
       </section>
 
-      <section class="recent-exams">
-        <h2 class="section-title">Recent Exams</h2>
-        <div class="exams-table">
-          <div class="table-header">
-            <div class="header-cell">Exam Name</div>
-            <div class="header-cell">Created By</div>
-            <div class="header-cell">Participants</div>
-            <div class="header-cell">Status</div>
-            <div class="header-cell">Actions</div>
-          </div>
-          <div class="table-row">
-            <div class="table-cell">
-              <h4 class="exam-title">React Development Assessment</h4>
-              <p class="exam-date">Created 2 days ago</p>
-            </div>
-            <div class="table-cell">Dr. Sarah Johnson</div>
-            <div class="table-cell">
-              <div class="participant-count">45 / 50</div>
-            </div>
-            <div class="table-cell">
-              <span class="status-badge active">Active</span>
-            </div>
-            <div class="table-cell">
-              <a href="/admin/exams/1/view" class="table-btn view-btn">View</a>
-              <a href="/admin/exams/1/edit" class="table-btn edit-btn">Edit</a>
-            </div>
-          </div>
-          <div class="table-row">
-            <div class="table-cell">
-              <h4 class="exam-title">JavaScript Fundamentals</h4>
-              <p class="exam-date">Created 1 week ago</p>
-            </div>
-            <div class="table-cell">Prof. Michael Chen</div>
-            <div class="table-cell">
-              <div class="participant-count">120 / 120</div>
-            </div>
-            <div class="table-cell">
-              <span class="status-badge completed">Completed</span>
-            </div>
-            <div class="table-cell">
-              <a href="/admin/exams/2/view" class="table-btn view-btn">View</a>
-              <a href="/admin/exams/2/results" class="table-btn results-btn">Results</a>
-            </div>
-          </div>
-          <div class="table-row">
-            <div class="table-cell">
-              <h4 class="exam-title">Data Structures Quiz</h4>
-              <p class="exam-date">Created 3 days ago</p>
-            </div>
-            <div class="table-cell">Dr. Emily Rodriguez</div>
-            <div class="table-cell">
-              <div class="participant-count">0 / 75</div>
-            </div>
-            <div class="table-cell">
-              <span class="status-badge draft">Draft</span>
-            </div>
-            <div class="table-cell">
-              <a href="/admin/exams/3/edit" class="table-btn edit-btn">Edit</a>
-              <a href="/admin/exams/3/publish" class="table-btn publish-btn">Publish</a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="system-alerts">
-        <h2 class="section-title">System Alerts</h2>
-        <div class="alerts-list">
-          <div class="alert-item info">
-            <div class="alert-icon">ℹ️</div>
-            <div class="alert-content">
-              <h4 class="alert-title">System Maintenance</h4>
-              <p class="alert-message">Scheduled maintenance on Sunday, 2:00 AM - 4:00 AM EST</p>
-              <span class="alert-time">Posted 6 hours ago</span>
-            </div>
-          </div>
-          <div class="alert-item warning">
-            <div class="alert-icon">⚠️</div>
-            <div class="alert-content">
-              <h4 class="alert-title">High Server Load</h4>
-              <p class="alert-message">CPU usage above 85% for the past 30 minutes</p>
-              <span class="alert-time">Posted 2 hours ago</span>
-            </div>
-          </div>
-          <div class="alert-item success">
-            <div class="alert-icon">✅</div>
-            <div class="alert-content">
-              <h4 class="alert-title">Backup Completed</h4>
-              <p class="alert-message">Daily database backup completed successfully</p>
-              <span class="alert-time">Posted 1 hour ago</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="user-activity">
-        <h2 class="section-title">Recent User Activity</h2>
-        <div class="activity-list">
-          <div class="activity-item">
-            <div class="activity-avatar">👨‍🎓</div>
-            <div class="activity-content">
-              <p class="activity-text"><strong>John Smith</strong> completed React Development Assessment</p>
-              <span class="activity-time">5 minutes ago</span>
-            </div>
-            <div class="activity-score">Score: 92%</div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-avatar">👩‍🎓</div>
-            <div class="activity-content">
-              <p class="activity-text"><strong>Emma Johnson</strong> started JavaScript Fundamentals exam</p>
-              <span class="activity-time">12 minutes ago</span>
-            </div>
-            <div class="activity-status">In Progress</div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-avatar">👨‍🏫</div>
-            <div class="activity-content">
-              <p class="activity-text"><strong>Dr. Wilson</strong> created new Algorithm Design exam</p>
-              <span class="activity-time">1 hour ago</span>
-            </div>
-            <div class="activity-status">Created</div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-avatar">👩‍🎓</div>
-            <div class="activity-content">
-              <p class="activity-text"><strong>Lisa Parker</strong> submitted Python Basics assessment</p>
-              <span class="activity-time">2 hours ago</span>
-            </div>
-            <div class="activity-score">Score: 88%</div>
-          </div>
-        </div>
-      </section>
     </main>
   </div>
 
@@ -290,23 +161,7 @@
   <script src="/javascripts/adminDashboard.js"></script>
 </body>
 </html>
-                <p class="activity-text"><strong>Dr. Wilson</strong> created new Algorithm Design exam</p>
-                <span class="activity-time">1 hour ago</span>
-              </div>
-              <div class="activity-status">Created</div>
-            </div>
-            <div class="activity-item">
-              <div class="activity-avatar">👩‍🎓</div>
-              <div class="activity-content">
-                <p class="activity-text"><strong>Lisa Parker</strong> submitted Python Basics assessment</p>
-                <span class="activity-time">2 hours ago</span>
-              </div>
-              <div class="activity-score">Score: 88%</div>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
+    
   </div>
 </body>
 </html>
