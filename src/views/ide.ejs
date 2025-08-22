@@ -382,17 +382,80 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
       showNotification('Code saved successfully!');
     }
 
-    function runCode() {
+    async function runCode() {
       const consoleOutput = document.querySelector('.console-output');
+      const codeEditor = document.querySelector('.code-editor');
+      const languageSelect = document.querySelector('.language-select');
+      
+      const sourceCode = codeEditor.value;
+      const selectedLanguage = languageSelect.value;
+      
+      // Language ID mapping for Judge0 API
+      const languageMap = {
+        'javascript': 63,
+        'python': 71,
+        'java': 62,
+        'cpp': 54,
+        'csharp': 51
+      };
+      
+      if (!sourceCode.trim()) {
+        consoleOutput.innerHTML = '<div class="console-line error">Error: No code to execute</div><div class="console-cursor">&gt;</div>';
+        switchTab('console');
+        return;
+      }
+      
       consoleOutput.innerHTML = '<div class="console-line">Running code...</div>';
-      
-      setTimeout(() => {
-        consoleOutput.innerHTML += '<div class="console-line">Code executed successfully!</div>';
-        consoleOutput.innerHTML += '<div class="console-cursor">></div>';
-      }, 1000);
-      
-      // Switch to console tab to show output
       switchTab('console');
+      
+      try {
+        const response = await fetch('/api/v1/execute', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            source_code: sourceCode,
+            language_id: languageMap[selectedLanguage] || 63,
+            stdin: ''
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          let output = '';
+          
+          if (result.data.stdout) {
+            output += `<div class="console-line success">Output:</div>`;
+            output += `<div class="console-line">${result.data.stdout}</div>`;
+          }
+          
+          if (result.data.stderr) {
+            output += `<div class="console-line error">Error:</div>`;
+            output += `<div class="console-line error">${result.data.stderr}</div>`;
+          }
+          
+          if (result.data.compile_output) {
+            output += `<div class="console-line warning">Compilation Output:</div>`;
+            output += `<div class="console-line warning">${result.data.compile_output}</div>`;
+          }
+          
+          if (!result.data.stdout && !result.data.stderr && !result.data.compile_output) {
+            output += `<div class="console-line">Code executed successfully (no output)</div>`;
+          }
+          
+          output += `<div class="console-line">Execution time: ${result.data.time || '0'}s</div>`;
+          output += `<div class="console-line">Memory used: ${result.data.memory || '0'}KB</div>`;
+          
+          consoleOutput.innerHTML = output + '<div class="console-cursor">&gt;</div>';
+        } else {
+          consoleOutput.innerHTML = `<div class="console-line error">Error: ${result.error}</div><div class="console-cursor">&gt;</div>`;
+        }
+      } catch (error) {
+        console.error('Error running code:', error);
+        consoleOutput.innerHTML = `<div class="console-line error">Error: Failed to execute code. Please try again.</div><div class="console-cursor">&gt;</div>`;
+      }
     }
 
     function submitCode() {
@@ -454,26 +517,100 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]`;
       updateLineNumbers();
     }
 
-    function runTests() {
+    async function runTests() {
       const testCases = document.querySelectorAll('.test-case');
-      testCases.forEach((testCase, index) => {
+      const codeEditor = document.querySelector('.code-editor');
+      const languageSelect = document.querySelector('.language-select');
+      
+      const sourceCode = codeEditor.value;
+      const selectedLanguage = languageSelect.value;
+      
+      // Language ID mapping for Judge0 API
+      const languageMap = {
+        'javascript': 63,
+        'python': 71,
+        'java': 62,
+        'cpp': 54,
+        'csharp': 51
+      };
+      
+      if (!sourceCode.trim()) {
+        testCases.forEach(testCase => {
+          const status = testCase.querySelector('.test-status');
+          status.textContent = 'Failed';
+          status.className = 'test-status failed';
+        });
+        switchTab('tests');
+        return;
+      }
+      
+      switchTab('tests');
+      
+      // Test cases data
+      const testData = [
+        { input: 'nums = [2,7,11,15], target = 9', expected: '[0,1]', stdin: '' },
+        { input: 'nums = [3,2,4], target = 6', expected: '[1,2]', stdin: '' }
+      ];
+      
+      for (let i = 0; i < testCases.length; i++) {
+        const testCase = testCases[i];
         const status = testCase.querySelector('.test-status');
+        const outputElement = testCase.querySelector('.test-details p:last-child');
+        
         status.textContent = 'Running...';
         status.className = 'test-status running';
         
-        setTimeout(() => {
-          status.textContent = Math.random() > 0.5 ? 'Passed' : 'Failed';
-          status.className = 'test-status ' + (status.textContent === 'Passed' ? 'passed' : 'failed');
-        }, 1000 + index * 500);
-      });
-      
-      // Switch to tests tab to show results
-      switchTab('tests');
+        try {
+          const response = await fetch('/api/v1/execute', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              source_code: sourceCode,
+              language_id: languageMap[selectedLanguage] || 63,
+              stdin: testData[i] ? testData[i].stdin : ''
+            })
+          });
+          
+          const result = await response.json();
+          
+          if (result.success && result.data.stdout) {
+            const output = result.data.stdout.trim();
+            outputElement.innerHTML = `<strong>Output:</strong> ${output}`;
+            
+            // Simple output comparison (this can be enhanced)
+            const expectedOutput = testData[i] ? testData[i].expected : '';
+            const passed = output.includes(expectedOutput.replace(/[\[\]]/g, ''));
+            
+            status.textContent = passed ? 'Passed' : 'Failed';
+            status.className = 'test-status ' + (passed ? 'passed' : 'failed');
+          } else if (result.data && result.data.stderr) {
+            outputElement.innerHTML = `<strong>Error:</strong> ${result.data.stderr}`;
+            status.textContent = 'Failed';
+            status.className = 'test-status failed';
+          } else {
+            outputElement.innerHTML = `<strong>Output:</strong> No output or error`;
+            status.textContent = 'Failed';
+            status.className = 'test-status failed';
+          }
+        } catch (error) {
+          console.error('Error running test:', error);
+          outputElement.innerHTML = `<strong>Error:</strong> Failed to run test`;
+          status.textContent = 'Failed';
+          status.className = 'test-status failed';
+        }
+        
+        // Add a small delay between test executions
+        if (i < testCases.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
     }
 
     function clearConsole() {
       const consoleOutput = document.querySelector('.console-output');
-      consoleOutput.innerHTML = '<div class="console-line">Console cleared</div><div class="console-cursor">></div>';
+      consoleOutput.innerHTML = '<div class="console-line">Console cleared</div><div class="console-cursor">&gt;</div>';
     }
 
     function showNotification(message) {
@@ -513,6 +650,60 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]`;
     @keyframes slideIn {
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
+    }
+    
+    /* Console output styling */
+    .console-line.success {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .console-line.error {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    
+    .console-line.warning {
+      color: #ffc107;
+      font-weight: bold;
+    }
+    
+    .console-output {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    .console-line {
+      margin: 2px 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    
+    /* Test status styling */
+    .test-status.running {
+      color: #007bff;
+      animation: pulse 1.5s infinite;
+    }
+    
+    .test-status.passed {
+      color: #28a745;
+      font-weight: bold;
+    }
+    
+    .test-status.failed {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    
+    .test-status.pending {
+      color: #6c757d;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
     }
   </style>
 </body>

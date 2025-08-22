@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard - CodeSecure</title>
+    <link rel="stylesheet" href="/stylesheets/adminDashboard.css">
+    <style>
+        .owner-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .owner-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .owner-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .admin-management-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .admin-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .form-input {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .admin-list {
+            margin-top: 30px;
+        }
+        
+        .admin-item {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+        
+        .admin-info {
+            flex: 1;
+        }
+        
+        .admin-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .admin-email {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="owner-header">
+            <div class="owner-title">👑 Owner Dashboard</div>
+            <div class="owner-subtitle">Complete control and management of the CodeSecure platform</div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">-</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="adminCount">-</div>
+                <div class="stat-label">Admins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="userCount">-</div>
+                <div class="stat-label">Regular Users</div>
+            </div>
+        </div>
+
+        <!-- Admin Management Section -->
+        <div class="admin-management-section">
+            <h2 class="section-title">👨‍💼 Admin Management</h2>
+            
+            <form id="createAdminForm" class="admin-form">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="adminUsername" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="adminFullname" required>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" id="adminEmail" required>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="adminPassword" required>
+                </div>
+                <div class="form-group full-width">
+                    <button type="submit" class="btn btn-primary">Create Admin Account</button>
+                </div>
+            </form>
+            
+            <div id="message" class="message" style="display: none;"></div>
+            
+            <div class="admin-list">
+                <h3>Current Admins</h3>
+                <div id="adminsList">
+                    <p>Loading admins...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load dashboard stats
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('/api/v1/owner/dashboard-stats');
+                const result = await response.json();
+                
+                if (result.success) {
+                    document.getElementById('totalUsers').textContent = result.data.totalUsers;
+                    document.getElementById('adminCount').textContent = result.data.adminCount;
+                    document.getElementById('userCount').textContent = result.data.userCount;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load admins list
+        async function loadAdmins() {
+            try {
+                const response = await fetch('/api/v1/owner/admins');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const adminsList = document.getElementById('adminsList');
+                    
+                    if (result.data.length === 0) {
+                        adminsList.innerHTML = '<p>No admins found.</p>';
+                        return;
+                    }
+                    
+                    adminsList.innerHTML = result.data.map(admin => `
+                        <div class="admin-item">
+                            <div class="admin-info">
+                                <div class="admin-name">${admin.fullname} (@${admin.username})</div>
+                                <div class="admin-email">${admin.email}</div>
+                            </div>
+                            <button class="btn btn-danger" onclick="deleteAdmin('${admin._id}')">Delete</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading admins:', error);
+                document.getElementById('adminsList').innerHTML = '<p>Error loading admins.</p>';
+            }
+        }
+
+        // Create admin
+        document.getElementById('createAdminForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value;
+            const fullname = document.getElementById('adminFullname').value;
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                const response = await fetch('/api/v1/owner/create-admin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, fullname, email, password })
+                });
+                
+                const result = await response.json();
+                
+                messageDiv.style.display = 'block';
+                if (response.ok) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = 'Admin account created successfully!';
+                    document.getElementById('createAdminForm').reset();
+                    loadAdmins(); // Reload admins list
+                    loadDashboardStats(); // Reload stats
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = result.message || 'Failed to create admin account';
+                }
+            } catch (error) {
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Network error. Please try again.';
+            }
+        });
+
+        // Delete admin
+        async function deleteAdmin(adminId) {
+            if (!confirm('Are you sure you want to delete this admin account?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/v1/owner/delete-admin/${adminId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                const messageDiv = document.getElementById('message');
+                
+                messageDiv.style.display = 'block';
+                if (response.ok) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = 'Admin account deleted successfully!';
+                    loadAdmins(); // Reload admins list
+                    loadDashboardStats(); // Reload stats
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.textContent = result.message || 'Failed to delete admin account';
+                }
+            } catch (error) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'Network error. Please try again.';
+            }
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+            loadAdmins();
+        });
+    </script>
+</body>
+</html>
