@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const email = document.getElementById('registerEmail').value;
       const password = document.getElementById('registerPassword').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
+      const role = document.getElementById('userRole').value;
       const messageDiv = document.getElementById('registerMessage');
       
       if (password !== confirmPassword) {
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
             email: email,
             password: password,
             fullname: `${firstName} ${lastName}`,
-            // role removed
+            role: role
           })
         });
         
