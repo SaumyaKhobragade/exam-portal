@@ -11,6 +11,7 @@ import runCode from './src/utils/judge0.js';
 import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
 import { handleLogout } from './src/middlewares/logout.middleware.js';
 import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
+import HomepageStats from './src/models/homepageStats.model.js';
 
 
 app.set('view engine', 'ejs');
@@ -20,8 +21,37 @@ dotenv.config({
     path: '.env'
 });
 
-app.get('/', (req,res)=>{
-    res.render('landingpage');
+app.get('/', async (req, res) => {
+    try {
+        // Get real-time homepage stats from database
+        const stats = await HomepageStats.getRealTimeStats();
+        
+        res.render('landingpage', { 
+            stats: {
+                studentsAssessed: stats.studentsAssessed,
+                institutions: stats.institutions,
+                uptime: stats.uptime,
+                totalExams: stats.totalExams,
+                activeUsers: stats.activeUsers,
+                heroTitle: stats.heroTitle,
+                heroDescription: stats.heroDescription
+            }
+        });
+    } catch (error) {
+        console.error('Error loading homepage stats:', error);
+        // Fallback to default values if database fails
+        res.render('landingpage', {
+            stats: {
+                studentsAssessed: 0,
+                institutions: 0,
+                uptime: 99.9,
+                totalExams: 0,
+                activeUsers: 0,
+                heroTitle: "Secure & Fair Online Coding Examinations",
+                heroDescription: "The most advanced platform for conducting secure coding assessments with real-time monitoring, AI-powered proctoring, and comprehensive analytics."
+            }
+        });
+    }
 })
 app.get('/about', (req,res)=>{
     res.render('about');

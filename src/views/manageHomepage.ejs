@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Homepage Stats - Online Exam Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .logout-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #ff3742;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card-header h1 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input:read-only {
+            background-color: #f8f9fa !important;
+            cursor: not-allowed !important;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .update-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s;
+        }
+
+        .update-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .update-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .current-stats {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .current-stats h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-graduation-cap"></i> Exam Portal
+        </div>
+        <div class="nav-links">
+            <a href="/admin-dashboard"><i class="fas fa-dashboard"></i> Dashboard</a>
+            <a href="/admin/exams"><i class="fas fa-clipboard-list"></i> Exams</a>
+            <a href="/manage-homepage"><i class="fas fa-home"></i> Homepage</a>
+            <span>Welcome, <%= user.fullname || user.username %></span>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1><i class="fas fa-edit"></i> Manage Homepage Statistics</h1>
+                <p>Update the dynamic content displayed on the landing page</p>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div class="current-stats">
+                <h3><i class="fas fa-chart-bar"></i> Current Statistics (Auto-calculated from Database)</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value"><%= stats.studentsAssessed >= 1000 ? (stats.studentsAssessed/1000).toFixed(0) + 'K+' : stats.studentsAssessed %></div>
+                        <div class="stat-label">Students Assessed (Total Users)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value"><%= stats.institutions %>+</div>
+                        <div class="stat-label">Institutions (Total Admins)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value"><%= stats.uptime %>%</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                </div>
+                <p style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i> Students and Institutions are automatically calculated from your database. You can only edit Uptime and Hero content below.
+                </p>
+            </div>
+
+            <form id="homepageStatsForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentsAssessed">
+                            <i class="fas fa-users"></i> Students Assessed (Auto-calculated)
+                        </label>
+                        <input type="number" id="studentsAssessed" name="studentsAssessed" 
+                               value="<%= stats.studentsAssessed %>" readonly 
+                               style="background-color: #f8f9fa; cursor: not-allowed;">
+                        <small style="color: #666;">This value is automatically calculated from total users in database</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="institutions">
+                            <i class="fas fa-university"></i> Institutions (Auto-calculated)
+                        </label>
+                        <input type="number" id="institutions" name="institutions" 
+                               value="<%= stats.institutions %>" readonly 
+                               style="background-color: #f8f9fa; cursor: not-allowed;">
+                        <small style="color: #666;">This value is automatically calculated from total admins in database</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="uptime">
+                        <i class="fas fa-clock"></i> Uptime Percentage
+                    </label>
+                    <input type="number" id="uptime" name="uptime" 
+                           value="<%= stats.uptime %>" min="0" max="100" step="0.1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="heroTitle">
+                        <i class="fas fa-heading"></i> Hero Section Title
+                    </label>
+                    <input type="text" id="heroTitle" name="heroTitle" 
+                           value="<%= stats.heroTitle %>" maxlength="100" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="heroDescription">
+                        <i class="fas fa-align-left"></i> Hero Section Description
+                    </label>
+                    <textarea id="heroDescription" name="heroDescription" 
+                              maxlength="500" required><%= stats.heroDescription %></textarea>
+                </div>
+
+                <button type="submit" class="update-btn" id="updateBtn">
+                    <i class="fas fa-save"></i> Update Homepage Statistics
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('Logout failed. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    alert('An error occurred during logout.');
+                });
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        document.getElementById('homepageStatsForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const updateBtn = document.getElementById('updateBtn');
+            updateBtn.disabled = true;
+            updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+            
+            try {
+                const formData = new FormData(this);
+                const data = Object.fromEntries(formData.entries());
+                
+                // Remove readonly fields from submission (they're auto-calculated)
+                delete data.studentsAssessed;
+                delete data.institutions;
+                
+                const response = await fetch('/update-homepage-stats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('Homepage statistics updated successfully!', 'success');
+                    // Refresh the page to show updated current stats
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    showMessage(result.message || 'Failed to update homepage statistics', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating homepage stats:', error);
+                showMessage('An error occurred while updating statistics', 'error');
+            } finally {
+                updateBtn.disabled = false;
+                updateBtn.innerHTML = '<i class="fas fa-save"></i> Update Homepage Statistics';
+            }
+        });
+
+        // Form validation
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.value < 0) {
+                    this.value = 0;
+                }
+            });
+        });
+
+        // Character count for description
+        const descriptionTextarea = document.getElementById('heroDescription');
+        descriptionTextarea.addEventListener('input', function() {
+            const remaining = 500 - this.value.length;
+            if (remaining < 0) {
+                this.value = this.value.substring(0, 500);
+            }
+        });
+    </script>
+</body>
+</html>
