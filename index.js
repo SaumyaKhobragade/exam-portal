@@ -12,6 +12,7 @@ import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/au
 import { handleLogout } from './src/middlewares/logout.middleware.js';
 import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
 import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
+import HomepageStats from './src/models/homepageStats.model.js';
 
 
 app.set('view engine', 'ejs');
@@ -101,12 +102,74 @@ app.get('/owner-dashboard', noCacheMiddleware, verifyOwnerSession, (req,res)=>{
     res.render('ownerDashboard', { user: req.user });
 });
 
-app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, (req,res)=>{
-    res.render('userDashboard',{user: req.user});
+app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
+    try {
+        // Import the Exam model
+        const Exam = (await import('./src/models/exam.model.js')).default;
+        const Admin = (await import('./src/models/admin.model.js')).default;
+        
+        // Get user's domain
+        const userDomain = req.user.domain;
+        
+        // Find admins from the same organization (domain)
+        const organizationAdmins = await Admin.find({ domain: userDomain }).select('_id');
+        const adminIds = organizationAdmins.map(admin => admin._id);
+        
+        // Find exams created by admins from the same organization
+        const organizationExams = await Exam.find({
+            adminId: { $in: adminIds },
+            status: { $in: ['active', 'draft'] } // Only show active or draft exams
+        })
+        .populate('adminId', 'username fullname')
+        .sort({ startDateTime: 1 }) // Sort by start time
+        .select('title description startDateTime duration status createdAt totalMarks questions');
+        
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: organizationExams 
+        });
+    } catch (error) {
+        console.error('Error fetching organization exams:', error);
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: [] 
+        });
+    }
 });
 
-app.get('/dashboard', noCacheMiddleware, verifyJWTSession, (req,res)=>{
-    res.render('userDashboard', { user: req.user });
+app.get('/dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
+    try {
+        // Import the Exam model
+        const Exam = (await import('./src/models/exam.model.js')).default;
+        const Admin = (await import('./src/models/admin.model.js')).default;
+        
+        // Get user's domain
+        const userDomain = req.user.domain;
+        
+        // Find admins from the same organization (domain)
+        const organizationAdmins = await Admin.find({ domain: userDomain }).select('_id');
+        const adminIds = organizationAdmins.map(admin => admin._id);
+        
+        // Find exams created by admins from the same organization
+        const organizationExams = await Exam.find({
+            adminId: { $in: adminIds },
+            status: { $in: ['active', 'draft'] } // Only show active or draft exams
+        })
+        .populate('adminId', 'username fullname')
+        .sort({ startDateTime: 1 }) // Sort by start time
+        .select('title description startDateTime duration status createdAt totalMarks questions');
+        
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: organizationExams 
+        });
+    } catch (error) {
+        console.error('Error fetching organization exams:', error);
+        res.render('userDashboard', { 
+            user: req.user,
+            exams: [] 
+        });
+    }
 });
 
 // Judge0 code execution route
