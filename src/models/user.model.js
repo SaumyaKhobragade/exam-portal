@@ -43,10 +43,12 @@ const userSchema = new mongoose.Schema({
     refreshToken:{
         type: String,
     },
-    role:{
+    domain:{
         type: String,
-        enum: ['student', 'instructor'],
-        default: 'student'
+        required: true,
+        lowercase: true,
+        trim: true,
+        index: true
     }
 
 

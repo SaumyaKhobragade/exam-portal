@@ -2,6 +2,7 @@ import express from 'express';
 import Exam from '../models/exam.model.js';
 import HomepageStats from '../models/homepageStats.model.js';
 import { verifyAdminOrOwnerSession, noCacheMiddleware } from '../middlewares/sessionValidation.middleware.js';
+import { validateExamQuestions, validateTestCases, LANGUAGE_IDS } from '../services/judge0Service.js';
 
 const router = express.Router();
 
@@ -17,6 +18,17 @@ router.post('/test-form', (req, res) => {
         message: 'Form data received successfully',
         data: req.body 
     });
+});
+
+// Logout success page (no auth required)
+router.get('/logout-success', (req, res) => {
+    // Add no-cache headers to prevent caching
+    res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    });
+    res.render('logoutSuccess');
 });
 
 // Admin dashboard route - requires authentication and session validation
@@ -253,6 +265,7 @@ router.post('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
             instructions: req.body.instructions,
             startDateTime: new Date(req.body.startDateTime),
             duration: parseInt(req.body.duration),
+            programmingLanguage: req.body.programmingLanguage || 'python',
             ownerId: ownerId,
             adminId: adminId,
             createdBy: {
@@ -290,6 +303,58 @@ router.post('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
             examData.questions.push(question);
         }
 
+        // Optional: Validate test cases using Judge0 API
+        const shouldValidate = req.body.validateTestCases === 'true'; // Default to false unless explicitly enabled
+        
+        if (shouldValidate) {
+            console.log('Starting test case validation with Judge0...');
+            let validationResults = null;
+            
+            try {
+                // Get programming language from form
+                const programmingLanguage = examData.programmingLanguage;
+                
+                // Use structure validation only (safer approach)
+                const skipActualExecution = true;
+                
+                // Validate questions and test cases
+                validationResults = await validateExamQuestions(
+                    examData.questions, 
+                    programmingLanguage, 
+                    skipActualExecution
+                );
+                
+                console.log('Test case validation completed:', {
+                    questionsValidated: validationResults.questionsValidated,
+                    questionsWithErrors: validationResults.questionsWithErrors,
+                    overallValid: validationResults.valid
+                });
+
+                // Store validation results with exam data
+                examData.validationResults = validationResults;
+                examData.lastValidated = new Date();
+                examData.validationStatus = validationResults.valid ? 'passed' : 'failed';
+                
+                // Since we're doing structure validation only, most should pass
+                if (!validationResults.valid) {
+                    console.warn('Structure validation failed for some questions:', 
+                        validationResults.questionResults.filter(q => !q.valid));
+                    examData.hasValidationWarnings = true;
+                }
+
+            } catch (validationError) {
+                console.error('Validation error (continuing with exam creation):', validationError.message);
+                
+                // Store validation error info but don't fail exam creation
+                examData.validationError = validationError.message;
+                examData.validationStatus = 'error';
+                examData.lastValidated = new Date();
+            }
+        } else {
+            console.log('Test case validation skipped by user choice');
+            examData.validationStatus = 'skipped';
+        }
+
         // Save exam to database
         const newExam = new Exam(examData);
         const savedExam = await newExam.save();
@@ -297,8 +362,16 @@ router.post('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
         console.log(`Exam created successfully by ${userType} (${req.user.username}):`, savedExam._id);
         console.log(`Owner ID: ${ownerId}, Admin ID: ${adminId}`);
         
+        // Include validation status in success message
+        let successMessage = 'exam-created';
+        if (savedExam.validationStatus === 'failed') {
+            successMessage = 'exam-created-with-warnings';
+        } else if (savedExam.validationStatus === 'error') {
+            successMessage = 'exam-created-validation-error';
+        }
+        
         // Redirect back to dashboard with success message
-        res.redirect('/admin-dashboard?success=exam-created');
+        res.redirect(`/admin-dashboard?success=${successMessage}`);
         
     } catch (error) {
         console.error('Error creating exam:', error);
@@ -316,6 +389,54 @@ router.post('/admin/exams', verifyAdminOrOwnerSession, async (req, res) => {
         res.status(500).json({ 
             success: false, 
             message: 'Error creating exam. Please try again.' 
+        });
+    }
+});
+
+// Get exam validation results
+router.get('/admin/exams/:examId/validation', verifyAdminOrOwnerSession, async (req, res) => {
+    try {
+        const examId = req.params.examId;
+        const userId = req.user._id;
+        const userType = req.userModel;
+        
+        // Build query based on user type
+        let examQuery = { _id: examId };
+        if (userType === 'owner') {
+            examQuery.ownerId = userId;
+        } else if (userType === 'admin') {
+            examQuery.$or = [
+                { adminId: userId },
+                { ownerId: userId }
+            ];
+        }
+        
+        const exam = await Exam.findOne(examQuery);
+        
+        if (!exam) {
+            return res.status(404).json({
+                success: false,
+                message: 'Exam not found or you do not have permission to access it'
+            });
+        }
+        
+        res.json({
+            success: true,
+            examId: exam._id,
+            title: exam.title,
+            programmingLanguage: exam.programmingLanguage,
+            validationStatus: exam.validationStatus,
+            validationResults: exam.validationResults,
+            lastValidated: exam.lastValidated,
+            validationError: exam.validationError,
+            hasValidationWarnings: exam.hasValidationWarnings
+        });
+        
+    } catch (error) {
+        console.error('Error fetching validation results:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch validation results'
         });
     }
 });
