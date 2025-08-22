@@ -273,21 +273,61 @@
                 </div>
             </div>
 
-            <div class="exam-requests-section">
-                <div class="section-header">
-                    <h3>Recent Exam Requests</h3>
-                    <div class="filter-buttons">
-                        <button class="btn" onclick="loadExamRequests('all')" id="filterAll">All</button>
-                        <button class="btn" onclick="loadExamRequests('pending')" id="filterPending">Pending</button>
-                        <button class="btn" onclick="loadExamRequests('approved')" id="filterApproved">Approved</button>
-                        <button class="btn" onclick="loadExamRequests('rejected')" id="filterRejected">Rejected</button>
+            <div class="exam-requests-section upgraded-section">
+                <div class="section-header upgraded-header">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3039/3039434.png" alt="Exam Requests" style="width:32px;opacity:0.85;">
+                        <h3 style="margin:0;font-size:1.5rem;font-weight:700;color:#4a4a4a;">Recent Exam Requests</h3>
+                    </div>
+                    <div class="filter-buttons upgraded-filters">
+                        <button class="btn filter-btn" onclick="loadExamRequests('all')" id="filterAll">All</button>
+                        <button class="btn filter-btn" onclick="loadExamRequests('pending')" id="filterPending">Pending</button>
+                        <button class="btn filter-btn" onclick="loadExamRequests('approved')" id="filterApproved">Approved</button>
+                        <button class="btn filter-btn" onclick="loadExamRequests('rejected')" id="filterRejected">Rejected</button>
                     </div>
                 </div>
-                
-                <div id="examRequestsList">
-                    <p>Loading exam requests...</p>
+                <div id="examRequestsList" class="upgraded-list">
+                    <div id="noExamRequests" style="display:none;text-align:center;padding:40px 0;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" alt="No Requests" style="width:80px;opacity:0.5;margin-bottom:16px;">
+                        <div style="font-size:20px;font-weight:600;color:#888;">No exam requests found</div>
+                        <div style="color:#aaa;font-size:15px;margin-top:8px;">All exam hosting requests will appear here when submitted.</div>
+                    </div>
                 </div>
             </div>
+    <style>
+    .upgraded-section {
+        background: #f7f9fb;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(102,126,234,0.07);
+        padding: 32px 24px 24px 24px;
+        margin-top: 32px;
+    }
+    .upgraded-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        border-bottom: 1px solid #e1e5e9;
+        padding-bottom: 12px;
+    }
+    .upgraded-filters .filter-btn {
+        background: #fff;
+        color: #667eea;
+        border: 1px solid #dbeafe;
+        font-weight: 600;
+        border-radius: 6px;
+        margin-right: 6px;
+        transition: background 0.2s, color 0.2s;
+    }
+    .upgraded-filters .filter-btn:hover, .upgraded-filters .filter-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: 1px solid #667eea;
+    }
+    .upgraded-list {
+        margin-top: 18px;
+    }
+    </style>
         </div>
     </div>
 

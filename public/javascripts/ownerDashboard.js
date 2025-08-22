@@ -257,25 +257,17 @@ async function loadAdminsForAssignment() {
 
 // Submit review
 async function submitReview(status) {
-    const assignedAdminId = document.getElementById('assignedAdmin').value;
-    if (status === 'approved' && !assignedAdminId) {
-        alert('Please assign an admin for approved requests');
-        return;
-    }
     try {
         const response = await fetch(`/api/v1/exam-requests/${currentRequestId}/review`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                status,
-                assignedAdminId: status === 'approved' ? assignedAdminId : undefined
-            })
+            body: JSON.stringify({ status })
         });
         const result = await response.json();
         if (response.ok) {
-            alert(`Request ${status} successfully!`);
+            alert(result.message || `Request ${status} and removed!`);
             closeReviewModal();
             loadExamRequests();
             loadExamRequestStats();
