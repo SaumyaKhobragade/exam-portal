@@ -9,7 +9,8 @@ body, html {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #4a90e2, #357ABD);
   color: #333;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .main-container {
@@ -23,7 +24,7 @@ body, html {
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 1rem 2rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 100;
@@ -98,24 +99,18 @@ body, html {
   flex: 1;
   padding: 1rem;
   background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
+  overflow: auto;
 }
 
 .ide-layout {
-  height: 100%;
-  display: grid;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
-  grid-template-areas: 
-    "question-nav question-nav"
-    "ide-content ide-content"
-    "tabbed-section tabbed-section";
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr 200px;
 }
 
 /* Question Navigation with Progress and Boxes */
 .question-nav {
-  grid-area: question-nav;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   padding: 1rem 2rem;
@@ -123,11 +118,11 @@ body, html {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  gap: 2rem;
+  min-height: 80px;
 }
 
-.question-progress {
+.progress-section {
   display: flex;
   align-items: center;
   gap: 2rem;
@@ -204,76 +199,18 @@ body, html {
   font-family: 'Courier New', monospace;
 }
 
-/* Question Boxes */
-.question-boxes {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.question-box {
-  width: 50px;
-  height: 50px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.question-box:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.question-box.current {
-  background: #e3f2fd;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-}
-
-.question-box.completed {
-  background: #e8f5e8;
-  border-color: #28a745;
-}
-
-.question-number {
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: #333;
-  margin-bottom: 2px;
-}
-
-.question-icon {
-  font-size: 0.8rem;
-  font-weight: bold;
-}
-
-.question-box .question-icon {
-  color: #dc3545; /* Red X for not completed */
-}
-
-.question-box.current .question-icon {
-  color: #4a90e2; /* Blue for current */
-}
-
-.question-box.completed .question-icon {
-  color: #28a745; /* Green checkmark for completed */
-}
+/* Remove question boxes styles as they are no longer needed */
 
 /* IDE Content Area */
 .ide-content {
-  grid-area: ide-content;
   display: flex;
   gap: 0;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  min-height: 500px;
+  flex: 1;
 }
 
 .problem-section {
@@ -512,13 +449,16 @@ body, html {
 
 /* Tabbed Section */
 .tabbed-section {
-  grid-area: tabbed-section;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 300px;
+  max-height: 600px;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .tab-bar {
@@ -561,6 +501,7 @@ body, html {
   padding: 1.5rem;
   display: none;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .tab-content.active {
@@ -706,45 +647,40 @@ body, html {
 }
 
 @media (max-width: 1200px) {
-  .ide-layout {
-    grid-template-rows: auto 1fr 180px;
-  }
-
   .question-nav {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    padding: 1rem;
   }
 
-  .question-boxes {
-    order: -1;
+  .progress-section {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .user-actions {
+    order: 1;
+  }
+
+  .exam-timer {
+    order: 2;
   }
 }
 
 @media (max-width: 768px) {
   .header-section {
-    flex-direction: column;
-    gap: 1rem;
     padding: 1rem;
   }
 
-  .navigation-menu {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-  }
-
   .ide-layout {
-    grid-template-areas: 
-      "question-nav"
-      "ide-content"
-      "tabbed-section";
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 300px 150px;
+    min-height: calc(100vh - 100px);
   }
 
   .ide-content {
     flex-direction: column;
+    min-height: 400px;
   }
 
   .problem-section,
@@ -756,18 +692,25 @@ body, html {
     display: none;
   }
 
-  .question-progress {
+  .progress-section {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
 
-  .exam-timer {
-    justify-content: center;
-  }
-
   .question-nav {
     padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .user-actions {
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -784,6 +727,7 @@ body, html {
   .user-actions {
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .action-btn {
@@ -794,19 +738,56 @@ body, html {
   .question-buttons {
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .question-btn {
     width: 100%;
   }
 
-  .question-boxes {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
   .tab-btn {
     padding: 0.8rem 1rem;
     font-size: 0.9rem;
   }
+
+  .progress-bar {
+    width: 150px;
+  }
 }
+
+/* Collapsible functionality */
+.tabbed-section.collapsed {
+  min-height: 50px;
+  max-height: 50px;
+}
+
+.tabbed-section.collapsed .tab-content {
+  display: none !important;
+}
+
+.collapse-btn {
+  background: transparent;
+  border: none;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #666;
+  margin-left: auto;
+  transition: all 0.3s ease;
+}
+
+.collapse-btn:hover {
+  color: #333;
+  background: #e9ecef;
+}
+
+.collapse-icon {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.tabbed-section.collapsed .collapse-icon {
+  transform: rotate(-90deg);
+}
+
+/* Console Resizer */

@@ -10,27 +10,17 @@
   <div class="main-container">
     <header class="header-section">
       <div class="brand-logo">CodeSecure IDE</div>
-      <nav class="navigation-menu">
-        <a href="/dashboard" class="nav-link">Dashboard</a>
-        <a href="/exams" class="nav-link">Exams</a>
-        <a href="/results" class="nav-link">Results</a>
-      </nav>
-      <div class="user-actions">
-        <a href="#" class="action-btn" onclick="saveCode(); return false;">Save</a>
-        <a href="#" class="action-btn run-btn" onclick="runCode(); return false;">Run Code</a>
-        <a href="#" class="action-btn submit-btn" onclick="submitCode(); return false;">Submit</a>
-      </div>
     </header>
 
     <main class="content-area">
       <div class="ide-layout">
-        <!-- Question Navigation Bar with Progress -->
+        <!-- Question Navigation Bar -->
         <section class="question-nav">
-          <div class="question-progress">
+          <div class="progress-section">
             <div class="progress-info">
-              <span class="current-question">Question 1 of 5</span>
+              <span class="current-question">Question 2 of 5</span>
               <div class="progress-bar">
-                <div class="progress-fill" style="width: 20%"></div>
+                <div class="progress-fill" style="width: 40%"></div>
               </div>
             </div>
             <div class="question-buttons">
@@ -38,32 +28,14 @@
               <button class="question-btn" onclick="nextQuestion()">Next →</button>
             </div>
           </div>
+          <div class="user-actions">
+            <a href="#" class="action-btn" onclick="saveCode(); return false;">Save</a>
+            <a href="#" class="action-btn run-btn" onclick="runCode(); return false;">Run Code</a>
+            <a href="#" class="action-btn submit-btn" onclick="submitCode(); return false;">Submit</a>
+          </div>
           <div class="exam-timer">
             <span class="timer-label">Time Remaining:</span>
             <span class="timer">45:32</span>
-          </div>
-          <!-- Question Boxes -->
-          <div class="question-boxes">
-            <div class="question-box completed" onclick="goToQuestion(1)">
-              <span class="question-number">1</span>
-              <span class="question-icon">✓</span>
-            </div>
-            <div class="question-box current" onclick="goToQuestion(2)">
-              <span class="question-number">2</span>
-              <span class="question-icon">⏳</span>
-            </div>
-            <div class="question-box" onclick="goToQuestion(3)">
-              <span class="question-number">3</span>
-              <span class="question-icon">✕</span>
-            </div>
-            <div class="question-box" onclick="goToQuestion(4)">
-              <span class="question-number">4</span>
-              <span class="question-icon">✕</span>
-            </div>
-            <div class="question-box" onclick="goToQuestion(5)">
-              <span class="question-number">5</span>
-              <span class="question-icon">✕</span>
-            </div>
           </div>
         </section>
 
@@ -185,6 +157,9 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
               <span class="tab-icon">🧪</span>
               Test Results
             </button>
+            <button class="collapse-btn" onclick="toggleCollapse()">
+              <span class="collapse-icon">▼</span>
+            </button>
           </div>
 
           <!-- Console Tab Content -->
@@ -207,6 +182,17 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
               <a href="#" class="run-tests-btn" onclick="runTests(); return false;">Run Tests</a>
             </div>
             <div class="test-cases">
+              <div class="test-case">
+                <div class="test-header">
+                  <span class="test-name">Test Case 1</span>
+                  <span class="test-status pending">Pending</span>
+                </div>
+                <div class="test-details">
+                  <p><strong>Input:</strong> nums = [2,7,11,15], target = 9</p>
+                  <p><strong>Expected:</strong> [0,1]</p>
+                  <p><strong>Output:</strong> -</p>
+                </div>
+              </div>
               <div class="test-case">
                 <div class="test-header">
                   <span class="test-name">Test Case 1</span>
@@ -334,42 +320,59 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
     // Question navigation
     let currentQuestion = 2; // Starting at question 2 as shown in the design
     const totalQuestions = 5;
-    
+
     function nextQuestion() {
       if (currentQuestion < totalQuestions) {
         currentQuestion++;
         updateQuestionDisplay();
       }
     }
-    
+
     function previousQuestion() {
       if (currentQuestion > 1) {
         currentQuestion--;
         updateQuestionDisplay();
       }
     }
-    
+
     function goToQuestion(questionNum) {
       currentQuestion = questionNum;
       updateQuestionDisplay();
     }
-    
+
     function updateQuestionDisplay() {
-      document.querySelector('.current-question').textContent = `Question ${currentQuestion} of ${totalQuestions}`;
-      const progress = (currentQuestion / totalQuestions) * 100;
-      document.querySelector('.progress-fill').style.width = progress + '%';
-      
+      // Update current question text
+      const currentQuestionElement = document.querySelector('.current-question');
+      if (currentQuestionElement) {
+        currentQuestionElement.textContent = `Question ${currentQuestion} of ${totalQuestions}`;
+      }
+
+      // Update progress bar
+      const progressFill = document.querySelector('.progress-fill');
+      if (progressFill) {
+        const progress = (currentQuestion / totalQuestions) * 100;
+        progressFill.style.width = progress + '%';
+      }
+
       // Update button states
-      document.querySelector('.question-buttons .question-btn:first-child').disabled = currentQuestion === 1;
-      document.querySelector('.question-buttons .question-btn:last-child').disabled = currentQuestion === totalQuestions;
-      
-      // Update question boxes
-      document.querySelectorAll('.question-box').forEach((box, index) => {
-        box.classList.remove('current');
-        if (index === currentQuestion - 1) {
-          box.classList.add('current');
-        }
-      });
+      const buttons = document.querySelectorAll('.question-buttons .question-btn');
+      if (buttons.length >= 2) {
+        buttons[0].disabled = currentQuestion === 1;
+        buttons[1].disabled = currentQuestion === totalQuestions;
+      }
+    }
+
+    // Collapsible functionality
+    let isCollapsed = false;
+
+    function toggleCollapse() {
+      const tabbedSection = document.querySelector('.tabbed-section');
+      isCollapsed = !isCollapsed;
+      if (isCollapsed) {
+        tabbedSection.classList.add('collapsed');
+      } else {
+        tabbedSection.classList.remove('collapsed');
+      }
     }
 
     // IDE functionality functions
