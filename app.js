@@ -4,7 +4,10 @@ import cors from 'cors';
 import c from 'config';
 import adminRoutes from './src/routes/adminRoutes.js';
 
+
 const app = express();
+app.set('view engine', 'ejs');
+app.set('views', './src/views');
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN,

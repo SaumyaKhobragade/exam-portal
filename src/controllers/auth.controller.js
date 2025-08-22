@@ -46,8 +46,23 @@ const loginUser = asyncHandler(async (req, res) => {
         ModelClass = User;
     }
 
+
     if (!user) {
-        throw new ApiError(404, "User does not exist");
+        // If AJAX/fetch, return JSON error. If direct POST, render login page with error.
+        const acceptHeader = req.headers.accept || '';
+        if (acceptHeader.includes('application/json') || req.xhr) {
+            // API/AJAX request
+            return res.status(404).json({
+                success: false,
+                message: "User does not exist"
+            });
+        } else {
+            // Direct form POST (fallback)
+            return res.status(404).render('loginregister', {
+                errorMessage: 'User does not exist',
+                showLogin: true
+            });
+        }
     }
 
     const isPasswordValid = await user.isPasswordCorrect(password);

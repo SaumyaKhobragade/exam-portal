@@ -38,9 +38,15 @@
 
         <section class="auth-forms-section">
           <!-- Message Display Section -->
-          <div id="authMessage" class="auth-message" style="display: none;">
-            <div class="message-content"></div>
-          </div>
+          <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+            <div id="authMessage" class="auth-message error" style="display: block;">
+              <div class="message-content"><%= errorMessage %></div>
+            </div>
+          <% } else { %>
+            <div id="authMessage" class="auth-message" style="display: none;">
+              <div class="message-content"></div>
+            </div>
+          <% } %>
 
           <div class="form-container login-form active">
             <h2 class="form-title">Login to Your Account</h2>

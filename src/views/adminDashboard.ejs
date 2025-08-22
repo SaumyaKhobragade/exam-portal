@@ -4,22 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin Dashboard - Exam Portal</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/stylesheets/adminDashboard.css" />
-  <link rel="stylesheet" href="/stylesheets/adminDashboard-additional.css" />
 </head>
 <body>
   <div class="main-container">
     <header class="header-section">
-      <div class="brand-logo">Exam Portal - Admin</div>
-      <nav class="navigation-menu">
-        <a href="/admin-dashboard" class="nav-link">Dashboard</a>
-        <a href="/admin/exams/create" class="nav-link">Create Exam</a>
-        <a href="#" class="nav-link" onclick="showResults()">Results</a>
-        <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
-      </nav>
-      <div class="user-actions">
-        <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
-        <a href="/logout" class="action-btn logout-btn">Logout</a>
+      <div class="navbar-flex">
+        <div class="org-name extreme-left" id="organizationName">Loading...</div>
+        <nav class="navigation-menu navbar-center">
+          <a href="/admin-dashboard" class="nav-link">Dashboard</a>
+          <a href="/admin/exams/create" class="nav-link">Create Exam</a>
+          <a href="#" class="nav-link" onclick="showResults()">Results</a>
+        </nav>
+        <div class="user-actions extreme-right">
+          <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
+          <a href="/logout" class="action-btn logout-btn">Logout</a>
+        </div>
       </div>
     </header>
 
@@ -37,17 +38,9 @@
         </div>
       <% } %>
 
-      <!-- Organization Information -->
-      <div class="organization-info">
-        <div class="org-name" id="organizationName">Loading...</div>
-        <div class="org-subtitle">Admin Dashboard - Manage your organization's examinations</div>
-      </div>
 
-      <!-- Welcome Section -->
-      <section class="welcome-card">
-        <h1 class="welcome-title">Welcome to Admin Dashboard</h1>
-        <p class="welcome-description">Manage your organization's exams, view results, and monitor student performance</p>
-      </section>
+
+
 
       <!-- Exam Management Options -->
       <div class="exam-management">

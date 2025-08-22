@@ -13,8 +13,6 @@ import { handleLogout } from './src/middlewares/logout.middleware.js';
 import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
 
 
-app.set('view engine', 'ejs');
-app.set('views', './src/views');
 
 dotenv.config({
     path: '.env'

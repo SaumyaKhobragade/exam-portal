@@ -68,34 +68,38 @@ document.addEventListener('DOMContentLoaded', function() {
           },
           body: JSON.stringify({ email, password })
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok) {
           messageDiv.style.display = 'block';
           messageDiv.style.color = 'green';
           messageDiv.textContent = 'Login successful! Redirecting...';
-          
+
           // Redirect based on user type
           setTimeout(() => {
             window.location.href = result.data.redirectTo;
           }, 1000);
         } else {
-          messageDiv.style.display = 'block';
-          messageDiv.style.color = 'red';
-          messageDiv.textContent = result.message || 'Login failed';
+          // If user does not exist, redirect to register page after showing message
+          if (result.message && (result.message.toLowerCase().includes('user does not exist') || result.message.toLowerCase().includes('user not found'))) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'User does not exist. Redirecting to registration...';
+            setTimeout(() => {
+              // Switch to register form
+              document.querySelector('.toggle-btn[data-form="register"]').click();
+            }, 1500);
+          } else {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = result.message || 'Login failed';
+          }
         }
       } catch (error) {
         messageDiv.style.display = 'block';
         messageDiv.style.color = 'red';
-        // Try to detect user not found from error or result
-        if (result && result.message && (result.message.toLowerCase().includes('user not found') || result.message.toLowerCase().includes('user does not exist'))) {
-          messageDiv.textContent = 'User not found';
-        } else if (error && error.message && (error.message.toLowerCase().includes('user not found') || error.message.toLowerCase().includes('user does not exist'))) {
-          messageDiv.textContent = 'User not found';
-        } else {
-          messageDiv.textContent = 'Network error. Please try again.';
-        }
+        messageDiv.textContent = 'Network error. Please try again.';
       }
     });
   }
