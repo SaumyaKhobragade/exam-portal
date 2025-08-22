@@ -8,13 +8,13 @@ async function loadAdminInfo() {
     
     if (result.success) {
       const adminNameElement = document.getElementById('adminName');
-      const organizationNameElement = document.getElementById('organizationName');
+      const organizationNameHeaderElement = document.getElementById('organizationNameHeader');
       
       if (adminNameElement) {
         adminNameElement.textContent = result.data.fullname || result.data.username;
       }
-      if (organizationNameElement) {
-        organizationNameElement.textContent = result.data.organization || 'Admin Dashboard';
+      if (organizationNameHeaderElement) {
+        organizationNameHeaderElement.textContent = result.data.organization || 'Admin Dashboard';
       }
     }
   } catch (error) {
