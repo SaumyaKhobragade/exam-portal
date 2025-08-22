@@ -3,15 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Exam Hosting - Exam Portal</title>
+    <title>Request Exam Hosting - CodeSecure</title>
     <link rel="stylesheet" href="/stylesheets/requestExam.css">
 </head>
 <body>
-    <div class="request-container">
-        <div class="header">
-            <h1>Request Exam Hosting</h1>
-            <p>Submit your request to host an examination on our platform</p>
-        </div>
+    <div class="main-container">
+        <header class="header-section">
+            <div class="brand-logo">CodeSecure</div>
+            <nav class="navigation-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </nav>
+            <div class="user-actions">
+                <a href="/login" class="action-btn">Login</a>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="request-container">
+                <div class="header">
+                    <h1>Request Exam Hosting</h1>
+                    <p>Submit your request to host an examination on our platform</p>
+                </div>
 
         <div id="message" class="message"></div>
 
@@ -93,9 +107,11 @@
             <button type="submit" class="submit-btn">Submit Request</button>
         </form>
 
-        <div class="back-link">
-            <a href="/">← Back to Home</a>
-        </div>
+                <div class="back-link">
+                    <a href="/">← Back to Home</a>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script src="/javascripts/requestExam.js"></script>

@@ -4,6 +4,7 @@
   "main": "setup.js",
   "type": "module",
   "scripts": {
+    "start": "node -r dotenv/config --experimental-json-modules index.js",
     "dev": "nodemon -r dotenv/config --experimental-json-modules index.js"
   },
   "keywords": [],
