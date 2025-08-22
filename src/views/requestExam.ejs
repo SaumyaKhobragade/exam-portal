@@ -23,15 +23,15 @@
         <main class="content-area">
             <div class="request-container">
                 <div class="header">
-                    <h1>Request Exam Hosting</h1>
-                    <p>Submit your request to host an examination on our platform</p>
+                    <h1>Request Hosting Access</h1>
+                    <p>Submit your request to get access to our examination platform</p>
                 </div>
 
         <div id="message" class="message"></div>
 
         <form id="requestForm">
             <div class="form-group">
-                <label for="organizationName">Organization/University Name *</label>
+                <label for="organizationName">Organization Name *</label>
                 <input type="text" id="organizationName" name="organizationName" required>
             </div>
 
@@ -60,48 +60,8 @@
             </div>
 
             <div class="form-group">
-                <label for="examTitle">Exam Title *</label>
-                <input type="text" id="examTitle" name="examTitle" required>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="examDate">Proposed Exam Date *</label>
-                    <input type="date" id="examDate" name="examDate" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="duration">Duration (minutes) *</label>
-                    <input type="number" id="duration" name="duration" min="30" max="480" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="expectedStudents">Expected Students *</label>
-                    <input type="number" id="expectedStudents" name="expectedStudents" min="1" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="examType">Exam Type *</label>
-                    <select id="examType" name="examType" required>
-                        <option value="">Select Type</option>
-                        <option value="coding">Coding Assessment</option>
-                        <option value="mcq">Multiple Choice</option>
-                        <option value="mixed">Mixed (MCQ + Coding)</option>
-                        <option value="theory">Theory/Descriptive</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="requirements">Special Requirements</label>
-                <textarea id="requirements" name="requirements" placeholder="Any special requirements or additional information..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Exam Description *</label>
-                <textarea id="description" name="description" placeholder="Brief description of the exam, subjects covered, etc..." required></textarea>
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required>
             </div>
 
             <button type="submit" class="submit-btn">Submit Request</button>

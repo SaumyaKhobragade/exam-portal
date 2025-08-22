@@ -41,6 +41,9 @@ body, html {
 .navigation-menu {
     display: flex;
     gap: 2rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .nav-link {

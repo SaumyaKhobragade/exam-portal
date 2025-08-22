@@ -29,30 +29,39 @@ const examRequestSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    examTitle: {
+    password: {
         type: String,
         required: true,
         trim: true
     },
+    examTitle: {
+        type: String,
+        required: false,
+        trim: true,
+        default: "TBD"
+    },
     examDate: {
         type: Date,
-        required: true
+        required: false,
+        default: Date.now
     },
     duration: {
         type: Number,
-        required: true,
-        min: 30,
-        max: 480
+        required: false,
+        min: 0,
+        default: 0
     },
     expectedStudents: {
         type: Number,
-        required: true,
-        min: 1
+        required: false,
+        min: 0,
+        default: 0
     },
     examType: {
         type: String,
-        required: true,
-        enum: ['coding', 'mcq', 'mixed', 'theory']
+        required: false,
+        enum: ['coding', 'mcq', 'mixed', 'theory', 'TBD'],
+        default: 'TBD'
     },
     requirements: {
         type: String,
@@ -61,8 +70,9 @@ const examRequestSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true,
-        trim: true
+        required: false,
+        trim: true,
+        default: "Hosting access request"
     },
     status: {
         type: String,

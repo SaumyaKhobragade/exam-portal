@@ -13,45 +13,38 @@ const createExamRequest = asyncHandler(async (req, res) => {
         designation,
         email,
         phone,
-        examTitle,
-        examDate,
-        duration,
-        expectedStudents,
-        examType,
-        requirements,
-        description
+        password
     } = req.body;
 
-    // Validation
-    if ([organizationName, contactPerson, designation, email, phone, examTitle, examDate, duration, expectedStudents, examType, description].some((field) => {
+    // Validation for required fields only
+    if ([organizationName, contactPerson, designation, email, phone, password].some((field) => {
         return field === undefined || field === null || (typeof field === 'string' && field.trim() === "")
     })) {
         throw new ApiError(400, "All required fields must be provided");
     }
 
-    // Validate exam date is not in the past
-    const examDateTime = new Date(examDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    if (examDateTime < today) {
-        throw new ApiError(400, "Exam date cannot be in the past");
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        throw new ApiError(400, "Please provide a valid email address");
     }
 
-    // Create exam request
+    // Create exam request with simplified fields
     const examRequest = await ExamRequest.create({
         organizationName,
         contactPerson,
         designation,
         email,
         phone,
-        examTitle,
-        examDate: examDateTime,
-        duration: parseInt(duration),
-        expectedStudents: parseInt(expectedStudents),
-        examType,
-        requirements: requirements || '',
-        description
+        password, // Note: In a real app, you'd hash this password
+        // Set default values for removed fields
+        examTitle: "TBD",
+        examDate: new Date(),
+        duration: 0,
+        expectedStudents: 0,
+        examType: "TBD",
+        requirements: "",
+        description: "Hosting access request"
     });
 
     if (!examRequest) {
