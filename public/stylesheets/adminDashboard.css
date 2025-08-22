@@ -94,7 +94,19 @@ body, html {
 
 .user-actions {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+#adminName {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-right: 0.5rem;
+}
 }
 
 .action-btn {
@@ -117,10 +129,21 @@ body, html {
 
 .logout-btn {
   background-color: #ff4757;
+  color: #fff !important;
+  border: none;
+  outline: none;
+  font-weight: 700;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  margin-left: 0.5rem;
+  box-shadow: 0 2px 8px rgba(255, 71, 87, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
-.logout-btn:hover {
+.logout-btn:hover, .logout-btn:focus {
   background-color: #ff3742;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(255, 71, 87, 0.15);
 }
 
 .content-area {
