@@ -1,97 +1,112 @@
-# Exam Portal System
+# Online Examination Platform (Coding Focus)
 
-## 🎯 Complete Implementation Summary
+## Overview
+This project is a secure online coding examination platform designed for institutes and companies to conduct coding tests seamlessly. It ensures fairness, prevents malpractice, and provides accurate, real-time code evaluation.
 
-### ✅ What's Been Created:
+---
 
-#### 1. **Exam Request System**
-- **Request Page**: `/request-exam` - Beautiful form for organizations to request exam hosting
-- **Database Model**: `ExamRequest` with full validation and status tracking
-- **API Endpoints**: Complete CRUD operations for request management
+## Features
 
-#### 2. **Enhanced Owner Dashboard**
-- **Request Management**: View, approve/reject, and assign admins to requests
-- **Statistics**: Real-time stats for pending, approved, and total requests
-- **Modal Interface**: Professional review interface with admin assignment
-- **Admin Assignment**: Assign specific admins to approved exam requests
+- User authentication and role-based access control (admin, candidate)
+- Real-time tracking of code submissions and test progress
+- Tab/screen switching detection to prevent cheating
+- Secure code execution using sandboxed environments or external code execution APIs
+- Support for multiple coding languages and test case evaluation
+- Instant or deferred feedback for candidates
+- Admin dashboard for managing exams, monitoring candidates, and viewing results
 
-#### 3. **Enhanced Admin Dashboard** 
-- **Organization Display**: Shows admin's organization prominently
-- **Assigned Exams**: Lists all exam requests assigned to the admin
-- **Exam Management**: Options to create exams and view results
-- **Statistics**: Organization-specific metrics and performance data
+---
 
-#### 4. **New API Routes**
-- `POST /api/v1/exam-requests` - Submit new exam request
-- `GET /api/v1/exam-requests/all` - Get all requests (Owner only)
-- `GET /api/v1/exam-requests/stats` - Get request statistics
-- `PATCH /api/v1/exam-requests/:id/review` - Approve/reject requests
-- `GET /api/v1/admin/profile` - Get admin profile with organization
-- `GET /api/v1/admin/assigned-exams` - Get assigned exam requests
-- `GET /api/v1/admin/stats` - Get admin dashboard statistics
+## Tech Stack
 
-### 🌟 Key Features:
+- **Frontend:** HTML + CSS + JS
+- **Backend:** Node.js + Express.js
+- **Database:** MongoDB
+- **Real-time Communication:** Socket.IO / WebSockets
+- **Code Execution:** Dockerized execution environment or integration with external APIs (e.g., Judge0)
+- **Authentication:** JWT based authentication and secure sessions
 
-#### **For Organization Representatives:**
-1. **Easy Request Submission**: Beautiful, validated form with all necessary fields
-2. **Multiple Exam Types**: Support for coding, MCQ, mixed, and theory exams
-3. **Real-time Validation**: Prevents invalid dates and ensures proper data
-4. **Status Tracking**: Automatic status updates (pending → approved/rejected)
+---
 
-#### **For Platform Owner:**
-1. **Request Management**: Complete dashboard for reviewing all requests
-2. **Smart Assignment**: Assign requests to specific admins based on organization match
-3. **Filtering**: Filter requests by status (all, pending, approved, rejected)
-4. **Review System**: Add notes and comments when approving/rejecting
-5. **Statistics**: Real-time metrics on request volume and status
+## Installation & Setup
 
-#### **For Admins:**
-1. **Organization Context**: Dashboard clearly shows their organization
-2. **Assigned Exams**: View all exam requests assigned to them
-3. **Exam Creation**: Ready interface for creating new exams
-4. **Results Management**: Interface for viewing and managing exam results
-5. **Performance Metrics**: Statistics specific to their organization
+### Prerequisites
+- Node.js (v14 or above)
+- MongoDB (local or cloud instance)
+- Docker (if running code execution locally)
 
-### 🔄 Complete Workflow:
+### Clone the repo
+```
+git clone https://github.com/SaumyaKhobragade/exam-portal.git
+cd online-examination-platform
+```
 
-1. **Request Submission**: 
-   - Organization visits `/request-exam`
-   - Fills detailed form with exam requirements
-   - Submits request → Status: "Pending"
+### Backend Setup
+```
+cd backend
+npm install
+```
 
-2. **Owner Review**:
-   - Owner sees request in dashboard
-   - Reviews details in modal interface
-   - Decides to approve/reject
-   - If approved: assigns appropriate admin
-   - Status becomes "Approved" or "Rejected"
+### Frontend Setup
+```
+cd frontend
+npm install
+npm start
+```
 
-3. **Admin Management**:
-   - Assigned admin sees request in their dashboard
-   - Admin can create and manage the exam
-   - Admin handles student enrollment and results
+---
 
-### 🎨 UI/UX Highlights:
+## Usage
 
-- **Modern Design**: Clean, professional interface with gradients and shadows
-- **Responsive**: Works on all devices and screen sizes
-- **Interactive**: Smooth transitions, hover effects, and real-time updates
-- **User-Friendly**: Clear navigation, status indicators, and helpful messages
-- **Accessibility**: Proper labels, contrast, and keyboard navigation
+1. Register as a candidate or admin.
+2. Admin creates coding exams with questions and schedules.
+3. Candidates participate in exams with live code editing.
+4. Code is evaluated automatically; results are visible in real-time.
+5. Tab switch and cheating attempts are logged and flagged.
+6. Admin reviews candidates’ performance and downloads reports.
 
-### 🔐 Security Features:
+---
 
-- **Role-Based Access**: Proper authentication for owner and admin functions
-- **Data Validation**: Server-side validation for all inputs
-- **Protected Routes**: All management interfaces require proper authentication
-- **Input Sanitization**: Prevents XSS and injection attacks
+## Folder Structure
+```
+/backend # Express server and API
+/frontend # React client application
+/execution-server # Sandboxed code runner (optional Docker setup)
+```
 
-### 📱 Testing the System:
 
-1. **Visit Landing Page**: `http://localhost:3000` → Click "Request Hosting"
-2. **Submit Request**: Fill form with test data and submit
-3. **Owner Login**: Login as owner and review request in dashboard
-4. **Approve Request**: Assign to an admin and approve
-5. **Admin Login**: Login as admin to see assigned request
+---
 
-This creates a complete, professional exam hosting request and management system! 🚀
+## Future Enhancements
+
+- Plagiarism detection module
+- Advanced analytics dashboard for admins
+- Support for more programming languages and custom test cases
+- Mobile-friendly responsive UI
+- Integration with third-party authentication providers
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open issues or pull requests for bug fixes, enhancements, or feature requests.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Contact
+
+For questions or support, please contact:
+
+- Saumya Khobragade - khobragadesaumya@gmail.com
+- Saptanshu Wanjari - saptanshuwanjari63@gmail.com
+- Hardik Sharma - 26hardiksharma@gmail.com
+
+---
+
+*Built with ❤️ during the iTechRoots Hackathon 2025.*
