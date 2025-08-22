@@ -1,4 +1,4 @@
-# Exam Portal Request System - Demo Script
+# Exam Portal System
 
 ## 🎯 Complete Implementation Summary
 
