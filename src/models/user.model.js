@@ -43,11 +43,7 @@ const userSchema = new mongoose.Schema({
     refreshToken:{
         type: String,
     },
-    role:{
-        type: String,
-        enum: ['student', 'instructor'],
-        default: 'student'
-    }
+    // role removed
 
 
 },{timestamps: true}

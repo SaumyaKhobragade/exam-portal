@@ -80,7 +80,7 @@ const registerUser = asyncHandler(async (req,res)=>{
 
 // Simple registration without file upload
 const simpleRegisterUser = asyncHandler(async (req, res) => {
-    const { username, email, password, fullname, role } = req.body;
+    const { username, email, password, fullname } = req.body;
     
     // Validation
     if([fullname, email, username, password].some((field) => field?.trim() === "")){
@@ -108,7 +108,7 @@ const simpleRegisterUser = asyncHandler(async (req, res) => {
         email,
         password,
         username: username.toLowerCase(),
-        role: role || 'student'
+    // role removed
     });
     
     // Get user for token generation (without excluding password for methods)
@@ -186,7 +186,7 @@ const createAdminAccount = asyncHandler(async (req, res) => {
         email,
         password,
         username: username.toLowerCase(),
-        role: 'admin'
+    // role removed
     });
     
     // Remove password and refresh token from response
