@@ -17,7 +17,7 @@
         <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
       </nav>
       <div class="user-actions">
-        <span id="adminName">Admin</span>
+        <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
         <a href="/logout" class="action-btn logout-btn">Logout</a>
       </div>
     </header>
@@ -79,6 +79,7 @@
     </main>
   </div>
 
+  <script src="/javascripts/sessionProtection.js"></script>
   <script src="/javascripts/createExam.js"></script>
 </body>
 </html>

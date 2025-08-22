@@ -18,12 +18,25 @@
         <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
       </nav>
       <div class="user-actions">
-        <span id="adminName">Admin</span>
+        <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
         <a href="/logout" class="action-btn logout-btn">Logout</a>
       </div>
     </header>
 
     <main class="content-area">
+      <!-- Success/Error Messages -->
+      <% if (typeof success !== 'undefined' && success === 'exam-created') { %>
+        <div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #c3e6cb;">
+          <strong>Success!</strong> Exam created successfully.
+        </div>
+      <% } %>
+      
+      <% if (typeof error !== 'undefined') { %>
+        <div class="alert alert-error" style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
+          <strong>Error!</strong> <%= error %>
+        </div>
+      <% } %>
+
       <!-- Organization Information -->
       <div class="organization-info">
         <div class="org-name" id="organizationName">Loading...</div>
@@ -255,6 +268,7 @@
     </main>
   </div>
 
+  <script src="/javascripts/sessionProtection.js"></script>
   <script src="/javascripts/adminDashboard.js"></script>
 </body>
 </html>

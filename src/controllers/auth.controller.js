@@ -99,44 +99,89 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-    const userId = req.user._id;
-    const userType = req.user.role;
-    
-    let ModelClass;
-    switch(userType) {
-        case 'owner':
-            ModelClass = Owner;
-            break;
-        case 'admin':
-            ModelClass = Admin;
-            break;
-        default:
-            ModelClass = User;
-    }
+    try {
+        // Try to get user from request (if middleware was used)
+        let userId = req.user?._id;
+        let userModel = null;
 
-    await ModelClass.findByIdAndUpdate(
-        userId,
-        {
-            $unset: {
-                refreshToken: 1
+        if (userId) {
+            // Determine user type by checking which model the user belongs to
+            let user = await Owner.findById(userId);
+            if (user) {
+                userModel = Owner;
+            } else {
+                user = await Admin.findById(userId);
+                if (user) {
+                    userModel = Admin;
+                } else {
+                    user = await User.findById(userId);
+                    if (user) {
+                        userModel = User;
+                    }
+                }
             }
-        },
-        {
-            new: true
+
+            // Clear refresh token from database if user found
+            if (userModel && userId) {
+                await userModel.findByIdAndUpdate(
+                    userId,
+                    {
+                        $unset: {
+                            refreshToken: 1
+                        }
+                    },
+                    {
+                        new: true
+                    }
+                );
+            }
         }
-    );
 
-    const options = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax'
+        // Cookie options for clearing
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax'
+        }
+
+        // For browser requests, redirect to login page
+        if (req.headers.accept && req.headers.accept.includes('text/html')) {
+            return res
+                .clearCookie("accessToken", options)
+                .clearCookie("refreshToken", options)
+                .redirect('/login');
+        }
+
+        // For API requests, return JSON response
+        return res
+            .status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json(new ApiResponse(200, {}, "User logged out successfully"));
+
+    } catch (error) {
+        console.error('Logout error:', error);
+        
+        // Clear cookies anyway and redirect/respond
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax'
+        }
+
+        if (req.headers.accept && req.headers.accept.includes('text/html')) {
+            return res
+                .clearCookie("accessToken", options)
+                .clearCookie("refreshToken", options)
+                .redirect('/login');
+        }
+
+        return res
+            .status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
+            .json(new ApiResponse(200, {}, "Logged out (with errors)"));
     }
-
-    return res
-        .status(200)
-        .clearCookie("accessToken", options)
-        .clearCookie("refreshToken", options)
-        .json(new ApiResponse(200, {}, "User logged out"));
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {

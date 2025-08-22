@@ -160,6 +160,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (allValid) {
+            // Show loading state
+            const submitBtn = form.querySelector('.primary');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Creating Exam...';
+            submitBtn.disabled = true;
+
             // Add question count to form data before submission
             const questionCountInput = document.createElement('input');
             questionCountInput.type = 'hidden';
@@ -167,8 +173,30 @@ document.addEventListener('DOMContentLoaded', function() {
             questionCountInput.value = questionCount;
             form.appendChild(questionCountInput);
 
-            // Submit the form normally
-            form.submit();
+            // Submit the form
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Success - redirect will be handled by the server
+                    window.location.href = response.url;
+                } else {
+                    // Handle error response
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Failed to create exam');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error creating exam:', error);
+                alert('Error creating exam: ' + error.message);
+                
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            });
         }
     }
 

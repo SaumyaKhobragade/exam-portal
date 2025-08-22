@@ -9,6 +9,8 @@ import adminRouter from "./src/routes/admin.routes.js";
 import examRequestRouter from "./src/routes/examRequest.routes.js";
 import runCode from './src/utils/judge0.js';
 import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
+import { handleLogout } from './src/middlewares/logout.middleware.js';
+import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
 
 
 app.set('view engine', 'ejs');
@@ -44,20 +46,9 @@ app.get('/request-exam', (req,res)=>{
     res.render('requestExam');
 });
 
-// Logout route to clear cookies
-app.get('/logout', (req, res) => {
-    res.clearCookie('accessToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax'
-    });
-    res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax'
-    });
-    res.redirect('/login');
-});
+// Logout route using middleware - handles both browser and API requests
+app.get('/logout', handleLogout);
+app.post('/logout', handleLogout);
 
 // Clear all cookies route for testing
 app.get('/clear-cookies', (req, res) => {
@@ -75,21 +66,17 @@ app.get('/clear-cookies', (req, res) => {
     `);
 });
 
-// Protected dashboard routes - require authentication
-app.get('/owner-dashboard', verifyOwner, (req,res)=>{
-    res.render('ownerDashboard');
+// Protected dashboard routes - require authentication and session validation
+app.get('/owner-dashboard', noCacheMiddleware, verifyOwnerSession, (req,res)=>{
+    res.render('ownerDashboard', { user: req.user });
 });
 
-app.get('/admin-dashboard', verifyAdminOrOwner, (req,res)=>{
-    res.render('adminDashboard');
-});
-
-app.get('/user-dashboard', verifyJWT, (req,res)=>{
+app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, (req,res)=>{
     res.render('userDashboard',{user: req.user});
 });
 
-app.get('/dashboard', verifyJWT, (req,res)=>{
-    res.render('userDashboard');
+app.get('/dashboard', noCacheMiddleware, verifyJWTSession, (req,res)=>{
+    res.render('userDashboard', { user: req.user });
 });
 
 // Judge0 code execution route

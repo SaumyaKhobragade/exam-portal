@@ -16,6 +16,19 @@ function togglePasswordVisibility(inputId, btn) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Handle URL parameters for messages
+  const urlParams = new URLSearchParams(window.location.search);
+  const message = urlParams.get('message');
+  const messageType = urlParams.get('type') || 'info';
+  
+  if (message) {
+    showMessage(message, messageType);
+    
+    // Clean URL by removing the message parameters
+    const newUrl = window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+
   const toggleBtns = document.querySelectorAll('.toggle-btn');
   const loginForm = document.querySelector('.login-form');
   const registerForm = document.querySelector('.register-form');
@@ -152,3 +165,22 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+// Function to show messages
+function showMessage(message, type = 'info') {
+  const messageDiv = document.getElementById('authMessage');
+  const messageContent = messageDiv.querySelector('.message-content');
+  
+  if (messageDiv && messageContent) {
+    messageContent.textContent = message;
+    messageDiv.className = `auth-message ${type}`;
+    messageDiv.style.display = 'block';
+    
+    // Auto-hide success messages after 5 seconds
+    if (type === 'success' || type === 'info') {
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 5000);
+    }
+  }
+}
