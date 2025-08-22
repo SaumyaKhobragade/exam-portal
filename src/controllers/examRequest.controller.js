@@ -2,6 +2,7 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 import {ApiError} from "../utils/apiError.js"
 import {ApiResponse} from "../utils/apiResponse.js"
 import ExamRequest from "../models/examRequest.model.js"
+import { sendExamAcceptedMail } from "../utils/sendExamAcceptedMail.js";
 import Owner from "../models/owner.model.js"
 import Admin from "../models/admin.model.js"
 
@@ -36,15 +37,7 @@ const createExamRequest = asyncHandler(async (req, res) => {
         designation,
         email,
         phone,
-        password, // Note: In a real app, you'd hash this password
-        // Set default values for removed fields
-        examTitle: "TBD",
-        examDate: new Date(),
-        duration: 0,
-        expectedStudents: 0,
-        examType: "TBD",
-        requirements: "",
-        description: "Hosting access request"
+        password // Note: In a real app, you'd hash this password
     });
 
     if (!examRequest) {
@@ -79,7 +72,6 @@ const getAllExamRequests = asyncHandler(async (req, res) => {
     
     const examRequests = await ExamRequest.find(filter)
         .populate('reviewedBy', 'username fullname')
-        .populate('assignedAdmin', 'username fullname organization')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit));
@@ -103,7 +95,7 @@ const getAllExamRequests = asyncHandler(async (req, res) => {
 // Review exam request (Approve/Reject)
 const reviewExamRequest = asyncHandler(async (req, res) => {
     const { requestId } = req.params;
-    const { status, reviewNotes, assignedAdminId } = req.body;
+    const { status } = req.body;
     const ownerId = req.user._id;
 
     // Verify requester is owner
@@ -127,34 +119,21 @@ const reviewExamRequest = asyncHandler(async (req, res) => {
         throw new ApiError(400, "This request has already been reviewed");
     }
 
-    // If approving, validate assigned admin
-    if (status === 'approved' && assignedAdminId) {
-        const admin = await Admin.findById(assignedAdminId);
-        if (!admin) {
-            throw new ApiError(404, "Assigned admin not found");
-        }
+    if (status === 'approved') {
+        // Send acceptance email
+        await sendExamAcceptedMail(examRequest.email, examRequest.contactPerson);
+        // Delete the request after sending mail
+        await ExamRequest.findByIdAndDelete(requestId);
+        return res.status(200).json(
+            new ApiResponse(200, null, 'Exam request approved, requester notified, and request removed.')
+        );
+    } else {
+        // For rejected, just delete the request
+        await ExamRequest.findByIdAndDelete(requestId);
+        return res.status(200).json(
+            new ApiResponse(200, null, 'Exam request rejected and removed.')
+        );
     }
-
-    // Update the request
-    examRequest.status = status;
-    examRequest.reviewedBy = ownerId;
-    examRequest.reviewDate = new Date();
-    examRequest.reviewNotes = reviewNotes || '';
-    
-    if (status === 'approved' && assignedAdminId) {
-        examRequest.assignedAdmin = assignedAdminId;
-    }
-
-    await examRequest.save();
-
-    // Populate the updated request for response
-    const updatedRequest = await ExamRequest.findById(requestId)
-        .populate('reviewedBy', 'username fullname')
-        .populate('assignedAdmin', 'username fullname organization');
-
-    return res.status(200).json(
-        new ApiResponse(200, updatedRequest, `Exam request ${status} successfully`)
-    );
 });
 
 // Get exam requests for specific admin
