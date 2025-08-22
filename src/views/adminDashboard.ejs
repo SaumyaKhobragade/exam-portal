@@ -10,6 +10,7 @@
 <body>
   <div class="main-container">
     <header class="header-section">
+<<<<<<< HEAD
       <div class="navbar-flex">
         <div class="org-name extreme-left" id="organizationName">Loading...</div>
         <nav class="navigation-menu navbar-center">
@@ -21,6 +22,22 @@
           <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
           <a href="/logout" class="action-btn logout-btn">Logout</a>
         </div>
+=======
+      <div class="brand-logo">CodeSecure</div>
+      <div class="organization-header">
+        <span class="org-name-header" id="organizationNameHeader">Loading...</span>
+      </div>
+      <nav class="navigation-menu">
+        <a href="/admin-dashboard" class="nav-link">Dashboard</a>
+        <a href="/admin/exams/create" class="nav-link">Create Exam</a>
+        <a href="/manage-homepage" class="nav-link">Homepage</a>
+        <a href="#" class="nav-link" onclick="showResults()">Results</a>
+        <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
+      </nav>
+      <div class="user-actions">
+        <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
+        <a href="/logout" class="action-btn logout-btn">Logout</a>
+>>>>>>> 1088214fdbea8bc6e3830c1c3cee22d41c96a7dc
       </div>
     </header>
 
@@ -50,9 +67,17 @@
         </div>
       <% } %>
 
+<<<<<<< HEAD
 
 
 
+=======
+      <!-- Welcome Section -->
+      <section class="welcome-card">
+        <h1 class="welcome-title">Welcome to Admin Dashboard</h1>
+        <p class="welcome-description">Manage your organization's exams, view results, and monitor student performance</p>
+      </section>
+>>>>>>> 1088214fdbea8bc6e3830c1c3cee22d41c96a7dc
 
       <!-- Exam Management Options -->
       <div class="exam-management">
@@ -70,12 +95,12 @@
       </div>
 
       <!-- Assigned Exams Section -->
-      <div class="assigned-exams">
+      <!-- <div class="assigned-exams">
         <h2>Your Assigned Exam Requests</h2>
         <div class="exam-list" id="assignedExamsList">
           <p>Loading assigned exams...</p>
         </div>
-      </div>
+      </div> -->
 
 
       <!-- Stats Section -->

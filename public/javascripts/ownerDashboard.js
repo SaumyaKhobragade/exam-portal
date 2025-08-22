@@ -13,7 +13,13 @@ async function loadDashboardStats() {
             document.getElementById('totalUsers').textContent = result.data.totalUsers;
             document.getElementById('adminCount').textContent = result.data.adminCount;
             document.getElementById('userCount').textContent = result.data.userCount;
-            document.getElementById('approvedRequests').textContent = result.data.adminCount;
+            // Only update approvedRequests if it exists in the main stats section (not the exam requests section)
+            var approvedRequestsElem = document.getElementById('approvedRequests');
+            if (approvedRequestsElem && approvedRequestsElem.closest('.stats-grid')) {
+                // Only update if this is the main stats section
+                // (If you want to update both, remove this check)
+                // approvedRequestsElem.textContent = result.data.adminCount;
+            }
         }
     } catch (error) {
         console.error('Error loading stats:', error);

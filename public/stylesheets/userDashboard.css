@@ -282,7 +282,8 @@ body, html {
 .exam-meta {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .exam-difficulty {
@@ -307,13 +308,79 @@ body, html {
   color: #721c24;
 }
 
-.exam-questions {
+.exam-questions, .exam-marks {
   background: #e9ecef;
   color: #495057;
   padding: 0.3rem 0.8rem;
   border-radius: 15px;
   font-size: 0.8rem;
   font-weight: 500;
+}
+
+.exam-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-draft {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-completed {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.status-archived {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.exam-schedule {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #4a90e2;
+}
+
+.schedule-info {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.created-by {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.no-exams-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.no-exams-message h3 {
+  color: #357ABD;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.no-exams-message p {
+  color: #6c757d;
+  font-size: 1rem;
 }
 
 .start-exam-btn {
@@ -333,6 +400,19 @@ body, html {
   background: linear-gradient(135deg, #357ABD, #2b6cb8);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+}
+
+.start-exam-btn.disabled {
+  background: #6c757d;
+  color: #fff;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.start-exam-btn.disabled:hover {
+  background: #6c757d;
+  transform: none;
+  box-shadow: none;
 }
 
 .recent-results {

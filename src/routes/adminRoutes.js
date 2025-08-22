@@ -1,5 +1,6 @@
 import express from 'express';
 import Exam from '../models/exam.model.js';
+import HomepageStats from '../models/homepageStats.model.js';
 import { verifyAdminOrOwnerSession, noCacheMiddleware } from '../middlewares/sessionValidation.middleware.js';
 import { validateExamQuestions, validateTestCases, LANGUAGE_IDS } from '../services/judge0Service.js';
 
@@ -87,6 +88,48 @@ router.get('/admin-dashboard', verifyAdminOrOwnerSession, async (req, res) => {
             user: req.user,
             userType: req.userModel
         });
+    }
+});
+
+// Route to update homepage stats (admin only)
+router.post('/update-homepage-stats', verifyAdminOrOwnerSession, async (req, res) => {
+    try {
+        const { studentsAssessed, institutions, uptime, heroTitle, heroDescription } = req.body;
+        
+        let stats = await HomepageStats.findOne();
+        if (!stats) {
+            stats = new HomepageStats({
+                studentsAssessed,
+                institutions,
+                uptime,
+                heroTitle,
+                heroDescription
+            });
+        } else {
+            stats.studentsAssessed = studentsAssessed || stats.studentsAssessed;
+            stats.institutions = institutions || stats.institutions;
+            stats.uptime = uptime || stats.uptime;
+            stats.heroTitle = heroTitle || stats.heroTitle;
+            stats.heroDescription = heroDescription || stats.heroDescription;
+            stats.updatedAt = new Date();
+        }
+        
+        await stats.save();
+        res.json({ success: true, message: 'Homepage stats updated successfully' });
+    } catch (error) {
+        console.error('Error updating homepage stats:', error);
+        res.status(500).json({ success: false, message: 'Error updating homepage stats' });
+    }
+});
+
+// Route to render homepage stats management page
+router.get('/manage-homepage', verifyAdminOrOwnerSession, async (req, res) => {
+    try {
+        const stats = await HomepageStats.getRealTimeStats();
+        res.render('manageHomepage', { user: req.user, stats });
+    } catch (error) {
+        console.error('Error loading homepage management:', error);
+        res.status(500).send('Error loading homepage management');
     }
 });
 
