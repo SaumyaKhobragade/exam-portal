@@ -6,6 +6,7 @@ import userRouter from "./src/routes/user.routes.js";
 import authRouter from "./src/routes/auth.routes.js";
 import ownerRouter from "./src/routes/owner.routes.js";
 import runCode from './src/utils/judge0.js';
+import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
 
 
 app.set('view engine', 'ejs');
@@ -31,19 +32,51 @@ app.get('/login', (req,res)=>{
     res.render('loginregister');
 })
 
-app.get('/owner-dashboard', (req,res)=>{
+// Logout route to clear cookies
+app.get('/logout', (req, res) => {
+    res.clearCookie('accessToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+    });
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+    });
+    res.redirect('/login');
+});
+
+// Clear all cookies route for testing
+app.get('/clear-cookies', (req, res) => {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.send(`
+        <h2>Cookies Cleared!</h2>
+        <p>Authentication cookies have been cleared. Now test the protected routes:</p>
+        <ul>
+            <li><a href="/owner-dashboard">Owner Dashboard</a> (should redirect to login)</li>
+            <li><a href="/admin-dashboard">Admin Dashboard</a> (should redirect to login)</li>
+            <li><a href="/user-dashboard">User Dashboard</a> (should redirect to login)</li>
+            <li><a href="/login">Login Page</a></li>
+        </ul>
+    `);
+});
+
+// Protected dashboard routes - require authentication
+app.get('/owner-dashboard', verifyOwner, (req,res)=>{
     res.render('ownerDashboard');
 });
 
-app.get('/admin-dashboard', (req,res)=>{
+app.get('/admin-dashboard', verifyAdminOrOwner, (req,res)=>{
     res.render('adminDashboard');
 });
 
-app.get('/user-dashboard', (req,res)=>{
+app.get('/user-dashboard', verifyJWT, (req,res)=>{
     res.render('userDashboard');
 });
 
-app.get('/dashboard', (req,res)=>{
+app.get('/dashboard', verifyJWT, (req,res)=>{
     res.render('userDashboard');
 });
 

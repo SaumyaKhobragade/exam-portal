@@ -43,6 +43,12 @@ const adminSchema = new mongoose.Schema({
         type: String,
         default: 'admin'
     },
+    organization:{
+        type: String,
+        required: true,
+        trim: true,
+        index: true
+    },
     permissions:{
         type: [String],
         default: ['read', 'write', 'delete', 'manage_users', 'manage_exams']

@@ -134,6 +134,13 @@
             font-size: 14px;
         }
         
+        .admin-organization {
+            color: #888;
+            font-size: 13px;
+            font-style: italic;
+            margin-top: 2px;
+        }
+        
         .message {
             padding: 15px;
             border-radius: 8px;
@@ -224,6 +231,10 @@
                     <input type="email" class="form-input" id="adminEmail" required>
                 </div>
                 <div class="form-group full-width">
+                    <label class="form-label">University/Organization</label>
+                    <input type="text" class="form-input" id="adminOrganization" placeholder="Enter university or organization name" required>
+                </div>
+                <div class="form-group full-width">
                     <label class="form-label">Password</label>
                     <input type="password" class="form-input" id="adminPassword" required>
                 </div>
@@ -279,6 +290,7 @@
                             <div class="admin-info">
                                 <div class="admin-name">${admin.fullname} (@${admin.username})</div>
                                 <div class="admin-email">${admin.email}</div>
+                                <div class="admin-organization">${admin.organization}</div>
                             </div>
                             <button class="btn btn-danger" onclick="deleteAdmin('${admin._id}')">Delete</button>
                         </div>
@@ -298,6 +310,7 @@
             const fullname = document.getElementById('adminFullname').value;
             const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
+            const organization = document.getElementById('adminOrganization').value;
             const messageDiv = document.getElementById('message');
             
             try {
@@ -306,7 +319,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ username, fullname, email, password })
+                    body: JSON.stringify({ username, fullname, email, password, organization })
                 });
                 
                 const result = await response.json();

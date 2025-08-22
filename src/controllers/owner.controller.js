@@ -61,11 +61,11 @@ const createOwnerAccount = asyncHandler(async (req, res) => {
 
 // Create Admin by Owner
 const createAdminByOwner = asyncHandler(async (req, res) => {
-    const { username, email, password, fullname } = req.body;
+    const { username, email, password, fullname, organization } = req.body;
     const ownerId = req.user._id; // Assuming middleware sets this
     
     // Validation
-    if([fullname, email, username, password].some((field) => field?.trim() === "")){
+    if([fullname, email, username, password, organization].some((field) => field?.trim() === "")){
         throw new ApiError(400, "All fields are required");
     }
     
@@ -101,6 +101,7 @@ const createAdminByOwner = asyncHandler(async (req, res) => {
         password,
         username: username.toLowerCase(),
         role: 'admin',
+        organization,
         createdBy: ownerId
     });
     
