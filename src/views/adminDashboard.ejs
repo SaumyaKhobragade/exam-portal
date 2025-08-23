@@ -242,6 +242,16 @@
 
   <script src="/javascripts/sessionProtection.js"></script>
   <script src="/javascripts/adminDashboard.js"></script>
+  <script>
+    // Initialize dashboard animations
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add staggered animation delays
+      const elements = document.querySelectorAll('.slide-up');
+      elements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.1}s`;
+      });
+    });
+  </script>
 </body>
 </html>
 
