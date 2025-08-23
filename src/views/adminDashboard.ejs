@@ -4,27 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin Dashboard - Exam Portal</title>
-  <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/stylesheets/adminDashboard.css" />
 </head>
 <body>
   <div class="main-container">
-    <header class="header-section">
+    <header class="header-section fade-in">
 
-      <div class="brand-logo">CodeSecure</div>
+      <div class="brand-logo">
+        <i class="fas fa-shield-alt"></i> CodeSecure
+      </div>
       <div class="organization-header">
         <span class="org-name-header" id="organizationNameHeader">Loading...</span>
       </div>
       <nav class="navigation-menu">
-        <a href="/admin-dashboard" class="nav-link">Dashboard</a>
-        <a href="/admin/exams/create" class="nav-link">Create Exam</a>
-        <a href="/manage-homepage" class="nav-link">Homepage</a>
-        <a href="#" class="nav-link" onclick="showResults()">Results</a>
-        <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
+        <a href="/admin-dashboard" class="nav-link active">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/admin/exams/create" class="nav-link">
+          <i class="fas fa-plus-circle"></i> Create Exam
+        </a>
+        <a href="/manage-homepage" class="nav-link">
+          <i class="fas fa-home"></i> Homepage
+        </a>
+        <a href="#" class="nav-link" onclick="showResults()">
+          <i class="fas fa-chart-bar"></i> Results
+        </a>
+        <a href="#" class="nav-link" onclick="showSettings()">
+          <i class="fas fa-cog"></i> Settings
+        </a>
       </nav>
       <div class="user-actions">
-        <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
-        <a href="/logout" class="action-btn logout-btn">Logout</a>
+        <div class="user-info">
+          <i class="fas fa-user-shield"></i>
+          <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
+        </div>
+        <a href="/logout" class="action-btn logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
       </div>
     </header>
 
@@ -56,30 +74,67 @@
 
 
       <!-- Welcome Section -->
-      <section class="welcome-card">
-        <h1 class="welcome-title">Welcome to Admin Dashboard</h1>
-        <p class="welcome-description">Manage your organization's exams, view results, and monitor student performance</p>
+      <section class="welcome-section slide-up">
+        <div class="welcome-card">
+          <div class="welcome-content">
+            <h1 class="welcome-title">
+              <i class="fas fa-crown"></i>
+              Welcome to Admin Dashboard
+            </h1>
+            <p class="welcome-description">Manage your organization's exams, view results, and monitor student performance with ease</p>
+
+            <div class="admin-quick-actions">
+              <a href="/admin/exams/create" class="quick-action-link">
+                <i class="fas fa-plus"></i> Create New Exam
+              </a>
+              <button class="quick-action-link" onclick="showResults()">
+                <i class="fas fa-chart-line"></i> View Results
+              </button>
+            </div>
+          </div>
+          <div class="welcome-illustration">
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+        </div>
       </section>
 
 
       <!-- Dashboard Section: Exam Cards + Your Exams -->
-      <div class="dashboard-section">
+      <div class="dashboard-section slide-up">
         <div class="exam-management">
           <div class="exam-card">
-            <h3>📝 Create New Exam</h3>
+            <div class="exam-card-icon">
+              <i class="fas fa-plus-circle"></i>
+            </div>
+            <h3>Create New Exam</h3>
             <p>Set up a new examination for your organization with coding challenges, MCQs, or mixed formats.</p>
-            <a href="/admin/exams/create" class="btn">Create Exam</a>
+            <a href="/admin/exams/create" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Create Exam
+            </a>
           </div>
           <div class="exam-card">
-            <h3>📊 View Results</h3>
+            <div class="exam-card-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3>View Results</h3>
             <p>Monitor exam results, student performance, and generate detailed reports for analysis.</p>
-            <button class="btn btn-success" onclick="showResults()">View Results</button>
+            <button class="btn btn-success" onclick="showResults()">
+              <i class="fas fa-eye"></i> View Results
+            </button>
           </div>
         </div>
         <section class="current-exams">
-          <h2 class="section-title">Your Exams</h2>
+          <div class="section-header">
+            <h2 class="section-title">
+              <i class="fas fa-file-alt"></i> Your Exams
+            </h2>
+            <div class="exam-count" id="examCount">Loading...</div>
+          </div>
           <div class="exams-container" id="examsContainer">
-            <p>Loading exams...</p>
+            <div class="loading-message">
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Loading exams...</span>
+            </div>
           </div>
         </section>
       </div>
@@ -95,9 +150,11 @@
 
 
       <!-- Stats Section -->
-      <section class="stats-section">
+      <section class="stats-section slide-up">
         <div class="stat-card">
-          <div class="stat-icon">�</div>
+          <div class="stat-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
           <div class="stat-content">
             <div class="stat-number" id="totalExams"><%= stats ? stats.total : 0 %></div>
             <div class="stat-label">Total Exams</div>
@@ -111,7 +168,9 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">�</div>
+          <div class="stat-icon">
+            <i class="fas fa-play-circle"></i>
+          </div>
           <div class="stat-content">
             <div class="stat-number" id="activeExams"><%= stats ? stats.active : 0 %></div>
             <div class="stat-label">Active Exams</div>
@@ -119,7 +178,9 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">✅</div>
+          <div class="stat-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
           <div class="stat-content">
             <div class="stat-number" id="completedExams"><%= stats ? stats.completed : 0 %></div>
             <div class="stat-label">Completed Exams</div>
@@ -127,7 +188,9 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">👤</div>
+          <div class="stat-icon">
+            <i class="fas fa-user-shield"></i>
+          </div>
           <div class="stat-content">
             <div class="stat-number" id="userType">
               <% if (userType === 'owner') { %>
@@ -179,6 +242,16 @@
 
   <script src="/javascripts/sessionProtection.js"></script>
   <script src="/javascripts/adminDashboard.js"></script>
+  <script>
+    // Initialize dashboard animations
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add staggered animation delays
+      const elements = document.querySelectorAll('.slide-up');
+      elements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.1}s`;
+      });
+    });
+  </script>
 </body>
 </html>
 
