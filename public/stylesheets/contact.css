@@ -1,17 +1,22 @@
+/* Modern Contact Page Styles */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 body, html {
   height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
   color: #333;
+  line-height: 1.6;
 }
 
 .main-container {
@@ -22,22 +27,24 @@ body, html {
 
 .header-section {
   background: rgba(255, 255, 255, 0.95);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease forwards;
 }
 
 .brand-logo {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #357ABD;
+  color: #667eea;
   letter-spacing: 1px;
 }
 
@@ -62,19 +69,16 @@ body, html {
 }
 
 .nav-link:hover {
-  background-color: #4a90e2;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .nav-link.active {
-  background-color: #357ABD;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
   font-weight: 600;
-}
-
-.nav-link:hover {
-  background-color: #4a90e2;
-  color: #fff;
 }
 
 .user-actions {
@@ -83,21 +87,24 @@ body, html {
 }
 
 .action-btn {
-  padding: 0.5rem 1.2rem;
+  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 20px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  background-color: #4a90e2;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .action-btn:hover {
-  background-color: #357ABD;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .login-btn {
@@ -128,15 +135,30 @@ body, html {
 .welcome-card {
   grid-area: welcome;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
   padding: 3rem;
   text-align: center;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.6s ease forwards;
+}
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .welcome-title {
   font-size: 2.5rem;
-  color: #357ABD;
+  color: #333;
   margin-bottom: 1rem;
   font-weight: 700;
 }
@@ -195,22 +217,40 @@ body, html {
 .contact-form-section {
   grid-area: form;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+.contact-form-section.slide-up {
+  opacity: 1;
 }
 
 .section-title {
   font-size: 2rem;
-  color: #357ABD;
+  color: #333;
   margin-bottom: 2.5rem;
   font-weight: 700;
   text-align: center;
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   padding: 1.5rem;
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   text-shadow: none;
+  animation: slideUp 0.6s ease forwards;
+  animation-delay: 0.1s;
+  opacity: 0;
+}
+
+.section-title.slide-up {
+  opacity: 1;
 }
 
 .contact-form {
@@ -246,9 +286,9 @@ body, html {
 }
 
 .form-input:focus {
-  border-color: #4a90e2;
+  border-color: #667eea;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .message-input {
@@ -257,7 +297,7 @@ body, html {
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
   border: none;
   padding: 1rem 2rem;
@@ -268,13 +308,15 @@ body, html {
   transition: all 0.3s ease;
   justify-self: start;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .submit-btn:hover {
-  background: linear-gradient(135deg, #357ABD, #2b6cb8);
+  background: linear-gradient(135deg, #764ba2, #667eea);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -355,16 +397,36 @@ body, html {
 
 .contributor-card {
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 350px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-width: 280px;
-  border: 2px solid #e1e5e9;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.contributor-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.contributor-card:hover::before {
+  opacity: 1;
 }
 
 /* Layout: 1 2 3 in first row, 4 5 centered in second row */
@@ -392,7 +454,8 @@ body, html {
 
 .contributor-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
 }
 
 .contributor-header {
@@ -420,7 +483,7 @@ body, html {
 
 .contributor-name {
   font-size: 1.4rem;
-  color: #357ABD;
+  color: #333;
   margin-bottom: 0.5rem;
   font-weight: 700;
   word-wrap: break-word;
@@ -447,15 +510,15 @@ body, html {
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: rgba(74, 144, 226, 0.05);
+  background: rgba(102, 126, 234, 0.05);
   border-radius: 8px;
-  border-left: 4px solid #4a90e2;
+  border-left: 4px solid #667eea;
   min-height: 50px;
 }
 
 .detail-icon {
   font-size: 1.5rem;
-  color: #357ABD;
+  color: #667eea;
   flex-shrink: 0;
 }
 
@@ -476,12 +539,21 @@ body, html {
 }
 
 .team-address-card {
-  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
-  border-radius: 15px;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
   margin-top: 1rem;
+  animation: slideUp 0.6s ease forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+}
+
+.team-address-card.slide-up {
+  opacity: 1;
 }
 
 .address-header {
@@ -673,8 +745,10 @@ body, html {
 /* Footer Styles */
 .footer-section {
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .footer-content {
@@ -689,7 +763,7 @@ body, html {
 .footer-logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #357ABD;
+  color: #667eea;
   margin-bottom: 1rem;
 }
 
@@ -720,7 +794,7 @@ body, html {
 }
 
 .footer-link:hover {
-  color: #4a90e2;
+  color: #667eea;
 }
 
 .footer-bottom {
