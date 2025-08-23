@@ -4,6 +4,831 @@
 let timeRemaining = 2732; // Default fallback
 let examData = null;
 
+// Copy-Paste Prevention System
+function initializeCopyPastePrevention() {
+  console.log('Initializing copy-paste prevention...');
+  
+  // Prevent copy, cut, paste, and select all keyboard shortcuts
+  document.addEventListener('keydown', function(e) {
+    // Prevent Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A
+    if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x' || e.key === 'a')) {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Copy/Paste operations are disabled during the exam');
+      return false;
+    }
+    
+    // Prevent F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U (Developer tools and view source)
+    if (e.key === 'F12' || 
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+        (e.ctrlKey && e.key === 'u')) {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Developer tools are disabled during the exam');
+      return false;
+    }
+    
+    // Prevent Alt+Tab (minimize/switch windows)
+    if (e.altKey && e.key === 'Tab') {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Window switching is discouraged during the exam');
+      return false;
+    }
+    
+    // Prevent Ctrl+Shift+T (reopen closed tab)
+    if (e.ctrlKey && e.shiftKey && e.key === 'T') {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Tab operations are disabled during the exam');
+      return false;
+    }
+    
+    // Prevent F11 (manual fullscreen toggle)
+    if (e.key === 'F11') {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Manual fullscreen toggle is disabled during the exam');
+      return false;
+    }
+    
+    // Prevent Escape key when in fullscreen (to prevent exiting fullscreen)
+    if (e.key === 'Escape' && document.fullscreenElement) {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Exiting fullscreen is not allowed during the exam');
+      return false;
+    }
+  });
+  
+  // Prevent right-click context menu
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showSecurityAlert('Right-click is disabled during the exam');
+    return false;
+  });
+  
+  // Prevent clipboard API access
+  document.addEventListener('copy', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showSecurityAlert('Copy operation is disabled during the exam');
+    return false;
+  });
+  
+  document.addEventListener('cut', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showSecurityAlert('Cut operation is disabled during the exam');
+    return false;
+  });
+  
+  document.addEventListener('paste', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    showSecurityAlert('Paste operation is disabled during the exam');
+    return false;
+  });
+  
+  // Prevent text selection in specific areas (but allow in code editor)
+  document.addEventListener('selectstart', function(e) {
+    // Allow selection only in the code editor and input fields
+    const allowedElements = ['TEXTAREA', 'INPUT'];
+    const codeEditor = document.querySelector('.code-editor');
+    
+    if (!allowedElements.includes(e.target.tagName) && 
+        e.target !== codeEditor && 
+        !codeEditor?.contains(e.target)) {
+      e.preventDefault();
+      return false;
+    }
+  });
+  
+  // Additional protection for code editor
+  const codeEditor = document.querySelector('.code-editor');
+  if (codeEditor) {
+    // Override clipboard operations specifically for code editor
+    codeEditor.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x')) {
+        e.preventDefault();
+        e.stopPropagation();
+        showSecurityAlert('Copy/Paste operations are disabled in the code editor');
+        return false;
+      }
+    });
+    
+    codeEditor.addEventListener('paste', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Paste operation is disabled in the code editor');
+      return false;
+    });
+  }
+  
+  // Disable drag and drop
+  document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+    return false;
+  });
+  
+  document.addEventListener('drop', function(e) {
+    e.preventDefault();
+    return false;
+  });
+  
+  // Monitor for developer tools opening (basic detection)
+  let devtools = {
+    open: false,
+    threshold: 160
+  };
+  
+  function detectDevTools() {
+    if (window.outerHeight - window.innerHeight > devtools.threshold || 
+        window.outerWidth - window.innerWidth > devtools.threshold) {
+      if (!devtools.open) {
+        devtools.open = true;
+        showSecurityAlert('Developer tools detected. Please close them during the exam.');
+        console.warn('Developer tools opened');
+      }
+    } else {
+      devtools.open = false;
+    }
+  }
+  
+  // Check for developer tools every 500ms
+  setInterval(detectDevTools, 500);
+  
+  // Prevent opening new windows/tabs
+  window.addEventListener('beforeunload', function(e) {
+    const message = 'Are you sure you want to leave? Your exam progress might be lost.';
+    e.returnValue = message;
+    return message;
+  });
+  
+  // Disable print functionality
+  window.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'p') {
+      e.preventDefault();
+      e.stopPropagation();
+      showSecurityAlert('Printing is disabled during the exam');
+      return false;
+    }
+  });
+  
+  // Override print function
+  window.print = function() {
+    showSecurityAlert('Printing is disabled during the exam');
+    return false;
+  };
+  
+  // Disable selection of all text
+  document.onselectstart = function(e) {
+    const allowedElements = ['TEXTAREA', 'INPUT'];
+    const codeEditor = document.querySelector('.code-editor');
+    
+    if (!allowedElements.includes(e.target.tagName) && 
+        e.target !== codeEditor && 
+        !codeEditor?.contains(e.target)) {
+      return false;
+    }
+  };
+  
+  // Monitor window focus for potential tab switching
+  let isWindowFocused = true;
+  let focusWarningCount = 0;
+  
+  window.addEventListener('blur', function() {
+    isWindowFocused = false;
+    focusWarningCount++;
+    if (focusWarningCount <= 3) {
+      showSecurityAlert(`Warning ${focusWarningCount}/3: Please stay focused on the exam`);
+    }
+  });
+  
+  window.addEventListener('focus', function() {
+    isWindowFocused = true;
+  });
+  
+  console.log('Copy-paste prevention initialized successfully');
+}
+
+// Fullscreen Management System
+function initializeFullscreenMode() {
+  console.log('Initializing fullscreen mode...');
+  
+  let fullscreenAttempts = 0;
+  let maxAttempts = 3;
+  let fullscreenWarningShown = false;
+  
+  // Set global flag to prevent any interference
+  window.examTerminated = false;
+  
+  // Function to enter fullscreen
+  function enterFullscreen() {
+    const element = document.documentElement;
+    
+    if (element.requestFullscreen) {
+      return element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      return element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+      return element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) {
+      return element.msRequestFullscreen();
+    }
+    
+    return Promise.reject('Fullscreen not supported');
+  }
+  
+  // Function to check if in fullscreen
+  function isInFullscreen() {
+    return document.fullscreenElement || 
+           document.mozFullScreenElement || 
+           document.webkitFullscreenElement || 
+           document.msFullscreenElement;
+  }
+  
+  // Function to handle fullscreen requirement
+  function enforceFullscreen() {
+    // Check if exam is already terminated
+    if (window.examTerminated) {
+      console.log('Exam already terminated, skipping fullscreen enforcement');
+      return;
+    }
+    
+    if (!isInFullscreen()) {
+      console.log('Not in fullscreen. Current attempts:', fullscreenAttempts, 'Max:', maxAttempts);
+      
+      if (fullscreenAttempts >= maxAttempts) {
+        // Already exceeded max attempts, terminate immediately
+        console.error('TERMINATING: Exceeded max attempts');
+        handleMaxAttemptsReached();
+        return;
+      }
+      
+      fullscreenAttempts++;
+      console.log('Fullscreen attempt:', fullscreenAttempts, '/', maxAttempts);
+      
+      showFullscreenPrompt().then((userConfirmed) => {
+        if (userConfirmed) {
+          enterFullscreen().then(() => {
+            // Successfully entered fullscreen
+            console.log('Fullscreen enabled successfully');
+          }).catch((error) => {
+            console.error('Failed to enter fullscreen:', error);
+            showSecurityAlert('Please enable fullscreen manually for exam security');
+            
+            // If this was the last attempt and still failed
+            if (fullscreenAttempts >= maxAttempts) {
+              console.error('TERMINATING: Last attempt failed');
+              setTimeout(() => {
+                handleMaxAttemptsReached();
+              }, 1000);
+            } else {
+              // Retry after delay
+              setTimeout(enforceFullscreen, 2000);
+            }
+          });
+        } else {
+          // User cancelled/refused
+          console.log('User cancelled fullscreen attempt:', fullscreenAttempts, '/', maxAttempts);
+          if (fullscreenAttempts >= maxAttempts) {
+            // No more attempts left, terminate
+            console.error('TERMINATING: User refused final attempt');
+            handleMaxAttemptsReached();
+          } else {
+            // Still have attempts left, try again
+            setTimeout(enforceFullscreen, 2000);
+          }
+        }
+      });
+    }
+  }
+  
+  // Function to handle max attempts reached
+  function handleMaxAttemptsReached() {
+    console.error('EXAM TERMINATION: Maximum fullscreen attempts reached!');
+    console.log('Termination initiated - attempts:', fullscreenAttempts, 'max:', maxAttempts);
+    
+    // Prevent any further fullscreen attempts
+    fullscreenAttempts = maxAttempts + 1;
+    
+    // Log security violation
+    logSecurityViolation('FULLSCREEN_VIOLATION', `User exceeded maximum fullscreen attempts (${fullscreenAttempts-1}/${maxAttempts})`);
+    
+    // Show final warning modal
+    showExamTerminationModal();
+    
+    // Clear all code immediately
+    eraseAllCode();
+    
+    // Submit exam automatically after 5 seconds
+    setTimeout(() => {
+      forceSubmitExam();
+    }, 5000);
+    
+    // Disable any further security checks
+    window.examTerminated = true;
+  }
+  
+  // Function to log security violations
+  function logSecurityViolation(violationType, details) {
+    const violationData = {
+      type: violationType,
+      details: details,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href,
+      examId: window.examData?.exam?._id || 'unknown',
+      userId: window.examData?.user?._id || 'unknown'
+    };
+    
+    console.error('SECURITY VIOLATION:', violationData);
+    
+    // Try to send to server (optional - can fail silently)
+    try {
+      fetch('/api/security-violation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(violationData)
+      }).catch(error => {
+        console.warn('Failed to log security violation to server:', error);
+      });
+    } catch (error) {
+      console.warn('Failed to send security violation log:', error);
+    }
+    
+    // Store locally as backup
+    try {
+      const violations = JSON.parse(localStorage.getItem('securityViolations') || '[]');
+      violations.push(violationData);
+      localStorage.setItem('securityViolations', JSON.stringify(violations));
+    } catch (error) {
+      console.warn('Failed to store security violation locally:', error);
+    }
+  }
+  
+  // Function to erase all code from the IDE
+  function eraseAllCode() {
+    const codeEditor = document.querySelector('.code-editor');
+    if (codeEditor) {
+      codeEditor.value = '';
+      codeEditor.disabled = true;
+      codeEditor.style.background = '#ffebee';
+      codeEditor.style.color = '#c62828';
+      codeEditor.placeholder = 'Code cleared due to security violation';
+    }
+    
+    // Clear any saved code in localStorage
+    try {
+      localStorage.removeItem('examCode');
+      localStorage.removeItem('currentCode');
+      sessionStorage.clear();
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+    }
+    
+    // Disable all IDE functionality
+    disableIDEFunctionality();
+  }
+  
+  // Function to disable IDE functionality
+  function disableIDEFunctionality() {
+    // Disable all buttons
+    const buttons = document.querySelectorAll('.action-btn, .question-btn');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+    });
+    
+    // Disable language selector
+    const languageSelect = document.querySelector('.language-select, #language-select');
+    if (languageSelect) {
+      languageSelect.disabled = true;
+      languageSelect.style.opacity = '0.5';
+    }
+    
+    // Show disabled overlay
+    showDisabledOverlay();
+  }
+  
+  // Function to show exam termination modal
+  function showExamTerminationModal() {
+    const modal = document.createElement('div');
+    modal.id = 'examTerminationModal';
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999999;
+      backdrop-filter: blur(10px);
+    `;
+    
+    const modalContent = document.createElement('div');
+    modalContent.style.cssText = `
+      background: #ffebee;
+      padding: 3rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 600px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 3px solid #f44336;
+    `;
+    
+    modalContent.innerHTML = `
+      <div style="color: #c62828; font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+      <h2 style="color: #c62828; margin-bottom: 1rem; font-size: 1.8rem;">Exam Session Terminated</h2>
+      <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.6; font-size: 1.1rem;">
+        You have exceeded the maximum number of attempts (3/3) to enter fullscreen mode.
+        For exam security and integrity, your session has been terminated.
+      </p>
+      <div style="background: #ffcdd2; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+        <p style="color: #c62828; font-weight: bold; margin: 0;">
+          🔒 All code has been cleared<br>
+          📝 Exam will be auto-submitted in 5 seconds<br>
+          ❌ Session cannot be resumed
+        </p>
+      </div>
+      <div id="autoSubmitCountdown" style="color: #f44336; font-weight: bold; font-size: 1.2rem; margin-top: 1rem;">
+        Auto-submitting in: 5 seconds
+      </div>
+    `;
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    
+    // Countdown timer
+    let countdown = 5;
+    const countdownElement = document.getElementById('autoSubmitCountdown');
+    const countdownInterval = setInterval(() => {
+      countdown--;
+      if (countdownElement) {
+        countdownElement.textContent = `Auto-submitting in: ${countdown} seconds`;
+      }
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+      }
+    }, 1000);
+  }
+  
+  // Function to show disabled overlay
+  function showDisabledOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'disabledOverlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 71, 87, 0.1);
+      z-index: 1000;
+      pointer-events: none;
+      backdrop-filter: grayscale(100%);
+    `;
+    
+    const message = document.createElement('div');
+    message.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(196, 40, 40, 0.95);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+    `;
+    
+    message.innerHTML = `
+      <div style="font-size: 2rem; margin-bottom: 1rem;">🚫</div>
+      <div>EXAM SESSION TERMINATED</div>
+      <div style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">
+        Security violation detected
+      </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(message);
+  }
+  
+  // Function to force submit exam
+  function forceSubmitExam() {
+    console.log('Force submitting exam due to security violation...');
+    
+    // Show submission message
+    showSecurityAlert('Exam submitted due to security violation');
+    
+    // Try to submit via existing submit function if available
+    if (typeof submitCode === 'function') {
+      try {
+        submitCode();
+      } catch (error) {
+        console.error('Error submitting via submitCode:', error);
+        // Fallback to redirect
+        redirectToExamEnd();
+      }
+    } else {
+      // Fallback to redirect
+      redirectToExamEnd();
+    }
+  }
+  
+  // Function to redirect to exam end or dashboard
+  function redirectToExamEnd() {
+    // Clear any remaining data
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+    }
+    
+    // Show final message before redirect
+    setTimeout(() => {
+      const finalMessage = document.createElement('div');
+      finalMessage.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #c62828;
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        font-weight: bold;
+        z-index: 999999;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      `;
+      
+      finalMessage.innerHTML = `
+        <div style="font-size: 2rem; margin-bottom: 1rem;">📝</div>
+        <div>Redirecting to dashboard...</div>
+      `;
+      
+      document.body.appendChild(finalMessage);
+      
+      // Redirect after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/user/dashboard';
+      }, 2000);
+    }, 1000);
+  }
+  
+  // Function to show fullscreen prompt
+  function showFullscreenPrompt() {
+    return new Promise((resolve) => {
+      const modal = document.createElement('div');
+      modal.id = 'fullscreenModal';
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        backdrop-filter: blur(5px);
+      `;
+      
+      const modalContent = document.createElement('div');
+      modalContent.style.cssText = `
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 500px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        ${fullscreenAttempts === maxAttempts ? 'border: 3px solid #f44336;' : ''}
+      `;
+      
+      const warningColor = fullscreenAttempts === maxAttempts ? '#f44336' : '#333';
+      const warningText = fullscreenAttempts === maxAttempts ? 
+        'FINAL ATTEMPT: Exam will be terminated if fullscreen is not enabled!' : 
+        'For exam security and integrity, you must enable fullscreen mode.';
+      
+      modalContent.innerHTML = `
+        <h2 style="color: ${warningColor}; margin-bottom: 1rem;">
+          ${fullscreenAttempts === maxAttempts ? '⚠️ FINAL WARNING' : '🔒 Fullscreen Required'}
+        </h2>
+        <p style="color: #666; margin-bottom: 1.5rem; line-height: 1.5;">
+          ${warningText}
+          This prevents window switching and ensures a controlled exam environment.
+        </p>
+        ${fullscreenAttempts === maxAttempts ? `
+          <div style="background: #ffebee; padding: 1rem; border-radius: 8px; margin: 1rem 0; border-left: 4px solid #f44336;">
+            <p style="color: #c62828; margin: 0; font-weight: bold;">
+              ⚠️ If you cancel this attempt:<br>
+              • Your code will be erased<br>
+              • Exam will be auto-submitted<br>
+              • Session cannot be resumed
+            </p>
+          </div>
+        ` : ''}
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <button id="enableFullscreen" style="
+            background: ${fullscreenAttempts === maxAttempts ? '#4CAF50' : '#4CAF50'};
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+          ">Enable Fullscreen</button>
+          <button id="cancelFullscreen" style="
+            background: ${fullscreenAttempts === maxAttempts ? '#d32f2f' : '#f44336'};
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+          ">${fullscreenAttempts === maxAttempts ? 'Terminate Exam' : 'Cancel'}</button>
+        </div>
+        <p style="color: ${fullscreenAttempts === maxAttempts ? '#f44336' : '#999'}; margin-top: 1rem; font-size: 0.9rem; font-weight: ${fullscreenAttempts === maxAttempts ? 'bold' : 'normal'};">
+          Attempt ${fullscreenAttempts}/${maxAttempts}
+          ${fullscreenAttempts === maxAttempts ? ' - LAST CHANCE!' : ''}
+        </p>
+      `;
+      
+      modal.appendChild(modalContent);
+      document.body.appendChild(modal);
+      
+      document.getElementById('enableFullscreen').onclick = () => {
+        document.body.removeChild(modal);
+        resolve(true);
+      };
+      
+      document.getElementById('cancelFullscreen').onclick = () => {
+        document.body.removeChild(modal);
+        resolve(false);
+      };
+      
+      // Prevent closing modal by clicking outside on final attempt
+      if (fullscreenAttempts === maxAttempts) {
+        modal.onclick = (e) => {
+          e.stopPropagation();
+        };
+      }
+    });
+  }
+  
+  // Monitor fullscreen changes
+  document.addEventListener('fullscreenchange', function() {
+    if (window.examTerminated) return; // Skip if exam already terminated
+    
+    if (!isInFullscreen()) {
+      console.log('Fullscreen exited, current attempts:', fullscreenAttempts, 'max:', maxAttempts);
+      setTimeout(() => {
+        if (!isInFullscreen() && !window.examTerminated) {
+          if (fullscreenAttempts >= maxAttempts) {
+            // Already used all attempts, terminate
+            console.error('TERMINATING: Fullscreen exit after max attempts');
+            showSecurityAlert('Maximum fullscreen attempts exceeded. Terminating exam...');
+            handleMaxAttemptsReached();
+          } else {
+            // Still have attempts left
+            showSecurityAlert('Fullscreen mode exited. Re-entering for exam security...');
+            enforceFullscreen();
+          }
+        }
+      }, 1000);
+    } else {
+      // Show fullscreen active indicator
+      showFullscreenIndicator(true);
+    }
+  });
+  
+  // Also monitor for other vendor prefixes
+  document.addEventListener('mozfullscreenchange', function() {
+    if (window.examTerminated) return;
+    
+    if (!isInFullscreen()) {
+      setTimeout(() => {
+        if (!isInFullscreen() && !window.examTerminated) {
+          if (fullscreenAttempts >= maxAttempts) {
+            console.error('TERMINATING: Mozilla fullscreen exit after max attempts');
+            showSecurityAlert('Maximum fullscreen attempts exceeded. Terminating exam...');
+            handleMaxAttemptsReached();
+          } else {
+            showSecurityAlert('Fullscreen mode exited. Re-entering for exam security...');
+            enforceFullscreen();
+          }
+        }
+      }, 1000);
+    } else {
+      showFullscreenIndicator(true);
+    }
+  });
+  
+  document.addEventListener('webkitfullscreenchange', function() {
+    if (window.examTerminated) return;
+    
+    if (!isInFullscreen()) {
+      setTimeout(() => {
+        if (!isInFullscreen() && !window.examTerminated) {
+          if (fullscreenAttempts >= maxAttempts) {
+            console.error('TERMINATING: Webkit fullscreen exit after max attempts');
+            showSecurityAlert('Maximum fullscreen attempts exceeded. Terminating exam...');
+            handleMaxAttemptsReached();
+          } else {
+            showSecurityAlert('Fullscreen mode exited. Re-entering for exam security...');
+            enforceFullscreen();
+          }
+        }
+      }, 1000);
+    } else {
+      showFullscreenIndicator(true);
+    }
+  });
+  
+  // Function to show/hide fullscreen indicator
+  function showFullscreenIndicator(show) {
+    let indicator = document.getElementById('fullscreenIndicator');
+    
+    if (show && !indicator) {
+      indicator = document.createElement('div');
+      indicator.id = 'fullscreenIndicator';
+      indicator.className = 'fullscreen-indicator active';
+      indicator.innerHTML = '📺 Fullscreen Active';
+      document.body.appendChild(indicator);
+      
+      // Hide after 3 seconds
+      setTimeout(() => {
+        if (indicator && indicator.parentNode) {
+          indicator.style.opacity = '0';
+          setTimeout(() => {
+            if (indicator && indicator.parentNode) {
+              indicator.parentNode.removeChild(indicator);
+            }
+          }, 300);
+        }
+      }, 3000);
+    }
+  }
+  
+  // Initial fullscreen enforcement after a short delay
+  setTimeout(() => {
+    if (!isInFullscreen()) {
+      enforceFullscreen();
+    }
+  }, 2000);
+  
+  console.log('Fullscreen mode initialized successfully');
+}
+
+// Show security alert function
+function showSecurityAlert(message) {
+  // Create a temporary notification
+  const notification = document.createElement('div');
+  notification.className = 'security-alert';
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4757;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    z-index: 9999;
+    font-weight: bold;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.remove();
+    }
+  }, 3000);
+  
+  // Log security violation
+  console.warn('Security violation detected:', message);
+}
+
 // Load data from script tag
 function loadExamData() {
   try {
@@ -890,6 +1715,32 @@ function showNotification(message) {
 
 // Enhanced DOM ready initialization
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialize copy-paste prevention first
+  initializeCopyPastePrevention();
+  
+  // Initialize fullscreen mode
+  initializeFullscreenMode();
+  
+  // Hide security banner after 5 seconds
+  setTimeout(function() {
+    const securityBanner = document.getElementById('securityBanner');
+    if (securityBanner) {
+      securityBanner.style.transition = 'opacity 0.5s ease';
+      securityBanner.style.opacity = '0';
+      setTimeout(() => {
+        securityBanner.style.display = 'none';
+      }, 500);
+    }
+  }, 5000);
+  
+  // Console warning message
+  console.clear();
+  console.log('%c🔒 SECURE EXAM MODE ACTIVATED', 'color: #ff4757; font-size: 20px; font-weight: bold;');
+  console.log('%cCopy/Paste operations and developer tools are disabled during this exam.', 'color: #333; font-size: 14px;');
+  console.log('%cAny attempt to bypass security measures will be logged.', 'color: #333; font-size: 14px;');
+  console.log('%c⚠️ This exam session is being monitored for integrity.', 'color: #ff6b00; font-size: 14px; font-weight: bold;');
+  console.log('%c📺 Fullscreen mode is enforced for exam security.', 'color: #4CAF50; font-size: 14px; font-weight: bold;');
+  
   // Initialize exam mode if exam data is available
   if (window.examData) {
     console.log('Exam mode initialized with data:', window.examData);

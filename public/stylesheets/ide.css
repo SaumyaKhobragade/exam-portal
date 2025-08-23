@@ -1087,3 +1087,293 @@ body, html {
         align-self: center;
     }
 }
+
+/* Security Alert Styles */
+.security-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4757;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    z-index: 9999;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+    border-left: 4px solid #ffffff;
+    max-width: 300px;
+    word-wrap: break-word;
+    animation: slideIn 0.3s ease;
+}
+
+/* Security alert animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Additional security styles to prevent text selection */
+.no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Apply no-select to specific elements but allow in code editor */
+.problem-section:not(.code-editor),
+.question-nav:not(.code-editor),
+.header-section {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Ensure code editor allows selection */
+.code-editor {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Disable right-click context menu */
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Re-enable text selection for input elements */
+input, textarea, .code-editor {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Fullscreen Modal Styles */
+#fullscreenModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    backdrop-filter: blur(5px);
+    animation: modalFadeIn 0.3s ease;
+}
+
+#fullscreenModal .modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+#fullscreenModal button {
+    transition: all 0.2s ease;
+}
+
+#fullscreenModal button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#enableFullscreen:hover {
+    background: #45a049 !important;
+}
+
+#cancelFullscreen:hover {
+    background: #d32f2f !important;
+}
+
+/* Fullscreen modal animations */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Fullscreen indicator */
+.fullscreen-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    z-index: 1000;
+    display: none;
+}
+
+.fullscreen-indicator.active {
+    display: block;
+    animation: slideIn 0.3s ease;
+}
+
+/* Additional security styles for fullscreen */
+:fullscreen {
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+}
+
+:-webkit-full-screen {
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+}
+
+:-moz-full-screen {
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+}
+
+:-ms-fullscreen {
+    background: linear-gradient(135deg, #4a90e2, #357ABD);
+}
+
+/* Exam Termination Modal Styles */
+#examTerminationModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+    backdrop-filter: blur(10px);
+    animation: modalFadeIn 0.5s ease;
+}
+
+#examTerminationModal .modal-content {
+    background: #ffebee;
+    padding: 3rem;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 3px solid #f44336;
+    animation: modalShake 0.5s ease;
+}
+
+/* Disabled overlay styles */
+#disabledOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 71, 87, 0.1);
+    z-index: 1000;
+    pointer-events: none;
+    backdrop-filter: grayscale(100%);
+}
+
+/* Code editor disabled state */
+.code-editor:disabled {
+    background: #ffebee !important;
+    color: #c62828 !important;
+    cursor: not-allowed !important;
+    opacity: 0.8;
+}
+
+/* Disabled button styles */
+.action-btn:disabled,
+.question-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    background: #bdbdbd !important;
+    color: #757575 !important;
+}
+
+/* Enhanced fullscreen modal for final attempt */
+#fullscreenModal.final-attempt {
+    background: rgba(244, 67, 54, 0.9);
+}
+
+#fullscreenModal.final-attempt .modal-content {
+    border: 3px solid #f44336;
+    animation: modalPulse 1s ease infinite;
+}
+
+/* Warning animations */
+@keyframes modalShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+@keyframes modalPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+/* Termination countdown styles */
+#autoSubmitCountdown {
+    color: #f44336;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+    animation: countdownBlink 1s ease infinite;
+}
+
+@keyframes countdownBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Security violation message styles */
+.security-violation-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(196, 40, 40, 0.95);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+    animation: violationAlert 2s ease infinite;
+}
+
+@keyframes violationAlert {
+    0%, 100% { background: rgba(196, 40, 40, 0.95); }
+    50% { background: rgba(244, 67, 54, 0.95); }
+}

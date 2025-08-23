@@ -5,7 +5,12 @@
   <title>CodeSecure - <% if (typeof exam !== 'undefined' && exam) { %><%= exam.title %><% } else { %>Coding IDE<% } %></title>
   <link rel="stylesheet" href="/stylesheets/ide.css" />
 </head>
-<body>
+<body oncontextmenu="return false;" onselectstart="return false;" ondragstart="return false;">
+  <!-- Security Warning Banner -->
+  <div id="securityBanner" style="background: #ff4757; color: white; text-align: center; padding: 8px; font-weight: bold; font-size: 14px; z-index: 10000; position: relative;">
+    🔒 SECURE EXAM MODE: Fullscreen enforced • Copy/Paste disabled • Developer Tools blocked
+  </div>
+  
   <div class="main-container">
     <header class="header-section">
       <div class="brand-logo">CodeSecure IDE</div>
