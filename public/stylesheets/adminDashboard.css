@@ -199,6 +199,41 @@ body, html {
   background: rgba(255, 255, 255, 0.05);
 }
 
+/* Section Headers */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.exam-count {
+  background: rgba(74, 144, 226, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  color: #4a90e2;
+  font-weight: 500;
+}
+
+.loading-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem;
+  color: #666;
+  font-weight: 500;
+  background: rgba(74, 144, 226, 0.05);
+  border-radius: 12px;
+  border: 2px dashed rgba(74, 144, 226, 0.2);
+}
+
+.loading-message i {
+  color: #4a90e2;
+  font-size: 1.2rem;
+}
+
 /* Alert Messages */
 .alert {
   padding: 1rem;
