@@ -676,6 +676,42 @@ body, html {
   }
 }
 
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Initialize animations for toggle buttons and sections */
+.toggle-buttons.slide-up {
+  opacity: 1;
+}
+
+.auth-forms-section.slide-up {
+  opacity: 1;
+}
+
+.auth-benefits.slide-up {
+  opacity: 1;
+}
+
 /* Footer Styles */
 .footer-section {
   background: rgba(255, 255, 255, 0.95);
