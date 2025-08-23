@@ -19,11 +19,21 @@
         <span class="org-name-header" id="organizationNameHeader">Loading...</span>
       </div>
       <nav class="navigation-menu">
-        <a href="/admin-dashboard" class="nav-link">Dashboard</a>
-        <a href="/admin/exams/create" class="nav-link">Create Exam</a>
-        <a href="/manage-homepage" class="nav-link">Homepage</a>
-        <a href="#" class="nav-link" onclick="showResults()">Results</a>
-        <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
+        <a href="/admin-dashboard" class="nav-link active">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/admin/exams/create" class="nav-link">
+          <i class="fas fa-plus-circle"></i> Create Exam
+        </a>
+        <a href="/manage-homepage" class="nav-link">
+          <i class="fas fa-home"></i> Homepage
+        </a>
+        <a href="#" class="nav-link" onclick="showResults()">
+          <i class="fas fa-chart-bar"></i> Results
+        </a>
+        <a href="#" class="nav-link" onclick="showSettings()">
+          <i class="fas fa-cog"></i> Settings
+        </a>
       </nav>
       <div class="user-actions">
         <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
