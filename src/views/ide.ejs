@@ -86,6 +86,20 @@
                   <div id="problemDescription"><%- exam.questions[0].description || 'No description available.' %></div>
                 </div>
 
+                <% if (exam.questions[0].inputFormat) { %>
+                  <div class="problem-input-format" id="problemInputFormat">
+                    <h3 class="section-subtitle">Input Format</h3>
+                    <div><%- exam.questions[0].inputFormat %></div>
+                  </div>
+                <% } %>
+
+                <% if (exam.questions[0].outputFormat) { %>
+                  <div class="problem-output-format" id="problemOutputFormat">
+                    <h3 class="section-subtitle">Output Format</h3>
+                    <div><%- exam.questions[0].outputFormat %></div>
+                  </div>
+                <% } %>
+
                 <% if (exam.questions[0].examples && exam.questions[0].examples.length > 0) { %>
                   <div class="problem-examples" id="problemExamples">
                     <h3 class="section-subtitle">Examples</h3>
@@ -125,6 +139,22 @@
                   <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to target.</p>
                   <p>You may assume that each input would have exactly one solution, and you may not use the same element twice.</p>
                   <p>You can return the answer in any order.</p>
+                </div>
+
+                <div class="problem-input-format">
+                  <h3 class="section-subtitle">Input Format</h3>
+                  <ul>
+                    <li>The first parameter is an array of integers <code>nums</code></li>
+                    <li>The second parameter is an integer <code>target</code></li>
+                  </ul>
+                </div>
+
+                <div class="problem-output-format">
+                  <h3 class="section-subtitle">Output Format</h3>
+                  <ul>
+                    <li>Return an array of two integers representing the indices</li>
+                    <li>The indices should be in ascending order</li>
+                  </ul>
                 </div>
 
                 <div class="problem-examples">

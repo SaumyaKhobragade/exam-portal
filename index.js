@@ -79,45 +79,164 @@ app.get('/about', async (req, res) => {
 app.get('/contact', (req,res)=>{
     res.render('contact');
 })
-app.get('/ide', (req,res)=>{
-    // Provide sample exam data for testing purposes
-    const sampleExam = {
-        title: "Sample Coding Challenge",
-        description: "This is a sample exam for testing the IDE",
-        duration: 60,
-        totalMarks: 100,
-        questions: [{
-            title: "Two Sum Problem",
-            description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution, and you may not use the same element twice.",
-            points: 50,
-            examples: [
-                {
-                    input: "nums = [2,7,11,15], target = 9",
-                    output: "[0,1]",
-                    explanation: "Because nums[0] + nums[1] = 2 + 7 = 9, we return [0, 1]."
-                },
-                {
-                    input: "nums = [3,2,4], target = 6", 
-                    output: "[1,2]",
-                    explanation: "Because nums[1] + nums[2] = 2 + 4 = 6, we return [1, 2]."
-                }
-            ],
-            constraints: [
-                "2 ≤ nums.length ≤ 10⁴",
-                "-10⁹ ≤ nums[i] ≤ 10⁹", 
-                "-10⁹ ≤ target ≤ 10⁹",
-                "Only one valid answer exists."
-            ]
-        }]
-    };
-    
-    res.render('ide', { 
-        exam: sampleExam,
-        timeRemaining: 3600, // 1 hour for testing
-        examStarted: false,
-        user: null
-    });
+app.get('/ide', async (req,res)=>{
+    try {
+        // Import models
+        const mongoose = await import('mongoose');
+        const Exam = mongoose.default.model('Exam');
+        
+        console.log('IDE route: Fetching exam from database...');
+        
+        // Find any exam to display (not just active ones for demo purposes)
+        const exam = await Exam.findOne({ 
+            questions: { $exists: true, $not: { $size: 0 } } // Find exams that have questions
+        })
+        .populate('adminId', 'username fullname domain')
+        .select('title description startDateTime duration status questions totalMarks adminId')
+        .sort({ createdAt: -1 }) // Get the most recent exam
+        .limit(1);
+        
+        console.log('IDE route: Found exam:', exam ? { 
+            id: exam._id, 
+            title: exam.title, 
+            questionsCount: exam.questions?.length,
+            status: exam.status 
+        } : 'No exam found');
+        
+        if (exam && exam.questions && exam.questions.length > 0) {
+            console.log('IDE route: Using real exam data');
+            console.log('First question title:', exam.questions[0].title);
+            console.log('First question description length:', exam.questions[0].description?.length || 0);
+            
+            // Calculate remaining time (for demo purposes, show full duration)
+            const now = new Date();
+            const startTime = new Date(exam.startDateTime);
+            const endTime = new Date(startTime.getTime() + (exam.duration * 60000));
+            const timeRemaining = Math.max(0, Math.floor((endTime - now) / 1000));
+            
+            // Render IDE with real exam data
+            res.render('ide', { 
+                exam: exam,
+                timeRemaining: timeRemaining > 0 ? timeRemaining : exam.duration * 60, // Show full duration if expired
+                examStarted: false,
+                user: null
+            });
+        } else {
+            console.log('IDE route: No exams found with questions, using fallback sample data');
+            // Fallback to sample data if no exams with questions found
+            const sampleExam = {
+                title: "Sample Coding Challenge",
+                description: "This is a sample exam for testing the IDE",
+                duration: 60,
+                totalMarks: 100,
+                questions: [{
+                    title: "Two Sum Problem",
+                    description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to target.
+                    <br><br>
+                    You may assume that each input would have exactly one solution, and you may not use the same element twice.
+                    <br><br>
+                    You can return the answer in any order.
+                    <br><br>
+                    <strong>Follow-up:</strong> Can you come up with an algorithm that is less than O(n²) time complexity?`,
+                    points: 50,
+                    inputFormat: `<strong>Input Format:</strong>
+                    <ul>
+                        <li>The first parameter is an array of integers <code>nums</code></li>
+                        <li>The second parameter is an integer <code>target</code></li>
+                    </ul>`,
+                    outputFormat: `<strong>Output Format:</strong>
+                    <ul>
+                        <li>Return an array of two integers representing the indices of the two numbers that add up to the target</li>
+                        <li>The indices should be in ascending order</li>
+                    </ul>`,
+                    examples: [
+                        {
+                            input: "nums = [2,7,11,15], target = 9",
+                            output: "[0,1]",
+                            explanation: "Because nums[0] + nums[1] = 2 + 7 = 9, we return [0, 1]."
+                        },
+                        {
+                            input: "nums = [3,2,4], target = 6", 
+                            output: "[1,2]",
+                            explanation: "Because nums[1] + nums[2] = 2 + 4 = 6, we return [1, 2]."
+                        },
+                        {
+                            input: "nums = [3,3], target = 6",
+                            output: "[0,1]", 
+                            explanation: "Because nums[0] + nums[1] = 3 + 3 = 6, we return [0, 1]."
+                        }
+                    ],
+                    constraints: [
+                        "2 ≤ nums.length ≤ 10⁴",
+                        "-10⁹ ≤ nums[i] ≤ 10⁹", 
+                        "-10⁹ ≤ target ≤ 10⁹",
+                        "Only one valid answer exists."
+                    ]
+                }]
+            };
+            
+            res.render('ide', { 
+                exam: sampleExam,
+                timeRemaining: 3600, // 1 hour for testing
+                examStarted: false,
+                user: null
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching exam for IDE:', error);
+        // Fallback to sample data on error
+        const sampleExam = {
+            title: "Sample Coding Challenge - Error Fallback",
+            description: "Could not load exam from database. Showing sample data.",
+            duration: 60,
+            totalMarks: 100,
+            questions: [{
+                title: "Sample Problem",
+                description: "This is a fallback sample problem due to database error.",
+                points: 50,
+                examples: [],
+                constraints: []
+            }]
+        };
+        
+        res.render('ide', { 
+            exam: sampleExam,
+            timeRemaining: 3600,
+            examStarted: false,
+            user: null
+        });
+    }
 })
+
+// Debug route to see available exams
+app.get('/debug/exams', async (req, res) => {
+    try {
+        const mongoose = await import('mongoose');
+        const Exam = mongoose.default.model('Exam');
+        
+        const exams = await Exam.find({})
+            .populate('adminId', 'username fullname domain')
+            .select('title description status questions createdAt adminId')
+            .sort({ createdAt: -1 })
+            .limit(10);
+        
+        res.json({
+            total: exams.length,
+            exams: exams.map(exam => ({
+                id: exam._id,
+                title: exam.title,
+                description: exam.description,
+                status: exam.status,
+                questionsCount: exam.questions ? exam.questions.length : 0,
+                firstQuestionTitle: exam.questions && exam.questions.length > 0 ? exam.questions[0].title : 'No questions',
+                createdAt: exam.createdAt,
+                admin: exam.adminId ? exam.adminId.username : 'No admin'
+            }))
+        });
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+});
 
 // Start exam route - redirects user to IDE with exam data
 app.get('/exams/start/:examId', noCacheMiddleware, verifyJWTSession, async (req, res) => {
