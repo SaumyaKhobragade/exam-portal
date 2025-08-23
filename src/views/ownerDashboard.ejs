@@ -105,16 +105,20 @@
             </section>
 
             <!-- Organization Access Request Management Section -->
-            <div class="exam-requests-section dashboard-section slide-up">
+            <section class="requests-section slide-up">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-building"></i> Organization Access Requests
                     </h2>
+                    <div class="request-count" id="requestCount">Loading...</div>
                 </div>
-                <div id="examRequestsList">
-                    <!-- Exam requests will be loaded here dynamically -->
+                <div class="requests-container" id="examRequestsList">
+                    <div class="loading-message">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>Loading requests...</span>
+                    </div>
                 </div>
-            </div>
+            </section>
 
             <!-- Admin Management Section -->
             <div class="admin-management-section slide-up">
