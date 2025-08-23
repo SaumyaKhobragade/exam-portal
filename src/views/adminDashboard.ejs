@@ -100,23 +100,41 @@
 
 
       <!-- Dashboard Section: Exam Cards + Your Exams -->
-      <div class="dashboard-section">
+      <div class="dashboard-section slide-up">
         <div class="exam-management">
           <div class="exam-card">
-            <h3>📝 Create New Exam</h3>
+            <div class="exam-card-icon">
+              <i class="fas fa-plus-circle"></i>
+            </div>
+            <h3>Create New Exam</h3>
             <p>Set up a new examination for your organization with coding challenges, MCQs, or mixed formats.</p>
-            <a href="/admin/exams/create" class="btn">Create Exam</a>
+            <a href="/admin/exams/create" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Create Exam
+            </a>
           </div>
           <div class="exam-card">
-            <h3>📊 View Results</h3>
+            <div class="exam-card-icon">
+              <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3>View Results</h3>
             <p>Monitor exam results, student performance, and generate detailed reports for analysis.</p>
-            <button class="btn btn-success" onclick="showResults()">View Results</button>
+            <button class="btn btn-success" onclick="showResults()">
+              <i class="fas fa-eye"></i> View Results
+            </button>
           </div>
         </div>
         <section class="current-exams">
-          <h2 class="section-title">Your Exams</h2>
+          <div class="section-header">
+            <h2 class="section-title">
+              <i class="fas fa-file-alt"></i> Your Exams
+            </h2>
+            <div class="exam-count" id="examCount">Loading...</div>
+          </div>
           <div class="exams-container" id="examsContainer">
-            <p>Loading exams...</p>
+            <div class="loading-message">
+              <i class="fas fa-spinner fa-spin"></i>
+              <span>Loading exams...</span>
+            </div>
           </div>
         </section>
       </div>
