@@ -195,6 +195,9 @@ body, html {
 .welcome-section {
   margin-bottom: 2rem;
   animation: slideUp 0.6s ease forwards;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto 2rem auto;
 }
 
 .welcome-card {
@@ -460,25 +463,11 @@ body, html {
 }
 
 .exam-item.completed {
-  border-left-color: #667eea;
+  border-left-color: #28a745;
 }
 
 .exam-item.completed:hover {
-  border-left-color: #764ba2;
-}
-
-.exam-item.completed::after {
-  content: '✓ Completed';
-  position: absolute;
-  top: 1.5rem;
-  right: 2rem;
-  font-size: 0.9rem;
-  color: #667eea;
-  font-weight: 600;
-  background: rgba(102, 126, 234, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 15px;
-  letter-spacing: 0.5px;
+  border-left-color: #218838;
 }
 
 .exam-header {
@@ -546,13 +535,33 @@ body, html {
 
 /* Stats Section */
 .stats-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  max-width: 1200px;
+  width: 100%;
   animation: slideUp 0.6s ease forwards;
   animation-delay: 0.4s;
   opacity: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.stats-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .stats-section.slide-up {
@@ -808,6 +817,10 @@ body, html {
     padding: 1rem;
   }
 
+  .welcome-section {
+    margin: 1rem auto 2rem auto;
+  }
+
   .welcome-card {
     flex-direction: column;
     text-align: center;
@@ -821,6 +834,11 @@ body, html {
 
   .dashboard-section {
     padding: 2rem 1.5rem;
+  }
+
+  .stats-section {
+    padding: 2rem 1.5rem;
+    margin: 1rem auto;
   }
 
   .exam-management {
@@ -839,18 +857,24 @@ body, html {
   .performance-metrics {
     grid-template-columns: 1fr;
   }
-
-  .exam-item.completed::after {
-    position: static;
-    display: block;
-    margin-top: 1rem;
-    text-align: center;
-  }
 }
 
 @media (max-width: 480px) {
+  .welcome-section {
+    margin: 0.5rem auto 1.5rem auto;
+  }
+
+  .welcome-card {
+    padding: 2rem 1.5rem;
+  }
+
   .welcome-title {
     font-size: 1.8rem;
+  }
+
+  .stats-section {
+    padding: 1.5rem;
+    margin: 0.5rem auto;
   }
 
   .section-title {
@@ -982,8 +1006,9 @@ body, html {
 }
 
 .status-completed {
-  background: #d1ecf1;
-  color: #0c5460;
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 /* Modal Styles */

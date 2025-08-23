@@ -139,7 +139,14 @@ async function loadAdminExams() {
 // Display exams in the admin dashboard
 function displayExams(exams) {
   const examsContainer = document.getElementById('examsContainer');
+  const examCountElement = document.getElementById('examCount');
+  
   if (!examsContainer) return;
+  
+  // Update exam count
+  if (examCountElement) {
+    examCountElement.textContent = `${exams.length} exam${exams.length !== 1 ? 's' : ''}`;
+  }
   
   if (exams.length === 0) {
     examsContainer.innerHTML = '<p class="no-exams">No exams created yet. <a href="/admin/exams/create">Create your first exam</a></p>';
