@@ -36,8 +36,13 @@
         </a>
       </nav>
       <div class="user-actions">
-        <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
-        <a href="/logout" class="action-btn logout-btn">Logout</a>
+        <div class="user-info">
+          <i class="fas fa-user-shield"></i>
+          <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
+        </div>
+        <a href="/logout" class="action-btn logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
       </div>
     </header>
 
