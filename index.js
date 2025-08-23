@@ -755,6 +755,52 @@ app.get('/test-ai-grading', (req, res) => {
     res.sendFile(path.join(__dirname, 'test-ai-grading.html'));
 });
 
+// Test Google Gemini Grading endpoint
+app.post('/api/v1/test-gemini-grading', async (req, res) => {
+    try {
+        console.log('Testing Google Gemini grading system...');
+        
+        const testData = {
+            sourceCode: `def sum_array(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    return total
+
+result = sum_array([1, 2, 3, 4, 5])
+print(f"Sum: {result}")`,
+            language: 'python',
+            problemTitle: 'Sum Array Elements',
+            problemStatement: 'Write a function that calculates the sum of all elements in an array',
+            constraints: 'Array will contain positive integers',
+            testResults: [
+                { status: 'Accepted', time: '0.1s', memory: '256KB' },
+                { status: 'Accepted', time: '0.1s', memory: '256KB' }
+            ]
+        };
+
+        // Test Gemini directly
+        const GeminiGrader = (await import('./src/services/geminiGrader.js')).default;
+        const geminiGrader = new GeminiGrader();
+        const gradingResult = await geminiGrader.gradeCode(testData);
+        
+        console.log('Gemini test result:', JSON.stringify(gradingResult, null, 2));
+
+        res.json({
+            success: true,
+            message: 'Google Gemini grading test completed',
+            result: gradingResult
+        });
+
+    } catch (error) {
+        console.error('Test Gemini Grading error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Test failed: ' + error.message
+        });
+    }
+});
+
 // Test Hugging Face Grading endpoint
 app.post('/api/v1/test-hf-grading', async (req, res) => {
     try {
@@ -1018,6 +1064,103 @@ app.get('/debug/exams', async (req, res) => {
         });
     } catch (error) {
         res.json({ error: error.message, stack: error.stack });
+    }
+});
+
+// Rankings API endpoint for admin dashboard
+app.get('/api/v1/admin/rankings', verifyJWT, async (req, res) => {
+    try {
+        const { examId } = req.query;
+        
+        // Import required models
+        const User = (await import('./src/models/user.model.js')).default;
+        const Exam = (await import('./src/models/exam.model.js')).default;
+        
+        // Get all users in the admin's organization/domain
+        const adminDomain = req.user.domain;
+        
+        // Find all students in the same domain
+        const students = await User.find({ 
+            domain: adminDomain,
+            // Exclude admins/owners from rankings
+            $and: [
+                { username: { $not: /^admin/ } },
+                { username: { $not: /^owner/ } }
+            ]
+        }).select('username fullname email createdAt updatedAt');
+        
+        // Generate sample rankings data for demonstration
+        // In a real implementation, this would come from actual exam submissions and AI grading results
+        const rankings = students.map((student, index) => {
+            // Generate realistic scores based on position and some randomness
+            const baseScore = Math.max(3, 10 - (index * 0.5) - (Math.random() * 2));
+            
+            const generateScore = (base) => Math.min(10, Math.max(1, base + (Math.random() - 0.5) * 2));
+            
+            const correctness = generateScore(baseScore);
+            const codeQuality = generateScore(baseScore * 0.9);
+            const efficiency = generateScore(baseScore * 0.85);
+            const bestPractices = generateScore(baseScore * 0.8);
+            const timeScore = generateScore(baseScore * 0.9);
+            
+            const overallScore = (correctness + codeQuality + efficiency + bestPractices + timeScore) / 5;
+            
+            return {
+                _id: student._id,
+                username: student.username,
+                fullname: student.fullname,
+                email: student.email,
+                overallScore: Math.round(overallScore * 10) / 10,
+                correctness: Math.round(correctness * 10) / 10,
+                codeQuality: Math.round(codeQuality * 10) / 10,
+                efficiency: Math.round(efficiency * 10) / 10,
+                bestPractices: Math.round(bestPractices * 10) / 10,
+                timeScore: Math.round(timeScore * 10) / 10,
+                examCount: Math.floor(Math.random() * 5) + 1,
+                lastActivity: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000) // Random date within last 30 days
+            };
+        });
+        
+        // Sort by overall score (descending)
+        rankings.sort((a, b) => b.overallScore - a.overallScore);
+        
+        // Calculate statistics
+        const totalStudents = rankings.length;
+        const averageOverallScore = totalStudents > 0 
+            ? rankings.reduce((sum, student) => sum + student.overallScore, 0) / totalStudents 
+            : 0;
+        
+        const topPerformer = rankings.length > 0 ? rankings[0].fullname || rankings[0].username : 'N/A';
+        const mostImproved = rankings.length > 1 ? rankings[Math.floor(rankings.length / 3)].fullname || rankings[Math.floor(rankings.length / 3)].username : 'N/A';
+        const activeStudents = rankings.filter(student => {
+            const daysSinceActivity = (Date.now() - new Date(student.lastActivity)) / (1000 * 60 * 60 * 24);
+            return daysSinceActivity <= 7; // Active within last week
+        }).length;
+        
+        const stats = {
+            averageOverallScore,
+            topPerformer,
+            mostImproved,
+            activeStudents,
+            totalStudents
+        };
+        
+        res.json({
+            success: true,
+            data: {
+                rankings,
+                stats
+            },
+            message: `Found ${totalStudents} students in ${adminDomain} domain`
+        });
+        
+    } catch (error) {
+        console.error('Error fetching rankings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch rankings',
+            error: error.message
+        });
     }
 });
 

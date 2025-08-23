@@ -18,13 +18,11 @@ export default class HuggingFaceCodeGrader {
         
         // Fallback models to try in order (free and paid)
         this.models = this.hasApiKey ? [
-            'microsoft/DialoGPT-medium',
-            'microsoft/CodeBERT-base', 
-            'codellama/CodeLlama-7b-Instruct-hf',
-            'bigcode/starcoder',
-            'HuggingFaceH4/zephyr-7b-beta'
+            'gpt2',
+            'distilgpt2',
+            'microsoft/DialoGPT-small',
+            'facebook/blenderbot-400M-distill'
         ] : [
-            'microsoft/DialoGPT-medium',
             'gpt2',
             'distilgpt2'
         ];
@@ -138,37 +136,19 @@ export default class HuggingFaceCodeGrader {
      */
     async makeModelRequest(modelName, prompt) {
         try {
-            // For text generation models
-            if (modelName.includes('DialoGPT') || modelName.includes('CodeLlama') || 
-                modelName.includes('starcoder') || modelName.includes('gpt')) {
-                
-                const result = await this.hf.textGeneration({
-                    model: modelName,
-                    inputs: prompt,
-                    parameters: {
-                        max_new_tokens: 400,
-                        temperature: 0.3,
-                        do_sample: true,
-                        return_full_text: false
-                    }
-                });
-                
-                return result.generated_text || result;
-            }
+            // Use text generation for all models
+            const result = await this.hf.textGeneration({
+                model: modelName,
+                inputs: prompt,
+                parameters: {
+                    max_new_tokens: 200,
+                    temperature: 0.7,
+                    do_sample: true,
+                    return_full_text: false
+                }
+            });
             
-            // For conversational models
-            else {
-                const result = await this.hf.conversational({
-                    model: modelName,
-                    inputs: {
-                        past_user_inputs: [],
-                        generated_responses: [],
-                        text: prompt
-                    }
-                });
-                
-                return result.generated_text || result.conversation?.generated_responses?.[0] || result;
-            }
+            return result.generated_text || result;
         } catch (error) {
             throw error;
         }
@@ -181,19 +161,18 @@ export default class HuggingFaceCodeGrader {
         const passedTests = testResults.filter(t => t.status === 'Accepted').length;
         const totalTests = testResults.length;
 
+<<<<<<< HEAD
     return `Grade this ${language} code solution:
+=======
+        return `Code Review: ${language} solution for "${problemTitle}"
+>>>>>>> 6dfa95fbe754b5ed7f3143d38aa5109af5d159fd
 
-Problem: ${problemTitle}
-Description: ${problemStatement}
-Constraints: ${constraints}
-
-Code to grade:
-\`\`\`${language}
+Code:
 ${sourceCode}
-\`\`\`
 
-Test Results: ${passedTests}/${totalTests} tests passed
+Tests passed: ${passedTests}/${totalTests}
 
+<<<<<<< HEAD
 Please provide a comprehensive code review with scores out of 40 and specific feedback. Rate the code in these categories:
 1. Correctness (10 points): Based on test results and logic
 2. Code Quality (10 points): Readability, structure, naming
@@ -207,6 +186,18 @@ Format your response as a structured analysis with:
 - Summary of strengths and improvements needed
 
 Focus on being educational and constructive.`;
+=======
+Grade this code (0-100) and provide feedback on:
+1. Correctness
+2. Code quality  
+3. Efficiency
+4. Best practices
+
+Response format:
+Score: [number]/100
+Feedback: [brief assessment]
+Suggestions: [improvements]`;
+>>>>>>> 6dfa95fbe754b5ed7f3143d38aa5109af5d159fd
     }
 
     /**

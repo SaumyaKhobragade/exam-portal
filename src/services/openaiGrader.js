@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import GeminiCodeGrader from './geminiGrader.js';
 import HuggingFaceCodeGrader from './huggingfaceGrader.js';
 import FallbackCodeGrader from './fallbackGrader.js';
 
@@ -7,6 +8,7 @@ class OpenAICodeGrader {
         this.openai = new OpenAI({
             apiKey: process.env.OPENAI_API_KEY
         });
+        this.geminiGrader = new GeminiCodeGrader();
         this.huggingfaceGrader = new HuggingFaceCodeGrader();
         this.fallbackGrader = new FallbackCodeGrader();
         this.gradingRubric = {
@@ -62,9 +64,34 @@ class OpenAICodeGrader {
 
         } catch (error) {
             console.error('OpenAI API Error:', error);
+            console.log('Trying Google Gemini as fallback...');
+            
+            // Try Google Gemini as first fallback
+            try {
+                const geminiResult = await this.geminiGrader.gradeCode({
+                    sourceCode,
+                    language,
+                    problemTitle,
+                    problemStatement,
+                    constraints,
+                    testResults,
+                    expectedOutput,
+                    actualOutput
+                });
+                
+                if (geminiResult.success) {
+                    console.log('Google Gemini grading successful');
+                    return geminiResult;
+                } else {
+                    console.log('Google Gemini grading failed:', geminiResult.error);
+                }
+            } catch (geminiError) {
+                console.error('Gemini grading error:', geminiError);
+            }
+
             console.log('Trying Hugging Face as fallback...');
             
-            // Try Hugging Face as first fallback
+            // Try Hugging Face as second fallback
             try {
                 const huggingfaceResult = await this.huggingfaceGrader.gradeCode({
                     sourceCode,
