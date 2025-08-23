@@ -151,6 +151,18 @@ body, html {
   gap: 1rem;
 }
 
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: rgba(53, 122, 189, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(53, 122, 189, 0.2);
+}
+
 .action-btn {
   padding: 0.5rem 1.2rem;
   border: none;
