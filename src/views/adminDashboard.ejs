@@ -31,9 +31,6 @@
         <a href="#" class="nav-link" onclick="showResults()">
           <i class="fas fa-chart-bar"></i> Results
         </a>
-        <a href="#" class="nav-link" onclick="showSettings()">
-          <i class="fas fa-cog"></i> Settings
-        </a>
       </nav>
       <div class="user-actions">
         <div class="user-info">
@@ -128,13 +125,10 @@
             <h2 class="section-title">
               <i class="fas fa-file-alt"></i> Your Exams
             </h2>
-            <div class="exam-count" id="examCount">Loading...</div>
+            <div class="exam-count" id="examCount"></div>
           </div>
           <div class="exams-container" id="examsContainer">
-            <div class="loading-message">
-              <i class="fas fa-spinner fa-spin"></i>
-              <span>Loading exams...</span>
-            </div>
+            <!-- Exams will be loaded here -->
           </div>
         </section>
       </div>
@@ -175,16 +169,6 @@
             <div class="stat-number" id="activeExams"><%= stats ? stats.active : 0 %></div>
             <div class="stat-label">Active Exams</div>
             <div class="stat-change" id="activeChange">Currently Running</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="fas fa-check-circle"></i>
-          </div>
-          <div class="stat-content">
-            <div class="stat-number" id="completedExams"><%= stats ? stats.completed : 0 %></div>
-            <div class="stat-label">Completed Exams</div>
-            <div class="stat-change" id="completedChange">Finished</div>
           </div>
         </div>
         <div class="stat-card">
