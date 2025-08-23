@@ -9,6 +9,12 @@ class OpenAICodeGrader {
         });
         this.huggingfaceGrader = new HuggingFaceCodeGrader();
         this.fallbackGrader = new FallbackCodeGrader();
+        this.gradingRubric = {
+            correctness: 10,
+            codeQuality: 10,
+            efficiency: 10,
+            bestPractices: 10
+        };
     }
 
     async gradeCode(codeSubmission) {
@@ -121,46 +127,36 @@ ${sourceCode}
 
 **Test Results:** ${passedTests}/${totalTests} tests passed
 ${testResults ? testResults.map((test, i) => 
-    `Test ${i + 1}: ${test.passed ? 'PASSED' : 'FAILED'}
-    Input: ${test.input || 'N/A'}
-    Expected: ${test.expected_output || 'N/A'}
-    Actual: ${test.actual_output || 'N/A'}`
+    `Test ${i + 1}: ${test.passed ? 'PASSED' : 'FAILED'}\n    Input: ${test.input || 'N/A'}\n    Expected: ${test.expected_output || 'N/A'}\n    Actual: ${test.actual_output || 'N/A'}`
 ).join('\n') : 'No test results available'}
 
 Please provide a comprehensive evaluation in the following JSON format:
 {
-    "score": <number between 0-100>,
+    "score": <number between 0-40>,
     "grade": "<letter grade A-F>",
     "correctness": {
-        "score": <0-30>,
+        "score": <0-10>,
         "feedback": "<feedback on correctness>"
     },
     "codeQuality": {
-        "score": <0-25>,
+        "score": <0-10>,
         "feedback": "<feedback on code quality, style, readability>"
     },
     "efficiency": {
-        "score": <0-25>,
-        "feedback": "<feedback on time/space complexity>"
+        "score": <0-10>,
+        "feedback": "<feedback on efficiency, algorithm, performance>"
     },
     "bestPractices": {
-        "score": <0-20>,
-        "feedback": "<feedback on programming best practices>"
+        "score": <0-10>,
+        "feedback": "<feedback on best practices, conventions>"
     },
-    "overallFeedback": "<comprehensive summary and suggestions for improvement>",
-    "strengths": ["<list of code strengths>"],
-    "improvements": ["<list of areas for improvement>"],
-    "hints": ["<helpful hints for better solutions>"]
+    "strengths": ["<list>"],
+    "improvements": ["<list>"],
+    "hints": ["<list>"]
 }
 
-Focus on:
-1. Correctness: Does the code solve the problem correctly?
-2. Code Quality: Is the code clean, readable, and well-structured?
-3. Efficiency: What's the time/space complexity? Is it optimal?
-4. Best Practices: Does it follow good programming practices?
-
-Provide constructive, educational feedback that helps the student learn and improve.
-        `;
+Also provide a brief summary of the code's strengths and areas for improvement.
+`;
     }
 
     parseGradingResponse(feedback, testResults) {

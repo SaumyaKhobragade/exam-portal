@@ -30,10 +30,10 @@ export default class HuggingFaceCodeGrader {
         ];
         
         this.gradingRubric = {
-            correctness: 30,
-            codeQuality: 25,
-            efficiency: 25,
-            bestPractices: 20
+            correctness: 10,
+            codeQuality: 10,
+            efficiency: 10,
+            bestPractices: 10
         };
     }
 
@@ -181,7 +181,7 @@ export default class HuggingFaceCodeGrader {
         const passedTests = testResults.filter(t => t.status === 'Accepted').length;
         const totalTests = testResults.length;
 
-        return `Grade this ${language} code solution:
+    return `Grade this ${language} code solution:
 
 Problem: ${problemTitle}
 Description: ${problemStatement}
@@ -194,14 +194,14 @@ ${sourceCode}
 
 Test Results: ${passedTests}/${totalTests} tests passed
 
-Please provide a comprehensive code review with scores out of 100 and specific feedback. Rate the code in these categories:
-1. Correctness (30 points): Based on test results and logic
-2. Code Quality (25 points): Readability, structure, naming
-3. Efficiency (25 points): Algorithm complexity and optimization
-4. Best Practices (20 points): Following language conventions
+Please provide a comprehensive code review with scores out of 40 and specific feedback. Rate the code in these categories:
+1. Correctness (10 points): Based on test results and logic
+2. Code Quality (10 points): Readability, structure, naming
+3. Efficiency (10 points): Algorithm complexity and optimization
+4. Best Practices (10 points): Following language conventions
 
 Format your response as a structured analysis with:
-- Overall score out of 100
+- Overall score out of 40
 - Category scores
 - Specific feedback and suggestions
 - Summary of strengths and improvements needed

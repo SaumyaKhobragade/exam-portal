@@ -6,10 +6,10 @@
 export default class FallbackCodeGrader {
     constructor() {
         this.gradingRubric = {
-            correctness: 30,
-            codeQuality: 25,
-            efficiency: 25,
-            bestPractices: 20
+            correctness: 10,
+            codeQuality: 10,
+            efficiency: 10,
+            bestPractices: 10
         };
     }
 

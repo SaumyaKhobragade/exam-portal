@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import c from 'config';
 import adminRoutes from './src/routes/adminRoutes.js';
+import aiGraderRoutes from './src/routes/aiGrader.routes.js';
 import { errorHandler } from './src/middlewares/errorHandler.middleware.js';
 
 
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 // Use admin routes
 app.use('/', adminRoutes);
+app.use(aiGraderRoutes);
 
 // Global error handling middleware (must be last)
 app.use(errorHandler);
