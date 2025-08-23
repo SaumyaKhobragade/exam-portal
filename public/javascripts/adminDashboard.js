@@ -286,7 +286,176 @@ async function deleteExam(examId) {
 }
 
 function showResults() {
-  alert('Results feature will be implemented next! This will show detailed analytics and student performance reports.');
+  const resultsSection = document.getElementById('resultsSection');
+  if (resultsSection) {
+    resultsSection.style.display = 'block';
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+    loadRankings();
+    loadExamOptions();
+  }
+}
+
+function hideResults() {
+  const resultsSection = document.getElementById('resultsSection');
+  if (resultsSection) {
+    resultsSection.style.display = 'none';
+  }
+}
+
+// Load exam options for filter dropdown
+async function loadExamOptions() {
+  try {
+    const response = await fetch('/api/v1/admin/exams');
+    const result = await response.json();
+    
+    if (result.success) {
+      const examFilter = document.getElementById('examFilter');
+      if (examFilter) {
+        // Clear existing options except "All Exams"
+        examFilter.innerHTML = '<option value="all">All Exams</option>';
+        
+        // Add exam options
+        result.data.forEach(exam => {
+          const option = document.createElement('option');
+          option.value = exam._id;
+          option.textContent = exam.title;
+          examFilter.appendChild(option);
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error loading exam options:', error);
+  }
+}
+
+// Load rankings data
+async function loadRankings() {
+  try {
+    const examFilter = document.getElementById('examFilter');
+    const examId = examFilter ? examFilter.value : 'all';
+    
+    const url = examId === 'all' ? '/api/v1/admin/rankings' : `/api/v1/admin/rankings?examId=${examId}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    
+    if (result.success) {
+      displayRankings(result.data.rankings);
+      updatePerformanceMetrics(result.data.stats);
+    } else {
+      showRankingsError(result.message || 'Failed to load rankings');
+    }
+  } catch (error) {
+    console.error('Error loading rankings:', error);
+    showRankingsError('Error loading rankings data');
+  }
+}
+
+// Display rankings in the table
+function displayRankings(rankings) {
+  const tableBody = document.getElementById('rankingsTableBody');
+  if (!tableBody) return;
+  
+  if (!rankings || rankings.length === 0) {
+    tableBody.innerHTML = `
+      <tr class="loading-row">
+        <td colspan="10">
+          <i class="fas fa-info-circle"></i> No ranking data available yet. Students need to complete exams to generate rankings.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+  
+  tableBody.innerHTML = rankings.map((student, index) => {
+    const rank = index + 1;
+    const rankBadgeClass = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : 'default';
+    
+    return `
+      <tr>
+        <td>
+          <div class="rank-badge ${rankBadgeClass}">${rank}</div>
+        </td>
+        <td>
+          <div class="student-info">
+            <div class="student-avatar">
+              ${student.fullname ? student.fullname.charAt(0).toUpperCase() : 'U'}
+            </div>
+            <div class="student-details">
+              <h4>${student.fullname || student.username}</h4>
+              <p>${student.email}</p>
+            </div>
+          </div>
+        </td>
+        <td><span class="score-badge ${getScoreClass(student.overallScore)}">${student.overallScore}/10</span></td>
+        <td><span class="score-badge ${getScoreClass(student.correctness)}">${student.correctness}/10</span></td>
+        <td><span class="score-badge ${getScoreClass(student.codeQuality)}">${student.codeQuality}/10</span></td>
+        <td><span class="score-badge ${getScoreClass(student.efficiency)}">${student.efficiency}/10</span></td>
+        <td><span class="score-badge ${getScoreClass(student.bestPractices)}">${student.bestPractices}/10</span></td>
+        <td><span class="score-badge ${getScoreClass(student.timeScore)}">${student.timeScore}/10</span></td>
+        <td>${student.examCount || 0}</td>
+        <td>${student.lastActivity ? new Date(student.lastActivity).toLocaleDateString() : 'N/A'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Get CSS class based on score
+function getScoreClass(score) {
+  if (score >= 8.5) return 'score-excellent';
+  if (score >= 7.0) return 'score-good';
+  if (score >= 5.0) return 'score-average';
+  return 'score-poor';
+}
+
+// Update performance metrics
+function updatePerformanceMetrics(stats) {
+  if (!stats) return;
+  
+  const elements = {
+    avgOverallScore: stats.averageOverallScore || 0,
+    topPerformer: stats.topPerformer || 'N/A',
+    mostImproved: stats.mostImproved || 'N/A',
+    activeStudents: stats.activeStudents || 0
+  };
+  
+  Object.entries(elements).forEach(([id, value]) => {
+    const element = document.getElementById(id);
+    if (element) {
+      if (id === 'avgOverallScore') {
+        element.textContent = `${value.toFixed(1)}/10`;
+      } else {
+        element.textContent = value;
+      }
+    }
+  });
+}
+
+// Filter rankings by exam
+function filterRankings() {
+  loadRankings();
+}
+
+// Sort rankings
+function sortRankings() {
+  const sortBy = document.getElementById('sortBy');
+  if (sortBy) {
+    // For now, just reload rankings - could be enhanced to sort client-side
+    loadRankings();
+  }
+}
+
+// Show rankings error
+function showRankingsError(message) {
+  const tableBody = document.getElementById('rankingsTableBody');
+  if (tableBody) {
+    tableBody.innerHTML = `
+      <tr class="loading-row">
+        <td colspan="10" style="color: #e74c3c;">
+          <i class="fas fa-exclamation-triangle"></i> ${message}
+        </td>
+      </tr>
+    `;
+  }
 }
 
 function showSettings() {
