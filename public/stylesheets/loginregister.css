@@ -15,12 +15,38 @@ body, html {
   background-size: cover;
   color: #333;
   line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* Ensure page starts at top */
+html {
+  scroll-padding-top: 0;
+}
+
+body {
+  scroll-margin-top: 0;
+}
+
+/* Prevent auto-scroll on focus */
+input:focus, 
+textarea:focus, 
+select:focus, 
+button:focus {
+  scroll-margin: 0;
+  scroll-padding: 0;
+}
+
+/* Disable automatic scroll on anchor links */
+:target {
+  scroll-margin-top: 0;
 }
 
 .main-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  scroll-behavior: auto;
 }
 
 .header-section {
