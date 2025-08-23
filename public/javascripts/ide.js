@@ -964,8 +964,15 @@ function switchTab(tabName) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
   
-  // Add active class to selected tab and content
-  if (event && event.target) event.target.classList.add('active');
+  // Find and activate the correct tab button
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach(btn => {
+    if (btn.onclick && btn.onclick.toString().includes(`'${tabName}'`)) {
+      btn.classList.add('active');
+    }
+  });
+  
+  // Add active class to selected tab content
   const tabContent = document.getElementById(tabName + 'Tab');
   if (tabContent) tabContent.classList.add('active');
   
@@ -1089,33 +1096,54 @@ function loadQuestionData() {
   
   // Update constraints
   const constraintsElement = document.getElementById('problemConstraints');
-  console.log('=== CONSTRAINTS DEBUG ===');
-  console.log('Constraints element found:', !!constraintsElement);
-  console.log('Constraints element:', constraintsElement);
-  console.log('Question constraints type:', typeof question.constraints);
-  console.log('Question constraints value:', question.constraints);
-  console.log('Question constraints truthy:', !!question.constraints);
   
   if (constraintsElement) {
     if (question.constraints) {
-      console.log('Loading constraints:', question.constraints);
       let constraintsHtml = '<h3 class="section-subtitle">Constraints</h3><ul>';
+      
+      let constraintsArray = [];
+      
       if (Array.isArray(question.constraints)) {
-        console.log('Constraints is array, length:', question.constraints.length);
-        question.constraints.forEach(constraint => {
-          constraintsHtml += `<li>${constraint}</li>`;
-        });
+        // Constraints from sample data (already an array)
+        constraintsArray = question.constraints;
+      } else if (typeof question.constraints === 'string') {
+        // Constraints from database (stored as string)
+        try {
+          // Try to parse as JSON first (in case it's stored as JSON string)
+          constraintsArray = JSON.parse(question.constraints);
+          if (!Array.isArray(constraintsArray)) {
+            // If it's not an array after parsing, split by newlines or other delimiters
+            constraintsArray = [question.constraints];
+          }
+        } catch (e) {
+          // If JSON parsing fails, split by common delimiters
+          if (question.constraints.includes('\n')) {
+            constraintsArray = question.constraints.split('\n').filter(c => c.trim());
+          } else if (question.constraints.includes('•')) {
+            constraintsArray = question.constraints.split('•').filter(c => c.trim());
+          } else if (question.constraints.includes('-')) {
+            constraintsArray = question.constraints.split('-').filter(c => c.trim());
+          } else {
+            // Treat as single constraint
+            constraintsArray = [question.constraints];
+          }
+        }
       } else {
-        console.log('Constraints is not array, treating as string');
-        constraintsHtml += `<li>${question.constraints}</li>`;
+        // Fallback for other data types
+        constraintsArray = [String(question.constraints)];
       }
+      
+      constraintsArray.forEach(constraint => {
+        // Clean up the constraint text
+        const cleanConstraint = constraint.trim().replace(/^[-•*]\s*/, ''); // Remove leading bullets
+        if (cleanConstraint) {
+          constraintsHtml += `<li>${cleanConstraint}</li>`;
+        }
+      });
+      
       constraintsHtml += '</ul>';
-      console.log('Generated constraints HTML:', constraintsHtml);
       constraintsElement.innerHTML = constraintsHtml;
-      console.log('Constraints updated successfully');
-      console.log('Element content after update:', constraintsElement.innerHTML);
     } else {
-      console.log('No constraints found, using default');
       constraintsElement.innerHTML = `
         <h3 class="section-subtitle">Constraints</h3>
         <ul>
@@ -1124,10 +1152,7 @@ function loadQuestionData() {
         </ul>
       `;
     }
-  } else {
-    console.error('problemConstraints element not found in DOM!');
   }
-  console.log('=== END CONSTRAINTS DEBUG ===');
   
   // Update test cases
   loadTestCases();
@@ -1444,6 +1469,13 @@ async function runTests() {
           aiGradeBtn.disabled = false;
           aiGradeBtn.textContent = 'Get AI Feedback';
         }
+        
+        // Automatically get AI feedback after test execution
+        console.log('Automatically requesting AI feedback...');
+        showNotification('🤖 Generating AI feedback automatically...');
+        setTimeout(() => {
+          getAIFeedback();
+        }, 1000); // Small delay to ensure UI updates are complete
       }
     } else {
       console.error('Failed to execute test cases:', result.error);
@@ -1548,21 +1580,12 @@ async function getAIFeedback() {
 
 // Display AI Grading Results
 function displayAIGrading(grading) {
-  // Create or update AI feedback section
-  let feedbackSection = document.getElementById('aiFeedbackSection');
+  // Get the AI feedback container in the feedback tab
+  const feedbackContainer = document.getElementById('aiFeedbackContainer');
   
-  if (!feedbackSection) {
-    feedbackSection = document.createElement('div');
-    feedbackSection.id = 'aiFeedbackSection';
-    feedbackSection.className = 'ai-feedback-section';
-    
-    // Insert after test cases or in the results area
-    const testCasesContainer = document.getElementById('testCasesContainer');
-    if (testCasesContainer && testCasesContainer.parentNode) {
-      testCasesContainer.parentNode.insertBefore(feedbackSection, testCasesContainer.nextSibling);
-    } else {
-      document.querySelector('.tabbed-section').appendChild(feedbackSection);
-    }
+  if (!feedbackContainer) {
+    console.error('AI feedback container not found');
+    return;
   }
   
   // Handle both old format (grading.grade) and new format (grading.data)
@@ -1578,79 +1601,84 @@ function displayAIGrading(grading) {
   const gradeColor = getGradeColorFromScore(overallScore);
   const letterGrade = getLetterGrade(overallScore);
   
-  feedbackSection.innerHTML = `
-    <div class="ai-feedback-header">
-      <h3>🤖 AI Code Feedback</h3>
-      <div class="ai-grade-badge" style="background-color: ${gradeColor}">
-  Score: ${overallScore}/10 (${letterGrade})
-      </div>
-      ${note ? `<div class="grading-method">${note}</div>` : ''}
-    </div>
-    
-    <div class="ai-feedback-content">
-      <div class="feedback-section">
-        <h4>📋 Overall Assessment</h4>
-        <p>${summary}</p>
+  feedbackContainer.innerHTML = `
+    <div class="ai-feedback-section">
+      <div class="ai-feedback-header">
+        <h3>🤖 AI Code Analysis Results</h3>
+        <div class="ai-grade-badge" style="background-color: ${gradeColor}">
+    Score: ${overallScore}/10 (${letterGrade})
+        </div>
+        ${note ? `<div class="grading-method">${note}</div>` : ''}
       </div>
       
-      <div class="feedback-grid">
-        <div class="feedback-item">
-          <h5>✅ Correctness (${categoryScores.correctness || 0}/10)</h5>
-          <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.correctness || 0) / 10 * 100}%"></div>
-          </div>
-        </div>
-        
-        <div class="feedback-item">
-          <h5>🎨 Code Quality (${categoryScores.codeQuality || 0}/10)</h5>
-          <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.codeQuality || 0) / 10 * 100}%"></div>
-          </div>
-        </div>
-        
-        <div class="feedback-item">
-          <h5>⚡ Efficiency (${categoryScores.efficiency || 0}/10)</h5>
-          <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.efficiency || 0) / 10 * 100}%"></div>
-          </div>
-        </div>
-        
-        <div class="feedback-item">
-          <h5>📖 Best Practices (${categoryScores.bestPractices || 0}/10)</h5>
-          <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.bestPractices || 0) / 10 * 100}%"></div>
-          </div>
-        </div>
-      </div>
-      
-      ${feedback && feedback.length > 0 ? `
+      <div class="ai-feedback-content">
         <div class="feedback-section">
-          <h4>📝 Detailed Feedback</h4>
-          <ul>
-            ${feedback.map(item => `<li>${item}</li>`).join('')}
-          </ul>
+          <h4>📋 Overall Assessment</h4>
+          <p>${summary}</p>
         </div>
-      ` : ''}
-      
-      ${suggestions && suggestions.length > 0 ? `
+        
+        <div class="feedback-grid">
+          <div class="feedback-item">
+            <h5>✅ Correctness (${categoryScores.correctness || 0}/10)</h5>
+            <div class="score-bar">
+              <div class="score-fill" style="width: ${(categoryScores.correctness || 0) / 10 * 100}%"></div>
+            </div>
+          </div>
+          
+          <div class="feedback-item">
+            <h5>🎨 Code Quality (${categoryScores.codeQuality || 0}/10)</h5>
+            <div class="score-bar">
+              <div class="score-fill" style="width: ${(categoryScores.codeQuality || 0) / 10 * 100}%"></div>
+            </div>
+          </div>
+          
+          <div class="feedback-item">
+            <h5>⚡ Efficiency (${categoryScores.efficiency || 0}/10)</h5>
+            <div class="score-bar">
+              <div class="score-fill" style="width: ${(categoryScores.efficiency || 0) / 10 * 100}%"></div>
+            </div>
+          </div>
+          
+          <div class="feedback-item">
+            <h5>📖 Best Practices (${categoryScores.bestPractices || 0}/10)</h5>
+            <div class="score-bar">
+              <div class="score-fill" style="width: ${(categoryScores.bestPractices || 0) / 10 * 100}%"></div>
+            </div>
+          </div>
+        </div>
+        
+        ${feedback && feedback.length > 0 ? `
+          <div class="feedback-section">
+            <h4>📝 Detailed Feedback</h4>
+            <ul>
+              ${feedback.map(item => `<li>${item}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        
+        ${suggestions && suggestions.length > 0 ? `
+          <div class="feedback-section">
+            <h4>💡 Suggestions for Improvement</h4>
+            <ul>
+              ${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+        
         <div class="feedback-section">
-          <h4>� Suggestions for Improvement</h4>
-          <ul>
-            ${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
-          </ul>
+          <small style="color: #666; font-style: italic;">
+            Powered by ${gradingMethod} • Feedback generated in real-time
+          </small>
         </div>
-      ` : ''}
-      
-      <div class="feedback-section">
-        <small style="color: #666; font-style: italic;">
-          Powered by ${gradingMethod} • Feedback generated in real-time
-        </small>
       </div>
     </div>
   `;
   
-  // Scroll to feedback section
-  feedbackSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  // Switch to the feedback tab to show the results
+  switchTab('feedback');
+  
+  // Show notification that feedback is ready
+  showNotification('✅ AI feedback is ready! Check the AI Feedback tab.');
 }
 
 // Helper function to get grade colors from score

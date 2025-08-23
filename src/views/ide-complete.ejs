@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>CodeSecure - <% if (typeof exam !== 'undefined' && exam) { %><%= exam.title %><% } else { %>Coding IDE<% } %></title>
+  <link rel="stylesheet" href="/stylesheets/ide.css" />
+</head>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+  <div class="main-container exam-mode">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure IDE</div>
+      <% if (typeof exam !== 'undefined' && exam) { %>
+        <div class="exam-info">
+          <span class="exam-title"><%= exam.title %></span>
+          <span class="exam-points"><%= exam.totalMarks || 'N/A' %> Points</span>
+        </div>
+      <% } %>
+    </header>
+
+    <main class="content-area">
+      <div class="ide-layout">
+        <!-- Question Navigation Bar -->
+        <section class="question-nav">
+          <div class="progress-section">
+            <div class="progress-info">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions) { %>
+                <span class="current-question">Question <span id="currentQuestionNum">1</span> of <%= exam.questions.length %></span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+              <% } else { %>
+                <span class="current-question">Question 1 of 5</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 20%"></div>
+                </div>
+              <% } %>
+            </div>
+            <div class="question-buttons">
+              <button class="question-btn" onclick="previousQuestion()" <% if (typeof exam === 'undefined' || !exam) { %>disabled<% } %>>← Previous</button>
+              <button class="question-btn" onclick="nextQuestion()">Next →</button>
+            </div>
+          </div>
+          <div class="user-actions">
+            <a href="#" class="action-btn" onclick="saveCode(); return false;">Save</a>
+            <a href="#" class="action-btn run-btn" onclick="runCode(); return false;">Run Code</a>
+            <a href="#" class="action-btn test-btn" onclick="runTests(); return false;">Run Tests</a>
+            <a href="#" class="action-btn ai-btn" id="aiGradeBtn" onclick="getAIFeedback(); return false;" disabled>Get AI Feedback</a>
+            <a href="#" class="action-btn submit-btn" onclick="submitCode(); return false;">Submit</a>
+          </div>
+          <div class="exam-timer">
+            <span class="timer-label">Time Remaining:</span>
+            <span class="timer" id="examTimer">
+              <% if (typeof timeRemaining !== 'undefined' && timeRemaining) { %>
+                <%= Math.floor(timeRemaining / 60) %>:<%= String(timeRemaining % 60).padStart(2, '0') %>
+              <% } else { %>
+                45:32
+              <% } %>
+            </span>
+          </div>
+        </section>
+
+        <!-- Main IDE Content -->
+        <div class="ide-content">
+          <!-- Problem Section -->
+          <section class="problem-section" id="problemSection">
+            <div class="problem-header">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions.length > 0) { %>
+                <h2 class="problem-title" id="problemTitle"><%= exam.questions[0].title || 'Coding Question' %></h2>
+                <div class="problem-meta">
+                  <span class="difficulty-badge medium">Medium</span>
+                  <span class="problem-points" id="problemPoints"><%= exam.questions[0].points || exam.questions[0].weight || 25 %> Points</span>
+                </div>
+              <% } else { %>
+                <h2 class="problem-title">Two Sum Problem</h2>
+                <div class="problem-meta">
+                  <span class="difficulty-badge medium">Medium</span>
+                  <span class="problem-points">25 Points</span>
+                </div>
+              <% } %>
+            </div>
+            
+            <div class="problem-content" id="problemContent">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions.length > 0) { %>
+                <div class="problem-description">
+                  <h3 class="section-subtitle">Problem Description</h3>
+                  <div id="problemDescription">
+                    <% if ((exam.questions[0].description && exam.questions[0].description.trim()) || (exam.questions[0].statement && exam.questions[0].statement.trim())) { %>
+                      <%- exam.questions[0].description || exam.questions[0].statement %>
+                    <% } else { %>
+                      <p>Given an array of integers, solve the <strong><%= exam.questions[0].title || 'coding problem' %></strong>.</p>
+                      <p>Write an efficient solution that meets the given constraints.</p>
+                      <p><em>Note: Complete problem description is not available. Please refer to examples and constraints for requirements.</em></p>
+                    <% } %>
+                  </div>
+                </div>
+
+                <% if (exam.questions[0].inputFormat) { %>
+                  <div class="input-format">
+                    <h3 class="section-subtitle">Input Format</h3>
+                    <div id="inputFormat"><%- exam.questions[0].inputFormat %></div>
+                  </div>
+                <% } %>
+
+                <% if (exam.questions[0].outputFormat) { %>
+                  <div class="output-format">
+                    <h3 class="section-subtitle">Output Format</h3>
+                    <div id="outputFormat"><%- exam.questions[0].outputFormat %></div>
+                  </div>
+                <% } %>
+
+                <% if (exam.questions[0].examples && exam.questions[0].examples.length > 0) { %>
+                  <div class="examples">
+                    <h3 class="section-subtitle">Examples</h3>
+                    <div id="examplesList">
+                      <% exam.questions[0].examples.forEach((example, index) => { %>
+                        <div class="example">
+                          <h4>Example <%= index + 1 %>:</h4>
+                          <div class="example-content">
+                            <div class="example-input">
+                              <strong>Input:</strong> <code><%= example.input %></code>
+                            </div>
+                            <div class="example-output">
+                              <strong>Output:</strong> <code><%= example.output %></code>
+                            </div>
+                            <% if (example.explanation) { %>
+                              <div class="example-explanation">
+                                <strong>Explanation:</strong> <%= example.explanation %>
+                              </div>
+                            <% } %>
+                          </div>
+                        </div>
+                      <% }) %>
+                    </div>
+                  </div>
+                <% } else if (exam.questions[0].testCases && exam.questions[0].testCases.length > 0) { %>
+                  <div class="examples">
+                    <h3 class="section-subtitle">Examples</h3>
+                    <div id="examplesList">
+                      <% exam.questions[0].testCases.slice(0, 2).forEach((testCase, index) => { %>
+                        <div class="example">
+                          <h4>Example <%= index + 1 %>:</h4>
+                          <div class="example-content">
+                            <div class="example-input">
+                              <strong>Input:</strong> <code><%= testCase.input %></code>
+                            </div>
+                            <div class="example-output">
+                              <strong>Output:</strong> <code><%= testCase.expectedOutput %></code>
+                            </div>
+                          </div>
+                        </div>
+                      <% }) %>
+                    </div>
+                  </div>
+                <% } %>
+
+                <% if (exam.questions[0].constraints) { %>
+                  <div class="constraints">
+                    <h3 class="section-subtitle">Constraints</h3>
+                    <div id="constraintsList">
+                      <% if (Array.isArray(exam.questions[0].constraints)) { %>
+                        <ul>
+                          <% exam.questions[0].constraints.forEach(constraint => { %>
+                            <li><%= constraint %></li>
+                          <% }) %>
+                        </ul>
+                      <% } else { %>
+                        <ul>
+                          <li><%= exam.questions[0].constraints %></li>
+                        </ul>
+                      <% } %>
+                    </div>
+                  </div>
+                <% } %>
+              <% } else { %>
+                <!-- Fallback Sample Problem -->
+                <div class="problem-description">
+                  <h3 class="section-subtitle">Problem Description</h3>
+                  <div id="problemDescription">
+                    <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to target.</p>
+                    <p>You may assume that each input would have exactly one solution, and you may not use the same element twice.</p>
+                    <p>You can return the answer in any order.</p>
+                  </div>
+                </div>
+
+                <div class="examples">
+                  <h3 class="section-subtitle">Examples</h3>
+                  <div id="examplesList">
+                    <div class="example">
+                      <h4>Example 1:</h4>
+                      <div class="example-content">
+                        <div class="example-input">
+                          <strong>Input:</strong> <code>nums = [2,7,11,15], target = 9</code>
+                        </div>
+                        <div class="example-output">
+                          <strong>Output:</strong> <code>[0,1]</code>
+                        </div>
+                        <div class="example-explanation">
+                          <strong>Explanation:</strong> Because nums[0] + nums[1] = 2 + 7 = 9, we return [0, 1].
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="constraints">
+                  <h3 class="section-subtitle">Constraints</h3>
+                  <div id="constraintsList">
+                    <ul>
+                      <li>2 ≤ nums.length ≤ 10⁴</li>
+                      <li>-10⁹ ≤ nums[i] ≤ 10⁹</li>
+                      <li>-10⁹ ≤ target ≤ 10⁹</li>
+                      <li>Only one valid answer exists.</li>
+                    </ul>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </section>
+
+          <!-- Code Editor Section -->
+          <section class="code-section">
+            <div class="editor-header">
+              <div class="language-selector">
+                <label for="languageSelect">Language:</label>
+                <select id="languageSelect" onchange="changeLanguage()">
+                  <option value="javascript">JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                  <option value="cpp">C++</option>
+                  <option value="csharp">C#</option>
+                </select>
+              </div>
+              <div class="editor-controls">
+                <button class="control-btn" onclick="resetCode()">Reset</button>
+                <button class="control-btn" onclick="formatCode()">Format</button>
+              </div>
+            </div>
+            
+            <div class="code-editor-container">
+              <textarea id="codeEditor" placeholder="Write your code here...">
+// Write your solution here
+function twoSum(nums, target) {
+    // Your code here
+    
+}
+              </textarea>
+            </div>
+          </section>
+
+          <!-- Output Section -->
+          <section class="output-section">
+            <div class="output-tabs">
+              <button class="tab-btn active" data-tab="console">Console</button>
+              <button class="tab-btn" data-tab="testResults">Test Results</button>
+              <button class="tab-btn" data-tab="aiGrading">AI Grading</button>
+            </div>
+            
+            <div class="output-content">
+              <div id="consoleOutput" class="output-panel active">
+                <div class="output-header">
+                  <span class="output-title">Console Output</span>
+                  <button class="clear-btn" onclick="clearConsole()">Clear</button>
+                </div>
+                <div class="output-body" id="consoleBody">
+                  <div class="output-line">Ready to run your code...</div>
+                </div>
+              </div>
+              
+              <div id="testResultsOutput" class="output-panel">
+                <div class="output-header">
+                  <span class="output-title">Test Results</span>
+                  <span class="test-summary" id="testSummary">0/0 passed</span>
+                </div>
+                <div class="output-body" id="testResultsBody">
+                  <div class="output-line">Run tests to see results...</div>
+                </div>
+              </div>
+              
+              <div id="aiGradingOutput" class="output-panel">
+                <div class="output-header">
+                  <span class="output-title">AI Code Grading</span>
+                  <span class="ai-score" id="aiScore">Not graded</span>
+                </div>
+                <div class="output-body" id="aiGradingBody">
+                  <div class="output-line">Submit your code to get AI feedback...</div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Initialize exam data for JavaScript -->
+  <script type="application/json" id="examData">
+    <% if (typeof exam !== 'undefined' && exam) { %>
+    <%- JSON.stringify({
+      exam: {
+        id: exam._id,
+        title: exam.title,
+        description: exam.description || "",
+        duration: exam.duration,
+        totalMarks: exam.totalMarks || 0,
+        questions: exam.questions || []
+      },
+      currentQuestionIndex: 0,
+      isExamMode: true,
+      initialTimeRemaining: typeof timeRemaining !== 'undefined' ? timeRemaining : (exam.duration ? exam.duration * 60 : 2732)
+    }) %>
+    <% } else { %>
+    <%- JSON.stringify({
+      exam: null,
+      currentQuestionIndex: 0,
+      isExamMode: false,
+      initialTimeRemaining: 2732
+    }) %>
+    <% } %>
+  </script>
+  
+  <script src="/javascripts/ide.js"></script>
+
+</body>
+</html>

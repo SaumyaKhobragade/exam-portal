@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>CodeSecure - <% if (typeof exam !== 'undefined' && exam) { %><%= exam.title %><% } else { %>Coding IDE<% } %></title>
+  <link rel="stylesheet" href="/stylesheets/ide.css" />
+</head>
+<body oncontextmenu="return false" onselectstart="return false" ondragstart="return false">
+  <div class="main-container exam-mode">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure IDE</div>
+      <% if (typeof exam !== 'undefined' && exam) { %>
+        <div class="exam-info">
+          <span class="exam-title"><%= exam.title %></span>
+          <span class="exam-points"><%= exam.totalMarks || 'N/A' %> Points</span>
+        </div>
+      <% } %>
+    </header>
+
+    <main class="content-area">
+      <div class="ide-layout">
+        <!-- Question Navigation Bar -->
+        <section class="question-nav">
+          <div class="progress-section">
+            <div class="progress-info">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions) { %>
+                <span class="current-question">Question <span id="currentQuestionNum">1</span> of <%= exam.questions.length %></span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+              <% } else { %>
+                <span class="current-question">Question 1 of 5</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 20%"></div>
+                </div>
+              <% } %>
+            </div>
+            <div class="question-buttons">
+              <button class="question-btn" onclick="previousQuestion()" <% if (typeof exam === 'undefined' || !exam) { %>disabled<% } %>>← Previous</button>
+              <button class="question-btn" onclick="nextQuestion()">Next →</button>
+            </div>
+          </div>
+          <div class="user-actions">
+            <a href="#" class="action-btn" onclick="saveCode(); return false;">Save</a>
+            <a href="#" class="action-btn run-btn" onclick="runCode(); return false;">Run Code</a>
+            <a href="#" class="action-btn test-btn" onclick="runTests(); return false;">Run Tests</a>
+            <div class="timer-section">
+              <i class="fas fa-clock"></i>
+              <span class="timer-display" id="examTimer">
+                <% if (typeof timeRemaining !== 'undefined' && timeRemaining) { %>
+                  <%= Math.floor(timeRemaining / 60) %>:<%= String(timeRemaining % 60).padStart(2, '0') %>
+                <% } else { %>
+                  45:30
+                <% } %>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Problem Statement Section -->
+        <section class="problem-section">
+          <div class="problem-container">
+            <div class="problem-header">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions.length > 0) { %>
+                <h2 class="problem-title" id="problemTitle"><%= exam.questions[0].title || 'Coding Question' %></h2>
+                <div class="problem-meta">
+                  <span class="difficulty-badge medium">Medium</span>
+                  <span class="problem-points" id="problemPoints"><%= exam.questions[0].points || 25 %> Points</span>
+                </div>
+              <% } else { %>
+                <h2 class="problem-title">Two Sum Problem</h2>
+                <div class="problem-meta">
+                  <span class="difficulty-badge medium">Medium</span>
+                  <span class="problem-points">25 Points</span>
+                </div>
+              <% } %>
+            </div>
+            
+            <div class="problem-content" id="problemContent">
+              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions.length > 0) { %>
+                <div class="problem-description">
+                  <h3 class="section-subtitle">Problem Description</h3>
+                  <div id="problemDescription">
+                    <% if ((exam.questions[0].description && exam.questions[0].description.trim()) || (exam.questions[0].statement && exam.questions[0].statement.trim())) { %>
+                      <%- exam.questions[0].description || exam.questions[0].statement %>
+                    <% } else { %>
+                      <p>Given an array of integers, solve the <strong><%= exam.questions[0].title || 'coding problem' %></strong>.</p>
+                      <p>Write an efficient solution that meets the given constraints.</p>
+                      <p><em>Note: Complete problem description is not available. Please refer to examples and constraints for requirements.</em></p>
+                    <% } %>
+                  </div>
+                </div>
+
+                <div class="problem-input-format" id="problemInputFormat">
+                  <h3 class="section-subtitle">Input Format</h3>
+                  <div>
+                    <% if (exam.questions[0].inputFormat) { %>
+                      <%- exam.questions[0].inputFormat %>
+                    <% } else { %>
+                      <ul>
+                        <li>Standard input format for the problem</li>
+                        <li>Check problem description for specific input structure</li>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+
+                <div class="problem-output-format" id="problemOutputFormat">
+                  <h3 class="section-subtitle">Output Format</h3>
+                  <div>
+                    <% if (exam.questions[0].outputFormat) { %>
+                      <%- exam.questions[0].outputFormat %>
+                    <% } else { %>
+                      <ul>
+                        <li>Output the result as required by the problem</li>
+                        <li>Follow the format specified in the problem description</li>
+                      </ul>
+                    <% } %>
+                  </div>
+                </div>
+
+                <div class="problem-constraints" id="problemConstraints">
+                  <h3 class="section-subtitle">Constraints</h3>
+                  <ul>
+                    <li>Loading constraints...</li>
+                  </ul>
+                </div>
+              <% } else { %>
+                <div class="problem-description">
+                  <h3 class="section-subtitle">Problem Description</h3>
+                  <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to target.</p>
+                  <p>You may assume that each input would have exactly one solution, and you may not use the same element twice.</p>
+                  <p>You can return the answer in any order.</p>
+                </div>
+
+                <div class="problem-input-format">
+                  <h3 class="section-subtitle">Input Format</h3>
+                  <ul>
+                    <li>The first parameter is an array of integers <code>nums</code></li>
+                    <li>The second parameter is an integer <code>target</code></li>
+                  </ul>
+                </div>
+
+                <div class="problem-output-format">
+                  <h3 class="section-subtitle">Output Format</h3>
+                  <ul>
+                    <li>Return an array of two integers representing the indices</li>
+                  </ul>
+                </div>
+
+                <div class="problem-constraints">
+                  <h3 class="section-subtitle">Constraints</h3>
+                  <ul>
+                    <li>2 ≤ nums.length ≤ 10<sup>4</sup></li>
+                    <li>-10<sup>9</sup> ≤ nums[i] ≤ 10<sup>9</sup></li>
+                    <li>-10<sup>9</sup> ≤ target ≤ 10<sup>9</sup></li>
+                    <li>Only one valid answer exists.</li>
+                  </ul>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </section>
+
+        <!-- Code Editor Section -->
+        <section class="editor-section">
+          <div class="editor-container">
+            <div class="editor-header">
+              <div class="language-selector">
+                <select id="languageSelect" onchange="changeLanguage()">
+                  <option value="python3">Python 3</option>
+                  <option value="javascript">JavaScript</option>
+                  <option value="java">Java</option>
+                  <option value="cpp">C++</option>
+                  <option value="c">C</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="editor-wrapper">
+              <textarea id="codeEditor" class="code-editor" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">
+# Write your code here
+def solution():
+    pass
+              </textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Output Section -->
+        <section class="output-section">
+          <div class="output-container">
+            <div class="output-header">
+              <div class="output-tabs">
+                <button class="output-tab active" onclick="showOutputTab('console')">Console</button>
+                <button class="output-tab" onclick="showOutputTab('testResults')">Test Results</button>
+              </div>
+            </div>
+            
+            <div class="output-content">
+              <div id="consoleOutput" class="output-panel active">
+                <div class="output-placeholder">
+                  <i class="fas fa-terminal"></i>
+                  <p>Run your code to see output here</p>
+                </div>
+              </div>
+              
+              <div id="testResultsOutput" class="output-panel">
+                <div class="output-placeholder">
+                  <i class="fas fa-check-circle"></i>
+                  <p>Run tests to see results here</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Pass exam data to JavaScript -->
+  <script type="application/json" id="exam-data">
+    <% if (typeof exam !== 'undefined' && exam) { %>
+    <%- JSON.stringify({
+      exam: {
+        id: exam._id,
+        title: exam.title,
+        description: exam.description || "",
+        duration: exam.duration,
+        totalMarks: exam.totalMarks || 0,
+        questions: exam.questions || []
+      },
+      currentQuestionIndex: 0,
+      isExamMode: true,
+      initialTimeRemaining: typeof timeRemaining !== 'undefined' ? timeRemaining : (exam.duration ? exam.duration * 60 : 2732)
+    }) %>
+    <% } else { %>
+    <%- JSON.stringify({
+      exam: null,
+      currentQuestionIndex: 0,
+      isExamMode: false,
+      initialTimeRemaining: 2732
+    }) %>
+    <% } %>
+  </script>
+  
+  <script src="/javascripts/ide.js"></script>
+
+</body>
+</html>

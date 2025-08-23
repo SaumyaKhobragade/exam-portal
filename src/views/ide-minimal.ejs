@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CodeSecure - IDE Test</title>
+  <link rel="stylesheet" href="/stylesheets/ide.css" />
+</head>
+<body>
+  <div class="main-container exam-mode">
+    <header class="header-section">
+      <div class="brand-logo">CodeSecure IDE</div>
+      <div class="exam-info">
+        <span class="exam-title">Test Exam</span>
+        <span class="exam-points">100 Points</span>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="ide-layout">
+        <h1>IDE Working - Start Exam Success!</h1>
+        <p>This is a minimal IDE template to test the routing.</p>
+        <p>User: <%= user ? user.username : 'Guest' %></p>
+        <p>Exam: <%= exam ? exam.title : 'No exam data' %></p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -61,7 +61,7 @@
                     <i class="fas fa-clipboard-check"></i>
                   </div>
                   <div class="stat-content">
-                    <span class="stat-value">15</span>
+                    <span class="stat-value"><%= userStats.totalExams || 0 %></span>
                     <span class="stat-label">Exams Completed</span>
                   </div>
                 </div>
@@ -70,17 +70,17 @@
                     <i class="fas fa-trophy"></i>
                   </div>
                   <div class="stat-content">
-                    <span class="stat-value">87%</span>
+                    <span class="stat-value"><%= userStats.averageScore ? Math.round(userStats.averageScore) : 0 %>%</span>
                     <span class="stat-label">Average Score</span>
                   </div>
                 </div>
                 <div class="quick-stat">
                   <div class="stat-icon">
-                    <i class="fas fa-calendar-check"></i>
+                    <i class="fas fa-clock"></i>
                   </div>
                   <div class="stat-content">
-                    <span class="stat-value">3</span>
-                    <span class="stat-label">This Week</span>
+                    <span class="stat-value"><%= userStats.totalTimeTaken ? Math.round(userStats.totalTimeTaken) : 0 %> min</span>
+                    <span class="stat-label">Total Time</span>
                   </div>
                 </div>
               </div>
@@ -231,80 +231,52 @@
             </div>
 
             <div class="results-list">
-              <div class="result-card">
-                <div class="result-header">
-                  <div class="result-info">
-                    <h4 class="result-title">JavaScript Fundamentals</h4>
-                    <p class="result-date">
-                      <i class="fas fa-calendar"></i> Completed 2 days ago
-                    </p>
+              <% if (recentResults && recentResults.length > 0) { %>
+                <% recentResults.forEach(result => { %>
+                  <div class="result-card">
+                    <div class="result-header">
+                      <div class="result-info">
+                        <h4 class="result-title"><%= result.examTitle %></h4>
+                        <p class="result-date">
+                          <i class="fas fa-calendar"></i> Completed <%= 
+                            new Date(result.createdAt).toLocaleDateString('en-US', { 
+                              month: 'short', 
+                              day: 'numeric',
+                              year: new Date(result.createdAt).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                            }) 
+                          %>
+                        </p>
+                      </div>
+                      <div class="result-score <%= result.percentage >= 90 ? 'high-score' : result.percentage >= 70 ? 'medium-score' : 'low-score' %>">
+                        <span class="score-value"><%= Math.round(result.percentage) %>%</span>
+                        <i class="fas fa-<%= result.percentage >= 90 ? 'trophy' : result.percentage >= 70 ? 'medal' : 'thumbs-up' %>"></i>
+                      </div>
+                    </div>
+                    <div class="result-details">
+                      <div class="result-stat">
+                        <span class="stat-label">Time Taken</span>
+                        <span class="stat-value"><%= result.timeTaken || 0 %> min</span>
+                      </div>
+                      <div class="result-stat">
+                        <span class="stat-label">Questions</span>
+                        <span class="stat-value"><%= result.questionsAttempted || 0 %>/<%= result.totalQuestions || 0 %></span>
+                      </div>
+                      <div class="result-stat">
+                        <span class="stat-label">Score</span>
+                        <span class="stat-value"><%= result.totalScore || 0 %>/<%= result.maxScore || 0 %></span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="result-score high-score">
-                    <span class="score-value">92%</span>
-                    <i class="fas fa-trophy"></i>
+                <% }); %>
+              <% } else { %>
+                <div class="no-results-message">
+                  <div class="no-results-icon">
+                    <i class="fas fa-chart-bar"></i>
                   </div>
+                  <h3>No Results Yet</h3>
+                  <p>Complete your first exam to see your results here!</p>
                 </div>
-                <div class="result-details">
-                  <div class="result-stat">
-                    <span class="stat-label">Time Taken</span>
-                    <span class="stat-value">45 min</span>
-                  </div>
-                  <div class="result-stat">
-                    <span class="stat-label">Questions</span>
-                    <span class="stat-value">12/12</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="result-card">
-                <div class="result-header">
-                  <div class="result-info">
-                    <h4 class="result-title">Data Structures</h4>
-                    <p class="result-date">
-                      <i class="fas fa-calendar"></i> Completed 1 week ago
-                    </p>
-                  </div>
-                  <div class="result-score medium-score">
-                    <span class="score-value">78%</span>
-                    <i class="fas fa-medal"></i>
-                  </div>
-                </div>
-                <div class="result-details">
-                  <div class="result-stat">
-                    <span class="stat-label">Time Taken</span>
-                    <span class="stat-value">60 min</span>
-                  </div>
-                  <div class="result-stat">
-                    <span class="stat-label">Questions</span>
-                    <span class="stat-value">8/10</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="result-card">
-                <div class="result-header">
-                  <div class="result-info">
-                    <h4 class="result-title">SQL Queries</h4>
-                    <p class="result-date">
-                      <i class="fas fa-calendar"></i> Completed 2 weeks ago
-                    </p>
-                  </div>
-                  <div class="result-score high-score">
-                    <span class="score-value">95%</span>
-                    <i class="fas fa-trophy"></i>
-                  </div>
-                </div>
-                <div class="result-details">
-                  <div class="result-stat">
-                    <span class="stat-label">Time Taken</span>
-                    <span class="stat-value">38 min</span>
-                  </div>
-                  <div class="result-stat">
-                    <span class="stat-label">Questions</span>
-                    <span class="stat-value">15/15</span>
-                  </div>
-                </div>
-              </div>
+              <% } %>
             </div>
           </section>
 

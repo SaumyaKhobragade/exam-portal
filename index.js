@@ -512,6 +512,9 @@ app.get('/owner-dashboard', noCacheMiddleware, verifyOwnerSession, (req,res)=>{
 
 app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
     try {
+        // Import ExamResult model
+        const ExamResult = (await import('./src/models/examResult.model.js')).default;
+        
         // Debug user object
         console.log('User object:', {
             id: req.user._id,
@@ -535,7 +538,13 @@ app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=
             console.log('No domain found for user, showing empty exams list');
             return res.render('userDashboard', { 
                 user: req.user,
-                exams: [] 
+                exams: [],
+                userStats: {
+                    totalExams: 0,
+                    averageScore: 0,
+                    totalTimeTaken: 0
+                },
+                recentResults: []
             });
         }
         
@@ -543,15 +552,27 @@ app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=
         const organizationExams = await getNonExpiredExamsForOrganization(userDomain);
         console.log(`Found ${organizationExams.length} exams for user dashboard`);
         
+        // Get user's exam statistics and recent results
+        const userStats = await ExamResult.getUserStats(req.user._id);
+        const recentResults = await ExamResult.getRecentResults(req.user._id, 5);
+        
         res.render('userDashboard', { 
             user: req.user,
-            exams: organizationExams 
+            exams: organizationExams,
+            userStats: userStats,
+            recentResults: recentResults
         });
     } catch (error) {
         console.error('Error fetching organization exams:', error);
         res.render('userDashboard', { 
             user: req.user,
-            exams: [] 
+            exams: [],
+            userStats: {
+                totalExams: 0,
+                averageScore: 0,
+                totalTimeTaken: 0
+            },
+            recentResults: []
         });
     }
 });
@@ -565,6 +586,9 @@ app.get('/dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
             domain: req.user.domain,
             username: req.user.username
         });
+        
+        // Import ExamResult model
+        const ExamResult = (await import('./src/models/examResult.model.js')).default;
         
         // Get user's domain
         let userDomain = req.user.domain;
@@ -581,7 +605,13 @@ app.get('/dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
             console.log('Dashboard - No domain found for user, showing empty exams list');
             return res.render('userDashboard', { 
                 user: req.user,
-                exams: [] 
+                exams: [],
+                userStats: {
+                    totalExams: 0,
+                    averageScore: 0,
+                    totalTimeTaken: 0
+                },
+                recentResults: []
             });
         }
         
@@ -589,23 +619,76 @@ app.get('/dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
         const organizationExams = await getNonExpiredExamsForOrganization(userDomain);
         console.log(`Found ${organizationExams.length} exams for dashboard`);
         
+        // Get user's exam statistics and recent results
+        const userStats = await ExamResult.getUserStats(req.user._id);
+        const recentResults = await ExamResult.getRecentResults(req.user._id, 5);
+        
+        console.log('User stats:', userStats);
+        console.log('Recent results count:', recentResults.length);
+        
         res.render('userDashboard', { 
             user: req.user,
-            exams: organizationExams 
+            exams: organizationExams,
+            userStats: userStats,
+            recentResults: recentResults
         });
     } catch (error) {
-        console.error('Error fetching organization exams:', error);
+        console.error('Error fetching dashboard data:', error);
         res.render('userDashboard', { 
             user: req.user,
-            exams: [] 
+            exams: [],
+            userStats: {
+                totalExams: 0,
+                averageScore: 0,
+                totalTimeTaken: 0
+            },
+            recentResults: []
         });
     }
 });
 
+// Function to preprocess Java code to ensure proper Main class structure
+function preprocessJavaCode(sourceCode, languageId) {
+    // Only preprocess for Java (language_id 62)
+    if (languageId === 62 || languageId === '62') {
+        // Check if the code already has a proper Main class structure
+        if (sourceCode.includes('class Main') && sourceCode.includes('public static void main')) {
+            return sourceCode;
+        }
+        
+        // If the code looks like it's just the logic without class wrapper, wrap it
+        const trimmedCode = sourceCode.trim();
+        
+        // Check if it's just a method or logic without class
+        if (!trimmedCode.includes('class ') && !trimmedCode.includes('public class ')) {
+            return `
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        ${trimmedCode}
+        
+        scanner.close();
+    }
+}`.trim();
+        }
+        
+        // If it has a class but not Main, try to rename it to Main
+        if (trimmedCode.includes('public class ') && !trimmedCode.includes('public class Main')) {
+            return trimmedCode.replace(/public class \w+/g, 'public class Main');
+        }
+    }
+    
+    return sourceCode;
+}
+
 // Judge0 code execution route with enhanced functionality
 app.post('/api/v1/execute', async (req, res) => {
     try {
-        const { source_code, language_id, stdin, expected_output, test_cases } = req.body;
+        let { source_code, language_id, stdin, expected_output, test_cases } = req.body;
         
         if (!source_code) {
             return res.status(400).json({
@@ -613,6 +696,9 @@ app.post('/api/v1/execute', async (req, res) => {
                 error: 'Source code is required'
             });
         }
+        
+        // Preprocess Java code to ensure proper structure
+        source_code = preprocessJavaCode(source_code, language_id);
         
         // If test_cases are provided, run multiple test cases
         if (test_cases && Array.isArray(test_cases)) {
@@ -918,7 +1004,7 @@ app.post('/api/v1/review-code', async (req, res) => {
 // Enhanced Judge0 execution with AI grading
 app.post('/api/v1/execute-and-grade', async (req, res) => {
     try {
-        const {
+        let {
             source_code,
             language_id,
             test_cases,
@@ -933,6 +1019,9 @@ app.post('/api/v1/execute-and-grade', async (req, res) => {
                 error: 'Source code is required'
             });
         }
+
+        // Preprocess Java code to ensure proper structure
+        source_code = preprocessJavaCode(source_code, language_id);
 
         // First, execute the code with Judge0
         let executionResult;

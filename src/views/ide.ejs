@@ -262,6 +262,10 @@ console.log(solve(testInput)); // Expected: 15</textarea>
               <span class="tab-icon">🧪</span>
               Test Results
             </button>
+            <button class="tab-btn" onclick="switchTab('feedback')">
+              <span class="tab-icon">🤖</span>
+              AI Feedback
+            </button>
             <button class="collapse-btn" onclick="toggleCollapse()">
               <span class="collapse-icon">▼</span>
             </button>
@@ -288,6 +292,29 @@ console.log(solve(testInput)); // Expected: 15</textarea>
             </div>
             <div class="test-cases" id="testCasesContainer">
               <!-- Test cases will be loaded dynamically by JavaScript -->
+            </div>
+          </div>
+
+          <!-- AI Feedback Tab Content -->
+          <div class="tab-content" id="feedbackTab">
+            <div class="tab-header">
+              <h3 class="tab-title">AI Code Feedback</h3>
+              <button class="ai-btn" id="aiGradeBtn" onclick="getAIFeedback()" disabled>
+                Get AI Feedback
+              </button>
+            </div>
+            <div class="ai-feedback-container" id="aiFeedbackContainer">
+              <div class="feedback-placeholder">
+                <div class="placeholder-icon">🤖</div>
+                <h4>AI Code Analysis</h4>
+                <p>Run your test cases first, then click "Get AI Feedback" to receive intelligent feedback on your code quality, efficiency, and suggestions for improvement.</p>
+                <div class="feedback-features">
+                  <div class="feature-item">✅ Code Correctness Analysis</div>
+                  <div class="feature-item">🎨 Code Quality Assessment</div>
+                  <div class="feature-item">⚡ Performance Optimization Tips</div>
+                  <div class="feature-item">📖 Best Practices Review</div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

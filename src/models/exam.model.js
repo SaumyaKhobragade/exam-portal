@@ -33,8 +33,8 @@ const questionSchema = new mongoose.Schema({
         trim: true
     },
     constraints: {
-        type: String,
-        trim: true
+        type: [String], // Array of strings for better structure
+        default: []
     },
     weight: {
         type: Number,
