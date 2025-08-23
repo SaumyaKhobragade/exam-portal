@@ -62,28 +62,28 @@
       </section>
 
 
-      <!-- Exam Management Options -->
-      <div class="exam-management">
-        <div class="exam-card">
-          <h3>📝 Create New Exam</h3>
-          <p>Set up a new examination for your organization with coding challenges, MCQs, or mixed formats.</p>
-          <a href="/admin/exams/create" class="btn">Create Exam</a>
+      <!-- Dashboard Section: Exam Cards + Your Exams -->
+      <div class="dashboard-section">
+        <div class="exam-management">
+          <div class="exam-card">
+            <h3>📝 Create New Exam</h3>
+            <p>Set up a new examination for your organization with coding challenges, MCQs, or mixed formats.</p>
+            <a href="/admin/exams/create" class="btn">Create Exam</a>
+          </div>
+          <div class="exam-card">
+            <h3>📊 View Results</h3>
+            <p>Monitor exam results, student performance, and generate detailed reports for analysis.</p>
+            <button class="btn btn-success" onclick="showResults()">View Results</button>
+          </div>
         </div>
-        
-        <div class="exam-card">
-          <h3>📊 View Results</h3>
-          <p>Monitor exam results, student performance, and generate detailed reports for analysis.</p>
-          <button class="btn btn-success" onclick="showResults()">View Results</button>
-        </div>
+        <section class="current-exams">
+          <h2 class="section-title">Your Exams</h2>
+          <div class="exams-container" id="examsContainer">
+            <p>Loading exams...</p>
+          </div>
+        </section>
       </div>
-
-      <!-- Current Exams Management -->
-      <section class="current-exams">
-        <h2 class="section-title">Your Exams</h2>
-        <div class="exams-container" id="examsContainer">
-          <p>Loading exams...</p>
-        </div>
-      </section>
+      <!-- End Dashboard Section -->
 
       <!-- Assigned Exams Section -->
       <!-- <div class="assigned-exams">
