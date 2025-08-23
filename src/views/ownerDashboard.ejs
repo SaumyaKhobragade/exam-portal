@@ -121,24 +121,32 @@
             </section>
 
             <!-- Admin Management Section -->
-            <div class="admin-management-section slide-up">
-                <h2 class="section-title">
-                    <i class="fas fa-user-cog"></i> Admin Management
-                </h2>
-                
+            <section class="admin-management-section slide-up">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-cog"></i> Admin Management
+                    </h2>
+                    <div class="admin-count" id="adminCountDisplay">Loading...</div>
+                </div>
+
                 <!-- Message for admin operations -->
                 <div id="message" class="message"></div>
-                
+
                 <!-- Admin List -->
                 <div class="admin-list">
-                    <h3 class="section-title">
-                        <i class="fas fa-list"></i> Current Admins
-                    </h3>
-                    <div id="adminsList">
-                        <!-- Admins will be loaded here dynamically -->
+                    <div class="admin-list-header">
+                        <h3 class="list-title">
+                            <i class="fas fa-users"></i> Current Administrators
+                        </h3>
+                    </div>
+                    <div class="admins-container" id="adminsList">
+                        <div class="loading-message">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Loading administrators...</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
 
