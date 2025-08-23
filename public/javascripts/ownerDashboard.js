@@ -75,8 +75,8 @@ async function deleteAdmin(adminId) {
         if (response.ok) {
             messageDiv.className = 'message success';
             messageDiv.textContent = 'Admin account deleted successfully!';
-            loadAdmins(); // Reload admins list
-            loadDashboardStats(); // Reload stats
+            loadAdmins(); 
+            loadDashboardStats(); 
         } else {
             messageDiv.className = 'message error';
             messageDiv.textContent = result.message || 'Failed to delete admin account';
@@ -89,7 +89,6 @@ async function deleteAdmin(adminId) {
     }
 }
 
-// Load exam request statistics
 async function loadExamRequestStats() {
     try {
         const response = await fetch('/api/v1/exam-requests/stats');
