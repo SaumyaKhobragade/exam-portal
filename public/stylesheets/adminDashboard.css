@@ -629,7 +629,7 @@ body, html {
 .exam-item:hover {
   transform: translateY(-8px) scale(1.025);
   box-shadow: 0 16px 40px rgba(53,122,189,0.13), 0 2px 12px rgba(0,0,0,0.07);
-  border-left: 8px solid #357abd;
+  border-left: 8px solid #667eea;
   background: #fafbfc !important;
 }
 
@@ -1057,7 +1057,7 @@ body, html {
   width: 20px;
   height: 20px;
   border: 2px solid #f3f3f3;
-  border-top: 2px solid #357ABD;
+  border-top: 2px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -1078,12 +1078,12 @@ body, html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(53, 122, 189, 0.6);
+  background: rgba(102, 126, 234, 0.6);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(53, 122, 189, 0.8);
+  background: rgba(102, 126, 234, 0.8);
 }
 
 /* Exam Management Styles */
@@ -1118,7 +1118,7 @@ body, html {
 .exam-item:hover {
   transform: translateY(-8px) scale(1.025);
   box-shadow: 0 16px 40px rgba(53,122,189,0.13), 0 2px 12px rgba(0,0,0,0.07);
-  border-left: 8px solid #357abd;
+  border-left: 8px solid #667eea;
   background: #fafbfc !important;
 }
 
@@ -1556,7 +1556,7 @@ body, html {
   width: 20px;
   height: 20px;
   border: 2px solid #f3f3f3;
-  border-top: 2px solid #357ABD;
+  border-top: 2px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -1577,12 +1577,12 @@ body, html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(53, 122, 189, 0.6);
+  background: rgba(102, 126, 234, 0.6);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(53, 122, 189, 0.8);
+  background: rgba(102, 126, 234, 0.8);
 }
 
 /* Exam Management Styles */
@@ -1617,7 +1617,7 @@ body, html {
 .exam-item:hover {
   transform: translateY(-8px) scale(1.025);
   box-shadow: 0 16px 40px rgba(53,122,189,0.13), 0 2px 12px rgba(0,0,0,0.07);
-  border-left: 8px solid #357abd;
+  border-left: 8px solid #667eea;
   background: #fafbfc !important;
 }
 
@@ -2055,7 +2055,7 @@ body, html {
   width: 20px;
   height: 20px;
   border: 2px solid #f3f3f3;
-  border-top: 2px solid #357ABD;
+  border-top: 2px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -2076,12 +2076,12 @@ body, html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(53, 122, 189, 0.6);
+  background: rgba(102, 126, 234, 0.6);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(53, 122, 189, 0.8);
+  background: rgba(102, 126, 234, 0.8);
 }
 
 /* Exam Management Styles */
@@ -2116,7 +2116,7 @@ body, html {
 .exam-item:hover {
   transform: translateY(-8px) scale(1.025);
   box-shadow: 0 16px 40px rgba(53,122,189,0.13), 0 2px 12px rgba(0,0,0,0.07);
-  border-left: 8px solid #357abd;
+  border-left: 8px solid #667eea;
   background: #fafbfc !important;
 }
 
@@ -2554,7 +2554,7 @@ body, html {
   width: 20px;
   height: 20px;
   border: 2px solid #f3f3f3;
-  border-top: 2px solid #357ABD;
+  border-top: 2px solid #667eea;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -2575,10 +2575,10 @@ body, html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(53, 122, 189, 0.6);
+  background: rgba(102, 126, 234, 0.6);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(53, 122, 189, 0.8);
+  background: rgba(102, 126, 234, 0.8);
 }
