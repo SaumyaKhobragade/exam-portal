@@ -15,7 +15,22 @@ function togglePasswordVisibility(inputId, btn) {
   }
 }
 
+// Ensure page loads at the top
+window.addEventListener('load', function() {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+});
+
+// Also ensure on page reload/back navigation
+window.addEventListener('beforeunload', function() {
+  window.scrollTo(0, 0);
+});
+
 document.addEventListener('DOMContentLoaded', function() {
+  // Ensure page loads at the top
+  window.scrollTo(0, 0);
+  
   // Handle URL parameters for messages
   const urlParams = new URLSearchParams(window.location.search);
   const message = urlParams.get('message');

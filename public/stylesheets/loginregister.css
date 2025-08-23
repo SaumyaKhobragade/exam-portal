@@ -4,40 +4,71 @@
   box-sizing: border-box;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 body, html {
   height: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
   color: #333;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+/* Ensure page starts at top */
+html {
+  scroll-padding-top: 0;
+}
+
+body {
+  scroll-margin-top: 0;
+}
+
+/* Prevent auto-scroll on focus */
+input:focus, 
+textarea:focus, 
+select:focus, 
+button:focus {
+  scroll-margin: 0;
+  scroll-padding: 0;
+}
+
+/* Disable automatic scroll on anchor links */
+:target {
+  scroll-margin-top: 0;
 }
 
 .main-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  scroll-behavior: auto;
 }
 
 .header-section {
   background: rgba(255, 255, 255, 0.95);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  animation: fadeIn 0.6s ease forwards;
 }
 
 .brand-logo {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #357ABD;
+  color: #667eea;
   letter-spacing: 1px;
 }
 
@@ -56,19 +87,16 @@ body, html {
 }
 
 .nav-link:hover {
-  background-color: #4a90e2;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .nav-link.active {
-  background-color: #357ABD;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
   font-weight: 600;
-}
-
-.nav-link:hover {
-  background-color: #4a90e2;
-  color: #fff;
 }
 
 .user-actions {
@@ -77,21 +105,24 @@ body, html {
 }
 
 .action-btn {
-  padding: 0.5rem 1.2rem;
+  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 20px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  background-color: #4a90e2;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .action-btn:hover {
-  background-color: #357ABD;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .register-btn {
@@ -104,17 +135,16 @@ body, html {
 
 .content-area {
   flex: 1;
-  padding: 2rem;
   background: rgba(255, 255, 255, 0.1);
-  min-height: calc(100vh - 200px);
 }
 
 .auth-grid {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  gap: 2rem;
-  grid-template-areas: 
+  gap: 3rem;
+  padding: 2rem;
+  grid-template-areas:
     "welcome welcome"
     "toggle toggle"
     "forms forms"
@@ -124,23 +154,43 @@ body, html {
 .welcome-card {
   grid-area: welcome;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  padding: 3rem;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
+  padding: 4rem 3rem;
   text-align: center;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.6s ease forwards;
+}
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
 .welcome-title {
-  font-size: 2.5rem;
-  color: #357ABD;
-  margin-bottom: 1rem;
+  font-size: 3rem;
+  color: #333;
+  margin-bottom: 1.5rem;
   font-weight: 700;
+  line-height: 1.2;
 }
 
 .welcome-description {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   color: #666;
-  opacity: 0.8;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .auth-toggle-section {
@@ -151,11 +201,16 @@ body, html {
 
 .toggle-buttons {
   background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border-radius: 25px;
   padding: 0.5rem;
   display: flex;
   gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
 }
 
 .toggle-btn {
@@ -172,18 +227,23 @@ body, html {
 }
 
 .toggle-btn.active {
-  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
-  box-shadow: 0 2px 10px rgba(74, 144, 226, 0.3);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 .auth-forms-section {
   grid-area: forms;
   position: relative;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  padding: 2rem;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
 }
 
 .form-container {
@@ -201,8 +261,8 @@ body, html {
 }
 
 .form-title {
-  font-size: 1.8rem;
-  color: #357ABD;
+  font-size: 2.2rem;
+  color: #333;
   margin-bottom: 2rem;
   font-weight: 600;
   text-align: center;
@@ -245,9 +305,9 @@ body, html {
 }
 
 .form-input:focus {
-  border-color: #4a90e2;
+  border-color: #667eea;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-helper {
@@ -411,12 +471,12 @@ body, html {
 }
 
 .toggle-password-visibility:hover {
-  color: #4a90e2;
+  color: #667eea;
 }
 
 .toggle-password-visibility:focus {
   outline: none;
-  color: #4a90e2;
+  color: #667eea;
 }
 
 .form-options {
@@ -439,11 +499,11 @@ body, html {
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #4a90e2;
+  accent-color: #667eea;
 }
 
 .forgot-link {
-  color: #4a90e2;
+  color: #667eea;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -460,7 +520,7 @@ body, html {
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: #fff;
   border: none;
   padding: 1rem 2.5rem;
@@ -476,22 +536,27 @@ body, html {
 }
 
 .submit-btn:hover {
-  background: linear-gradient(135deg, #357ABD, #2b6cb8);
+  background: linear-gradient(135deg, #764ba2, #667eea);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .auth-benefits {
   grid-area: benefits;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  padding: 2rem;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.6s ease forwards;
+  animation-delay: 0.6s;
+  opacity: 0;
 }
 
 .benefits-title {
-  font-size: 1.5rem;
-  color: #357ABD;
+  font-size: 2.2rem;
+  color: #333;
   margin-bottom: 2rem;
   font-weight: 600;
   text-align: center;
@@ -504,17 +569,37 @@ body, html {
 }
 
 .benefit-item {
+  background: #fff;
+  border-radius: 15px;
+  padding: 2rem;
   text-align: center;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background: #f8f9fa;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.benefit-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.benefit-item:hover::before {
+  opacity: 1;
 }
 
 .benefit-item:hover {
-  background: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
 }
 
 .benefit-icon {
@@ -617,12 +702,49 @@ body, html {
   }
 }
 
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Initialize animations for toggle buttons and sections */
+.toggle-buttons.slide-up {
+  opacity: 1;
+}
+
+.auth-forms-section.slide-up {
+  opacity: 1;
+}
+
+.auth-benefits.slide-up {
+  opacity: 1;
+}
+
 /* Footer Styles */
 .footer-section {
   background: rgba(255, 255, 255, 0.95);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   margin-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .footer-content {
@@ -637,7 +759,7 @@ body, html {
 .footer-logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #357ABD;
+  color: #667eea;
   margin-bottom: 1rem;
 }
 
@@ -668,7 +790,7 @@ body, html {
 }
 
 .footer-link:hover {
-  color: #4a90e2;
+  color: #667eea;
 }
 
 .footer-bottom {
