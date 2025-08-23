@@ -1,677 +1,198 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Owner Dashboard</title>
+    <title>Owner Dashboard - CodeSecure</title>
     <link rel="stylesheet" href="/stylesheets/ownerDashboard.css">
-    <link rel="stylesheet" href="/stylesheets/adminDashboard.css">
-    <style>
-        /* Header section styling - matching admin dashboard */
-        .dashboard-container {
-            padding: 24px 18px 18px 18px;
-        }
-        .dashboard-section {
-            padding: 18px 12px 12px 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        .header-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-        .brand-logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #764ba2;
-            letter-spacing: 1px;
-            flex: 1;
-        }
-
-        .navigation-menu {
-            display: flex;
-            gap: 2rem;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background-color: #764ba2;
-            color: #fff;
-        }
-
-        .user-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex: 1;
-            justify-content: flex-end;
-        }
-
-        .user-actions span {
-            color: #333;
-            font-weight: 600;
-        }
-
-        .action-btn {
-            padding: 0.5rem 1.2rem;
-            border: none;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background-color: #764ba2;
-            color: #fff;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .action-btn:hover {
-            background-color: #667eea;
-            transform: translateY(-1px);
-        }
-
-        .logout-btn {
-            background-color: #ff4757;
-        }
-
-        .logout-btn:hover {
-            background-color: #ff3742;
-        }
-
-        /* Responsive design for header */
-        @media (max-width: 768px) {
-            .header-section {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
-                position: relative;
-            }
-            
-            .brand-logo {
-                text-align: center;
-                flex: none;
-            }
-            
-            .navigation-menu {
-                position: static;
-                transform: none;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            
-            .user-actions {
-                justify-content: center;
-                flex: none;
-            }
-        }
-
-        .owner-header {
-            background: #fff;
-            color: #764ba2;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        }
-        
-        .owner-title {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .owner-subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        
-        .admin-management-section {
-            background: white;
-            padding: 56px 56px 48px 56px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            width: 100%;
-            max-width: 900px;
-            align-self: center;
-        }
-        
-        .section-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #333;
-        }
-        
-        .admin-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .form-label {
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        
-        .form-input {
-            padding: 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .full-width {
-            grid-column: 1 / -1;
-        }
-        
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .admin-list {
-            margin-top: 30px;
-        }
-        
-        .admin-item {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            background: #f8f9fa;
-        }
-        
-        .admin-info {
-            flex: 1;
-        }
-        
-        .admin-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .admin-email {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .admin-organization {
-            color: #888;
-            font-size: 13px;
-            font-style: italic;
-            margin-top: 2px;
-        }
-        
-        .message {
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .stats-grid {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 32px;
-            margin-bottom: 30px;
-            padding: 16px 12px 8px 12px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 18px 24px 18px 24px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            min-width: 120px;
-            width: fit-content;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .stat-number {
-            font-size: 36px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        
-        .stat-label {
-            font-size: 16px;
-            color: #666;
-            font-weight: 500;
-        }
-    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="main-container">
-        <header class="header-section">
-            <div class="brand-logo">Exam Portal - Owner</div>
+        <!-- Header Section -->
+        <header class="header-section fade-in">
+            <div class="brand-logo">
+                <i class="fas fa-graduation-cap"></i> CodeSecure
+            </div>
             <nav class="navigation-menu">
-                <a href="/owner-dashboard" class="nav-link active">Dashboard</a>
-                <a href="#" class="nav-link" onclick="showAnalytics()">Analytics</a>
-                <a href="#" class="nav-link" onclick="showSettings()">Settings</a>
-                <a href="#" class="nav-link" onclick="showReports()">Reports</a>
+                <a href="/owner-dashboard" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#" class="nav-link" onclick="showAnalytics()">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                </a>
+                <a href="#" class="nav-link" onclick="showSettings()">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+                <a href="#" class="nav-link" onclick="showReports()">
+                    <i class="fas fa-file-alt"></i> Reports
+                </a>
             </nav>
             <div class="user-actions">
-                <span id="ownerName"><%= user ? user.fullname || user.username : 'Owner' %></span>
-                <a href="/logout" class="action-btn logout-btn">Logout</a>
+                <span id="ownerName">
+                    <i class="fas fa-crown"></i> <%= user ? user.fullname || user.username : 'Owner' %>
+                </span>
+                <button class="action-btn logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
             </div>
         </header>
 
+        <!-- Dashboard Container -->
         <div class="dashboard-container">
-        <div class="owner-header">
-            <div class="owner-title">👑 Owner Dashboard</div>
-            <div class="owner-subtitle">Complete control and management of the CodeSecure platform</div>
-        </div>
+            <!-- Owner Header -->
+            <div class="owner-header slide-up">
+                <div class="owner-title">
+                    <i class="fas fa-crown"></i> Owner Dashboard
+                </div>
+                <div class="owner-subtitle">
+                    Complete control and management of the CodeSecure platform
+                </div>
+            </div>
 
-    <div id="dashboardMessage" class="message" style="display:none;"></div>
-    <!-- Statistics Section -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number" id="totalUsers">-</div>
-                <div class="stat-label">Total Users</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="adminCount">-</div>
-                <div class="stat-label">Admins</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number" id="userCount">-</div>
-                <div class="stat-label">Regular Users</div>
-            </div>
-        </div>
+            <!-- Dashboard Message -->
+            <div id="dashboardMessage" class="message"></div>
 
-        <!-- Exam Request Management Section -->
-        <div class="dashboard-section">
-            <div class="exam-requests-section upgraded-section">
-                <div class="section-header upgraded-header">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3039/3039434.png" alt="Exam Requests" style="width:32px;opacity:0.85;">
-                        <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#4a4a4a;">Exam Request Management</h2>
+            <!-- Statistics Section -->
+            <div class="stats-grid slide-up">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">
+                        <i class="fas fa-users"></i> Total Users
                     </div>
                 </div>
-                <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number" id="pendingRequests">0</div>
-                    <div class="stat-label">Pending Requests</div>
+                    <div class="stat-number" id="adminCount">0</div>
+                    <div class="stat-label">
+                        <i class="fas fa-user-tie"></i> Admins
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="userCount">0</div>
+                    <div class="stat-label">
+                        <i class="fas fa-user-graduate"></i> Students
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="approvedRequests">0</div>
-                    <div class="stat-label">Approved Requests</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="totalRequests">0</div>
-                    <div class="stat-label">Total Requests</div>
-                </div>
-            </div>
-            <div class="exam-requests-section upgraded-section">
-                <div class="section-header upgraded-header">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3039/3039434.png" alt="Exam Requests" style="width:32px;opacity:0.85;">
-                        <h3 style="margin:0;font-size:1.5rem;font-weight:700;color:#4a4a4a;">Recent Exam Requests</h3>
-                    </div>
-                    <div class="filter-buttons upgraded-filters">
-                        <button class="btn filter-btn" onclick="loadExamRequests('all')" id="filterAll">All</button>
-                        <button class="btn filter-btn" onclick="loadExamRequests('pending')" id="filterPending">Pending</button>
-                        <button class="btn filter-btn" onclick="loadExamRequests('approved')" id="filterApproved">Approved</button>
-                        <button class="btn filter-btn" onclick="loadExamRequests('rejected')" id="filterRejected">Rejected</button>
-                    </div>
-                </div>
-                <div id="examRequestsList" class="upgraded-list">
-                    <div id="noExamRequests" style="display:none;text-align:center;padding:40px 0;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png" alt="No Requests" style="width:80px;opacity:0.5;margin-bottom:16px;">
-                        <div style="font-size:20px;font-weight:600;color:#888;">No exam requests found</div>
-                        <div style="color:#aaa;font-size:15px;margin-top:8px;">All exam hosting requests will appear here when submitted.</div>
+                    <div class="stat-label">
+                        <i class="fas fa-handshake"></i> Approved Access Requests
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Admin Management Section -->
-        <div class="admin-management-section">
-            <h2 class="section-title">👨‍💼 Admin Management</h2>
-            <div class="admin-list">
-                <h3>Current Admins</h3>
-                <div id="adminsList">
-                    <p>Loading admins...</p>
+            <!-- Organization Access Request Management Section -->
+            <div class="exam-requests-section dashboard-section slide-up">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-building"></i> Organization Access Requests
+                    </h2>
+                </div>
+                <div id="examRequestsList">
+                    <!-- Exam requests will be loaded here dynamically -->
                 </div>
             </div>
-        </div>
-    <style>
-    .upgraded-section {
-        background: #fff;
-        border-radius: 18px;
-        box-shadow: 0 4px 24px rgba(102,126,234,0.10);
-        padding: 56px 56px 48px 56px;
-        margin-top: 36px;
-        width: 100%;
-        max-width: 900px;
-        align-self: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .upgraded-section .section-header {
-        justify-content: center;
-    }
-    .upgraded-section .stats-grid {
-        justify-content: center;
-    }
-    .exam-requests-section {
-        padding: 18px 12px 12px 12px;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .exam-requests-section {
-        padding: 18px 12px 12px 12px;
-    }
-    .upgraded-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 18px;
-        border-bottom: 1px solid #e1e5e9;
-        padding-bottom: 12px;
-    }
-    .upgraded-filters .filter-btn {
-        background: #fff;
-        color: #667eea;
-        border: 1px solid #dbeafe;
-        font-weight: 600;
-        border-radius: 6px;
-        margin-right: 6px;
-        transition: background 0.2s, color 0.2s;
-    }
-    .upgraded-filters .filter-btn:hover, .upgraded-filters .filter-btn.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #fff;
-        border: 1px solid #667eea;
-    }
-    .upgraded-list {
-        margin-top: 18px;
-    }
-    </style>
+
+            <!-- Admin Management Section -->
+            <div class="admin-management-section slide-up">
+                <h2 class="section-title">
+                    <i class="fas fa-user-cog"></i> Admin Management
+                </h2>
+                
+                <!-- Message for admin operations -->
+                <div id="message" class="message"></div>
+                
+                <!-- Admin List -->
+                <div class="admin-list">
+                    <h3 class="section-title">
+                        <i class="fas fa-list"></i> Current Admins
+                    </h3>
+                    <div id="adminsList">
+                        <!-- Admins will be loaded here dynamically -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-
-    <!-- Exam Request Review Modal -->
+    <!-- Organization Access Request Review Modal -->
     <div id="reviewModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="reviewModalTitle">Review Exam Request</h2>
+                <h2><i class="fas fa-building-user"></i> Review Access Request</h2>
                 <span class="close" id="closeReviewModal">&times;</span>
             </div>
-            <div class="modal-body" id="reviewModalBody">
-                <!-- Exam request details will be dynamically inserted here by JS -->
+            <div class="modal-body">
+                <div id="requestDetails">
+                    <!-- Request details will be loaded here -->
+                </div>
+                <div class="form-group">
+                    <label for="reviewStatus" class="form-label">
+                        <i class="fas fa-tasks"></i> Decision
+                    </label>
+                    <select id="reviewStatus" class="form-input">
+                        <option value="">Select Decision</option>
+                        <option value="approved">Approve</option>
+                        <option value="rejected">Reject</option>
+                    </select>
+                </div>
+                <div id="adminAssignmentGroup" class="form-group" style="display: none;">
+                    <label for="assignedAdmin" class="form-label">
+                        <i class="fas fa-user-tie"></i> Assign to Admin
+                    </label>
+                    <select id="assignedAdmin" class="form-input">
+                        <option value="">Select Admin</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="closeReviewModalBtn">Close</button>
-                <button class="btn btn-primary" id="approveRequestBtn">Approve</button>
-                <button class="btn btn-danger" id="rejectRequestBtn">Reject</button>
+                <button type="button" class="btn btn-secondary" id="closeReviewModalBtn">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-primary" id="approveRequestBtn">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+                <button type="button" class="btn btn-danger" id="rejectRequestBtn">
+                    <i class="fas fa-times"></i> Reject
+                </button>
             </div>
         </div>
     </div>
 
-    <style>
-        .exam-requests-section {
-            margin-top: 20px;
-        }
-        
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .filter-buttons .btn {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-        
-        .request-item {
-            background: white;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 20px 28px;
-            margin-bottom: 18px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            gap: 32px;
-            justify-content: space-between;
-        }
-        
-        .request-header {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 180px;
-        }
-        
-        .request-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .request-org {
-            color: #667eea;
-            font-weight: 500;
-        }
-        
-        .request-status {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .request-details {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 18px 32px;
-            margin-bottom: 0;
-            align-items: flex-start;
-            min-width: 320px;
-        }
-        
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .detail-label {
-            font-weight: bold;
-            color: #666;
-            font-size: 12px;
-            text-transform: uppercase;
-            margin-bottom: 3px;
-        }
-        
-        .detail-value {
-            color: #333;
-        }
-        
-        .request-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: flex-end;
-            min-width: 120px;
-        }
-        
-        .modal {
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-        }
-        
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 0;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .modal-footer {
-            padding: 20px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-        
-        .close {
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
-        }
-        
-        .close:hover {
-            color: black;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-    </style>
-
-    </div> <!-- End of main-container -->
-
+    <!-- Scripts -->
     <script src="/javascripts/sessionProtection.js"></script>
     <script src="/javascripts/ownerDashboard.js"></script>
+    <script>
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('Logout failed. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    alert('An error occurred during logout.');
+                });
+            }
+        }
+
+        // Initialize dashboard animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add staggered animation delays
+            const elements = document.querySelectorAll('.slide-up');
+            elements.forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
 </body>
 </html>

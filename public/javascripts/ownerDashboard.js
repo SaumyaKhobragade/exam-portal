@@ -103,17 +103,14 @@ async function loadExamRequestStats() {
             document.getElementById('totalRequests').textContent = result.data.stats.total;
         }
     } catch (error) {
-        console.error('Error loading exam request stats:', error);
+        console.error('Error loading organization access request stats:', error);
     }
 }
 
-// Load exam requests with optional status filter
-async function loadExamRequests(status = 'all') {
+// Load organization access requests
+async function loadExamRequests() {
     try {
         let url = '/api/v1/exam-requests/all';
-        if (status !== 'all') {
-            url += `?status=${status}`;
-        }
         
         const response = await fetch(url);
         const result = await response.json();
@@ -122,7 +119,7 @@ async function loadExamRequests(status = 'all') {
             const requestsList = document.getElementById('examRequestsList');
             
             if (result.data.requests.length === 0) {
-                requestsList.innerHTML = '<p>No exam requests found.</p>';
+                requestsList.innerHTML = '<p>No organization access requests found.</p>';
                 return;
             }
             
@@ -169,24 +166,30 @@ async function loadExamRequests(status = 'all') {
             `).join('');
         }
     } catch (error) {
-        console.error('Error loading exam requests:', error);
-        document.getElementById('examRequestsList').innerHTML = '<p>Error loading exam requests.</p>';
+        console.error('Error loading organization access requests:', error);
+        document.getElementById('examRequestsList').innerHTML = '<p>Error loading organization access requests.</p>';
     }
 }
 
 // Open review modal
 async function openReviewModal(requestId) {
+    console.log('Opening review modal for request:', requestId);
+    
     // Wire up modal buttons to review actions
     setTimeout(() => {
         const approveBtn = document.getElementById('approveRequestBtn');
         const rejectBtn = document.getElementById('rejectRequestBtn');
         const closeBtn = document.getElementById('closeReviewModal');
         const closeFooterBtn = document.getElementById('closeReviewModalBtn');
+        
+        console.log('Setting up modal buttons:', {approveBtn, rejectBtn, closeBtn, closeFooterBtn});
+        
         if (approveBtn) approveBtn.onclick = () => submitReview('approved');
         if (rejectBtn) rejectBtn.onclick = () => submitReview('rejected');
         if (closeBtn) closeBtn.onclick = closeReviewModal;
         if (closeFooterBtn) closeFooterBtn.onclick = closeReviewModal;
     }, 0);
+    
     currentRequestId = requestId;
     
     try {
@@ -198,7 +201,7 @@ async function openReviewModal(requestId) {
             const request = result.data.requests.find(r => r._id === requestId);
             if (request) {
                 // Populate modal body with request details
-                document.getElementById('reviewModalBody').innerHTML = `
+                document.getElementById('requestDetails').innerHTML = `
                     <div class="request-details">
                         <h4>${request.organizationName || 'N/A'}</h4>
                         <p><strong>Contact:</strong> ${request.contactPerson || 'N/A'} (${request.email || 'N/A'})</p>
@@ -209,10 +212,17 @@ async function openReviewModal(requestId) {
                     </div>
                 `;
                 document.getElementById('reviewModal').style.display = 'block';
+            } else {
+                console.error('Request not found with ID:', requestId);
+                alert('Request not found');
             }
+        } else {
+            console.error('Failed to load requests:', result);
+            alert('Failed to load request details');
         }
     } catch (error) {
-        console.error('Error loading request details:', error);
+        console.error('Error opening review modal:', error);
+        alert('Error opening review modal: ' + error.message);
     }
 }
 
@@ -286,48 +296,6 @@ function viewRequestDetails(requestId) {
     alert('View details feature - would show full request information');
 }
 
-// Handle form submission for creating admin
-function initializeCreateAdminForm() {
-    document.getElementById('createAdminForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const username = document.getElementById('adminUsername').value;
-        const fullname = document.getElementById('adminFullname').value;
-        const email = document.getElementById('adminEmail').value;
-        const password = document.getElementById('adminPassword').value;
-        const organization = document.getElementById('adminOrganization').value;
-        const messageDiv = document.getElementById('message');
-        
-        try {
-            const response = await fetch('/api/v1/owner/create-admin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username, fullname, email, password, organization })
-            });
-            
-            const result = await response.json();
-            
-            messageDiv.style.display = 'block';
-            if (response.ok) {
-                messageDiv.className = 'message success';
-                messageDiv.textContent = 'Admin account created successfully!';
-                document.getElementById('createAdminForm').reset();
-                loadAdmins(); // Reload admins list
-                loadDashboardStats(); // Reload stats
-            } else {
-                messageDiv.className = 'message error';
-                messageDiv.textContent = result.message || 'Failed to create admin account';
-            }
-        } catch (error) {
-            messageDiv.style.display = 'block';
-            messageDiv.className = 'message error';
-            messageDiv.textContent = 'Network error. Please try again.';
-        }
-    });
-}
-
 // Handle review status change
 function initializeReviewStatusHandler() {
     document.getElementById('reviewStatus').addEventListener('change', function() {
@@ -346,7 +314,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadAdmins();
     loadExamRequestStats();
     loadExamRequests();
-    initializeCreateAdminForm();
     initializeReviewStatusHandler();
 });
 
