@@ -5,174 +5,420 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CodeSecure - User Dashboard</title>
   <link rel="stylesheet" href="/stylesheets/userDashboard.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
   <div class="main-container">
-    <header class="header-section">
-      <div class="brand-logo">CodeSecure</div>
+    <!-- Header Section -->
+    <header class="header-section fade-in">
+      <div class="brand-logo">
+        <i class="fas fa-code"></i> CodeSecure
+      </div>
       <nav class="navigation-menu">
-        <a href="/dashboard" class="nav-link">Dashboard</a>
-        <a href="/exams" class="nav-link">Exams</a>
-        <a href="/results" class="nav-link">Results</a>
-        <a href="/profile" class="nav-link">Profile</a>
+        <a href="/dashboard" class="nav-link active">
+          <i class="fas fa-tachometer-alt"></i> Dashboard
+        </a>
+        <a href="/exams" class="nav-link">
+          <i class="fas fa-file-alt"></i> Exams
+        </a>
+        <a href="/results" class="nav-link">
+          <i class="fas fa-chart-line"></i> Results
+        </a>
+        <a href="/profile" class="nav-link">
+          <i class="fas fa-user"></i> Profile
+        </a>
       </nav>
       <div class="user-actions">
-        <a href="/settings" class="action-btn">Settings</a>
-        <a href="/logout" class="action-btn logout-btn">Logout</a>
+        <div class="user-info">
+          <i class="fas fa-user-graduate"></i> 
+          <span><%= user ? user.fullname || user.username : 'Student' %></span>
+        </div>
+        <a href="/settings" class="action-btn">
+          <i class="fas fa-cog"></i> Settings
+        </a>
+        <a href="/logout" class="action-btn logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
       </div>
     </header>
 
     <main class="content-area">
-      <div class="dashboard-grid">
-        <section class="welcome-card">
-          <h1 class="welcome-title">Welcome Back, <%= user.username %>!</h1>
-          <p class="welcome-description">Ready to take your next coding challenge?</p>
-          <div class="quick-stats">
-            <div class="quick-stat">
-              <span class="stat-value">15</span>
-              <span class="stat-name">Exams Completed</span>
-            </div>
-            <div class="quick-stat">
-              <span class="stat-value">87%</span>
-              <span class="stat-name">Average Score</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="exam-list">
-          <h2 class="section-title">Available Exams from Your Organization</h2>
-          <div class="exam-items">
-            <% if (exams && exams.length > 0) { %>
-              <% exams.forEach(exam => { %>
-                <div class="exam-card">
-                  <div class="exam-header">
-                    <h3 class="exam-name"><%= exam.title %></h3>
-                    <span class="exam-duration"><%= exam.duration %> min</span>
+      <div class="dashboard-container">
+        <!-- Welcome Section -->
+        <section class="welcome-section slide-up">
+          <div class="welcome-card">
+            <div class="welcome-content">
+              <h1 class="welcome-title">
+                <i class="fas fa-wave-square"></i> 
+                Welcome Back, <span class="username"><%= user ? user.fullname || user.username : 'Student' %></span>!
+              </h1>
+              <p class="welcome-description">Ready to challenge yourself with your next coding exam?</p>
+              
+              <div class="quick-stats">
+                <div class="quick-stat">
+                  <div class="stat-icon">
+                    <i class="fas fa-clipboard-check"></i>
                   </div>
-                  <% if (exam.description) { %>
-                    <p class="exam-description"><%= exam.description %></p>
-                  <% } %>
-                  <div class="exam-meta">
-                    <span class="exam-status status-<%= exam.status %>"><%= exam.status.toUpperCase() %></span>
-                    <% if (exam.questions && exam.questions.length > 0) { %>
-                      <span class="exam-questions"><%= exam.questions.length %> Questions</span>
-                    <% } %>
-                    <% if (exam.totalMarks) { %>
-                      <span class="exam-marks"><%= exam.totalMarks %> Points</span>
-                    <% } %>
+                  <div class="stat-content">
+                    <span class="stat-value">15</span>
+                    <span class="stat-label">Exams Completed</span>
                   </div>
-                  <div class="exam-schedule">
-                    <div class="schedule-info">
-                      <strong>Start Time:</strong> 
-                      <%= new Date(exam.startDateTime).toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      }) %>
-                    </div>
-                    <% if (exam.adminId && exam.adminId.fullname) { %>
-                      <div class="created-by">
-                        <small>Created by: <%= exam.adminId.fullname %></small>
-                      </div>
-                    <% } %>
-                  </div>
-                  <% 
-                    const now = new Date();
-                    const startTime = new Date(exam.startDateTime);
-                    const endTime = new Date(startTime.getTime() + (exam.duration * 60000));
-                    const canStart = now >= startTime && now <= endTime && exam.status === 'active';
-                    const isPast = now > endTime;
-                    const isFuture = now < startTime;
-                  %>
-                  
-                  <% if (canStart) { %>
-                    <a href="/exams/start/<%= exam._id %>" class="start-exam-btn">Start Exam</a>
-                  <% } else if (isPast) { %>
-                    <button class="start-exam-btn disabled" disabled>Exam Ended</button>
-                  <% } else if (isFuture) { %>
-                    <button class="start-exam-btn disabled" disabled>
-                      Starts <%= startTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
-                    </button>
-                  <% } else if (exam.status === 'draft') { %>
-                    <button class="start-exam-btn disabled" disabled>Draft - Not Available</button>
-                  <% } else { %>
-                    <button class="start-exam-btn disabled" disabled>Not Available</button>
-                  <% } %>
                 </div>
-              <% }); %>
-            <% } else { %>
-              <div class="no-exams-message">
-                <h3>No Exams Available</h3>
-                <p>Your organization hasn't created any exams yet. Check back later!</p>
+                <div class="quick-stat">
+                  <div class="stat-icon">
+                    <i class="fas fa-trophy"></i>
+                  </div>
+                  <div class="stat-content">
+                    <span class="stat-value">87%</span>
+                    <span class="stat-label">Average Score</span>
+                  </div>
+                </div>
+                <div class="quick-stat">
+                  <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                  </div>
+                  <div class="stat-content">
+                    <span class="stat-value">3</span>
+                    <span class="stat-label">This Week</span>
+                  </div>
+                </div>
               </div>
-            <% } %>
-          </div>
-        </section>
-
-        <section class="recent-results">
-          <h2 class="section-title">Recent Results</h2>
-          <div class="results-list">
-            <div class="result-item">
-              <div class="result-info">
-                <h3 class="result-exam">JavaScript Fundamentals</h3>
-                <p class="result-date">Completed 2 days ago</p>
-              </div>
-              <div class="result-score high-score">92%</div>
             </div>
-            <div class="result-item">
-              <div class="result-info">
-                <h3 class="result-exam">Data Structures</h3>
-                <p class="result-date">Completed 1 week ago</p>
-              </div>
-              <div class="result-score medium-score">78%</div>
-            </div>
-            <div class="result-item">
-              <div class="result-info">
-                <h3 class="result-exam">SQL Queries</h3>
-                <p class="result-date">Completed 2 weeks ago</p>
-              </div>
-              <div class="result-score high-score">95%</div>
-            </div>
-            <div class="result-item">
-              <div class="result-info">
-                <h3 class="result-exam">Web Development</h3>
-                <p class="result-date">Completed 3 weeks ago</p>
-              </div>
-              <div class="result-score medium-score">83%</div>
+            <div class="welcome-illustration">
+              <i class="fas fa-laptop-code"></i>
             </div>
           </div>
         </section>
 
-        <!-- <section class="achievements-section">
-          <h2 class="section-title">Achievements</h2>
-          <div class="achievements-grid">
-            <div class="achievement-card earned">
-              <div class="achievement-icon">🏆</div>
-              <h3 class="achievement-title">First Exam</h3>
-              <p class="achievement-desc">Complete your first exam</p>
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+          <!-- Available Exams Section -->
+          <section class="exam-section slide-up">
+            <div class="section-header">
+              <h2 class="section-title">
+                <i class="fas fa-file-code"></i> Available Exams
+              </h2>
+              <div class="exam-count">
+                <%= exams && exams.length > 0 ? exams.length : 0 %> exam<%= exams && exams.length !== 1 ? 's' : '' %> available
+              </div>
             </div>
-            <div class="achievement-card earned">
-              <div class="achievement-icon">⭐</div>
-              <h3 class="achievement-title">High Scorer</h3>
-              <p class="achievement-desc">Score 90% or higher</p>
+
+            <div class="exam-items">
+              <% if (exams && exams.length > 0) { %>
+                <% exams.forEach(exam => { %>
+                  <div class="exam-card">
+                    <div class="exam-card-header">
+                      <div class="exam-title-section">
+                        <h3 class="exam-title"><%= exam.title %></h3>
+                        <div class="exam-meta-top">
+                          <span class="exam-duration">
+                            <i class="fas fa-clock"></i> <%= exam.duration %> min
+                          </span>
+                          <span class="exam-status status-<%= exam.status %>">
+                            <i class="fas fa-circle"></i> <%= exam.status.toUpperCase() %>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <% if (exam.description) { %>
+                      <p class="exam-description"><%= exam.description %></p>
+                    <% } %>
+
+                    <div class="exam-details">
+                      <div class="exam-stats">
+                        <% if (exam.questions && exam.questions.length > 0) { %>
+                          <div class="stat-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span><%= exam.questions.length %> Questions</span>
+                          </div>
+                        <% } %>
+                        <% if (exam.totalMarks) { %>
+                          <div class="stat-item">
+                            <i class="fas fa-star"></i>
+                            <span><%= exam.totalMarks %> Points</span>
+                          </div>
+                        <% } %>
+                        <% if (exam.adminId && exam.adminId.fullname) { %>
+                          <div class="stat-item">
+                            <i class="fas fa-user-tie"></i>
+                            <span>By <%= exam.adminId.fullname %></span>
+                          </div>
+                        <% } %>
+                      </div>
+
+                      <div class="exam-schedule">
+                        <div class="schedule-item">
+                          <i class="fas fa-calendar-alt"></i>
+                          <div class="schedule-info">
+                            <span class="schedule-label">Start Time</span>
+                            <span class="schedule-value">
+                              <%= new Date(exam.startDateTime).toLocaleDateString('en-US', { 
+                                weekday: 'short', 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              }) %>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <% 
+                      const now = new Date();
+                      const startTime = new Date(exam.startDateTime);
+                      const endTime = new Date(startTime.getTime() + (exam.duration * 60000));
+                      const canStart = now >= startTime && now <= endTime && exam.status === 'active';
+                      const isPast = now > endTime;
+                      const isFuture = now < startTime;
+                    %>
+                    
+                    <div class="exam-action">
+                      <% if (canStart) { %>
+                        <a href="/exams/start/<%= exam._id %>" class="exam-btn exam-btn-primary">
+                          <i class="fas fa-play"></i>
+                          Start Exam
+                        </a>
+                      <% } else if (isPast) { %>
+                        <button class="exam-btn exam-btn-disabled" disabled>
+                          <i class="fas fa-times-circle"></i>
+                          Exam Ended
+                        </button>
+                      <% } else if (isFuture) { %>
+                        <button class="exam-btn exam-btn-pending" disabled>
+                          <i class="fas fa-clock"></i>
+                          Starts <%= startTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %>
+                        </button>
+                      <% } else if (exam.status === 'draft') { %>
+                        <button class="exam-btn exam-btn-disabled" disabled>
+                          <i class="fas fa-edit"></i>
+                          Draft - Not Available
+                        </button>
+                      <% } else { %>
+                        <button class="exam-btn exam-btn-disabled" disabled>
+                          <i class="fas fa-ban"></i>
+                          Not Available
+                        </button>
+                      <% } %>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <div class="no-exams-message">
+                  <div class="no-exams-icon">
+                    <i class="fas fa-file-alt"></i>
+                  </div>
+                  <h3>No Exams Available</h3>
+                  <p>Your organization hasn't created any exams yet. Check back later for new challenges!</p>
+                </div>
+              <% } %>
             </div>
-            <div class="achievement-card">
-              <div class="achievement-icon">🔥</div>
-              <h3 class="achievement-title">Streak Master</h3>
-              <p class="achievement-desc">Complete 5 exams in a row</p>
+          </section>
+
+          <!-- Recent Results Section -->
+          <section class="results-section slide-up">
+            <div class="section-header">
+              <h2 class="section-title">
+                <i class="fas fa-chart-bar"></i> Recent Results
+              </h2>
+              <a href="/results" class="view-all-link">
+                View All <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
-            <div class="achievement-card">
-              <div class="achievement-icon">💎</div>
-              <h3 class="achievement-title">Perfect Score</h3>
-              <p class="achievement-desc">Score 100% on any exam</p>
+
+            <div class="results-list">
+              <div class="result-card">
+                <div class="result-header">
+                  <div class="result-info">
+                    <h4 class="result-title">JavaScript Fundamentals</h4>
+                    <p class="result-date">
+                      <i class="fas fa-calendar"></i> Completed 2 days ago
+                    </p>
+                  </div>
+                  <div class="result-score high-score">
+                    <span class="score-value">92%</span>
+                    <i class="fas fa-trophy"></i>
+                  </div>
+                </div>
+                <div class="result-details">
+                  <div class="result-stat">
+                    <span class="stat-label">Time Taken</span>
+                    <span class="stat-value">45 min</span>
+                  </div>
+                  <div class="result-stat">
+                    <span class="stat-label">Questions</span>
+                    <span class="stat-value">12/12</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="result-card">
+                <div class="result-header">
+                  <div class="result-info">
+                    <h4 class="result-title">Data Structures</h4>
+                    <p class="result-date">
+                      <i class="fas fa-calendar"></i> Completed 1 week ago
+                    </p>
+                  </div>
+                  <div class="result-score medium-score">
+                    <span class="score-value">78%</span>
+                    <i class="fas fa-medal"></i>
+                  </div>
+                </div>
+                <div class="result-details">
+                  <div class="result-stat">
+                    <span class="stat-label">Time Taken</span>
+                    <span class="stat-value">60 min</span>
+                  </div>
+                  <div class="result-stat">
+                    <span class="stat-label">Questions</span>
+                    <span class="stat-value">8/10</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="result-card">
+                <div class="result-header">
+                  <div class="result-info">
+                    <h4 class="result-title">SQL Queries</h4>
+                    <p class="result-date">
+                      <i class="fas fa-calendar"></i> Completed 2 weeks ago
+                    </p>
+                  </div>
+                  <div class="result-score high-score">
+                    <span class="score-value">95%</span>
+                    <i class="fas fa-trophy"></i>
+                  </div>
+                </div>
+                <div class="result-details">
+                  <div class="result-stat">
+                    <span class="stat-label">Time Taken</span>
+                    <span class="stat-value">38 min</span>
+                  </div>
+                  <div class="result-stat">
+                    <span class="stat-label">Questions</span>
+                    <span class="stat-value">15/15</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </section> -->
+          </section>
+
+          <!-- Progress Section -->
+          <section class="progress-section slide-up">
+            <div class="section-header">
+              <h2 class="section-title">
+                <i class="fas fa-chart-line"></i> Your Progress
+              </h2>
+            </div>
+
+            <div class="progress-cards">
+              <div class="progress-card">
+                <div class="progress-header">
+                  <div class="progress-info">
+                    <h4 class="progress-title">Monthly Goal</h4>
+                    <p class="progress-description">Complete 5 exams this month</p>
+                  </div>
+                  <div class="progress-percentage">60%</div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 60%"></div>
+                </div>
+                <div class="progress-footer">
+                  <span class="progress-current">3 of 5 completed</span>
+                </div>
+              </div>
+
+              <div class="progress-card">
+                <div class="progress-header">
+                  <div class="progress-info">
+                    <h4 class="progress-title">Skill Development</h4>
+                    <p class="progress-description">JavaScript proficiency</p>
+                  </div>
+                  <div class="progress-percentage">87%</div>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill progress-fill-secondary" style="width: 87%"></div>
+                </div>
+                <div class="progress-footer">
+                  <span class="progress-current">Advanced level</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Quick Actions Section -->
+          <section class="quick-actions-section slide-up">
+            <div class="section-header">
+              <h2 class="section-title">
+                <i class="fas fa-bolt"></i> Quick Actions
+              </h2>
+            </div>
+
+            <div class="quick-actions-grid">
+              <a href="/exams" class="quick-action-card">
+                <div class="action-icon">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+                <h4 class="action-title">Browse Exams</h4>
+                <p class="action-description">View all available exams</p>
+              </a>
+
+              <a href="/results" class="quick-action-card">
+                <div class="action-icon">
+                  <i class="fas fa-chart-bar"></i>
+                </div>
+                <h4 class="action-title">View Results</h4>
+                <p class="action-description">Check your exam history</p>
+              </a>
+
+              <a href="/profile" class="quick-action-card">
+                <div class="action-icon">
+                  <i class="fas fa-user-edit"></i>
+                </div>
+                <h4 class="action-title">Update Profile</h4>
+                <p class="action-description">Manage your account</p>
+              </a>
+
+              <a href="/settings" class="quick-action-card">
+                <div class="action-icon">
+                  <i class="fas fa-cog"></i>
+                </div>
+                <h4 class="action-title">Settings</h4>
+                <p class="action-description">Customize preferences</p>
+              </a>
+            </div>
+          </section>
+        </div>
       </div>
     </main>
   </div>
+
+  <script src="/javascripts/sessionProtection.js"></script>
+  <script>
+    // Add animation delays for staggered effect
+    document.addEventListener('DOMContentLoaded', function() {
+      const elements = document.querySelectorAll('.slide-up');
+      elements.forEach((element, index) => {
+        element.style.animationDelay = `${index * 0.1}s`;
+      });
+
+      // Add hover effects for exam cards
+      const examCards = document.querySelectorAll('.exam-card');
+      examCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-5px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0) scale(1)';
+        });
+      });
+    });
+  </script>
 </body>
 </html>
