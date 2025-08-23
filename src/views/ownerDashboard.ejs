@@ -43,14 +43,29 @@
         <!-- Dashboard Container -->
         <div class="dashboard-container">
             <!-- Owner Header -->
-            <div class="owner-header slide-up">
-                <div class="owner-title">
-                    <i class="fas fa-crown"></i> Owner Dashboard
+            <section class="welcome-section slide-up">
+                <div class="welcome-card">
+                    <div class="welcome-content">
+                        <h1 class="welcome-title">
+                            <i class="fas fa-crown"></i>
+                            Owner Dashboard
+                        </h1>
+                        <p class="welcome-description">Complete control and management of the CodeSecure platform with comprehensive oversight</p>
+
+                        <div class="owner-quick-actions">
+                            <button class="quick-action-link" onclick="showAnalytics()">
+                                <i class="fas fa-chart-line"></i> View Analytics
+                            </button>
+                            <button class="quick-action-link" onclick="showReports()">
+                                <i class="fas fa-file-alt"></i> Generate Reports
+                            </button>
+                        </div>
+                    </div>
+                    <div class="welcome-illustration">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
                 </div>
-                <div class="owner-subtitle">
-                    Complete control and management of the CodeSecure platform
-                </div>
-            </div>
+            </section>
 
             <!-- Dashboard Message -->
             <div id="dashboardMessage" class="message"></div>
