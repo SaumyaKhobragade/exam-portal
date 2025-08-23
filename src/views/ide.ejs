@@ -104,13 +104,17 @@
                   </div>
                 <% } %>
 
-                <% if (exam.questions[0].constraints && exam.questions[0].constraints.length > 0) { %>
+                <% if (exam.questions[0].constraints) { %>
                   <div class="problem-constraints" id="problemConstraints">
                     <h3 class="section-subtitle">Constraints</h3>
                     <ul>
-                      <% exam.questions[0].constraints.forEach(constraint => { %>
-                        <li><%- constraint %></li>
-                      <% }); %>
+                      <% if (Array.isArray(exam.questions[0].constraints)) { %>
+                        <% exam.questions[0].constraints.forEach(constraint => { %>
+                          <li><%- constraint %></li>
+                        <% }); %>
+                      <% } else { %>
+                        <li><%- exam.questions[0].constraints %></li>
+                      <% } %>
                     </ul>
                   </div>
                 <% } %>
@@ -163,7 +167,7 @@
             <div class="code-header">
               <div class="language-selector">
                 <select class="language-select">
-                  <option value="javascript">JavaScript</option>
+                  <option value="javascript" selected>JavaScript</option>
                   <option value="python">Python</option>
                   <option value="java">Java</option>
                   <option value="cpp">C++</option>
@@ -207,6 +211,16 @@ var twoSum = function(nums, target) {
 // Test cases
 console.log(twoSum([2,7,11,15], 9)); // Expected: [0,1]
 console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+              <div class="input-header">
+                <h3 class="input-title">Input (stdin)</h3>
+                <span class="input-info">Provide input for your program here</span>
+              </div>
+              <textarea class="input-editor" placeholder="Enter input here (for JavaScript, input is typically handled differently):&#10;&#10;For testing array problems, modify the test cases in the code editor directly.">// For JavaScript, input is typically handled through function parameters
+// Modify the test cases in the code editor above</textarea>
             </div>
           </section>
         </div>

@@ -264,11 +264,13 @@ function saveCode() {
 async function runCode() {
   const consoleOutput = document.querySelector('.console-output');
   const codeEditor = document.querySelector('.code-editor');
+  const inputEditor = document.querySelector('.input-editor');
   const languageSelect = document.querySelector('.language-select') || document.getElementById('language-select');
   
   if (!consoleOutput || !codeEditor) return;
   
   const sourceCode = codeEditor.value;
+  const inputData = inputEditor ? inputEditor.value.trim() : '';
   const selectedLanguage = languageSelect ? languageSelect.value : 'javascript';
   
   // Language ID mapping for Judge0 API
@@ -303,7 +305,7 @@ async function runCode() {
       body: JSON.stringify({
         source_code: sourceCode,
         language_id: languageMap[selectedLanguage] || 63,
-        stdin: ''
+        stdin: inputData
       })
     });
     

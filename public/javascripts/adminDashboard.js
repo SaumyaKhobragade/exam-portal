@@ -253,6 +253,12 @@ function viewExamDetails(examId) {
   alert(`View details for exam ${examId}. Feature coming soon!`);
 }
 
+// View exam results (for completed exams)
+function viewExamResults(examId) {
+  // For now, just show an alert. In a full implementation, this would show detailed results
+  alert(`View results for completed exam ${examId}. This will show:\n- Student submissions\n- Score analytics\n- Pass/fail rates\n- Individual performance\n\nFeature coming soon!`);
+}
+
 // Delete an exam
 async function deleteExam(examId) {
   if (!confirm('Are you sure you want to delete this exam? This action cannot be undone.')) {
