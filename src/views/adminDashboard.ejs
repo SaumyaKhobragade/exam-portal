@@ -74,9 +74,28 @@
 
 
       <!-- Welcome Section -->
-      <section class="welcome-card">
-        <h1 class="welcome-title">Welcome to Admin Dashboard</h1>
-        <p class="welcome-description">Manage your organization's exams, view results, and monitor student performance</p>
+      <section class="welcome-section slide-up">
+        <div class="welcome-card">
+          <div class="welcome-content">
+            <h1 class="welcome-title">
+              <i class="fas fa-crown"></i>
+              Welcome to Admin Dashboard
+            </h1>
+            <p class="welcome-description">Manage your organization's exams, view results, and monitor student performance with ease</p>
+
+            <div class="admin-quick-actions">
+              <a href="/admin/exams/create" class="quick-action-link">
+                <i class="fas fa-plus"></i> Create New Exam
+              </a>
+              <button class="quick-action-link" onclick="showResults()">
+                <i class="fas fa-chart-line"></i> View Results
+              </button>
+            </div>
+          </div>
+          <div class="welcome-illustration">
+            <i class="fas fa-chalkboard-teacher"></i>
+          </div>
+        </div>
       </section>
 
 
