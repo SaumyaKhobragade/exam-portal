@@ -314,13 +314,30 @@ body, html {
 
 .problem-description,
 .problem-examples,
-.problem-constraints {
+.problem-constraints,
+.problem-input-format,
+.problem-output-format {
   margin-bottom: 1.5rem;
 }
 
-.problem-description p {
+.problem-description p,
+.problem-input-format div,
+.problem-output-format div {
   margin-bottom: 0.8rem;
   line-height: 1.6;
+  color: #555;
+}
+
+.problem-input-format ul,
+.problem-output-format ul {
+  list-style-type: disc;
+  margin-left: 2rem;
+  margin-top: 0.5rem;
+}
+
+.problem-input-format li,
+.problem-output-format li {
+  margin-bottom: 0.5rem;
   color: #555;
 }
 
