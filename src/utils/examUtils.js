@@ -52,6 +52,11 @@ export async function getAvailableExamsForOrganization(userDomain) {
         
         console.log(`Fetching exams for organization domain: ${userDomain}`);
         
+        if (!userDomain) {
+            console.log('No domain provided, returning empty array');
+            return [];
+        }
+        
         // Find admins from the same organization
         const organizationAdmins = await Admin.find({ domain: userDomain }).select('_id');
         const adminIds = organizationAdmins.map(admin => admin._id);
@@ -69,6 +74,19 @@ export async function getAvailableExamsForOrganization(userDomain) {
         .select('title description startDateTime duration status createdAt totalMarks questions');
         
         console.log(`Found ${exams.length} available exams for user dashboard`);
+        
+        // Log exam details for debugging
+        exams.forEach((exam, index) => {
+            const now = new Date();
+            const startTime = new Date(exam.startDateTime);
+            const endTime = new Date(startTime.getTime() + (exam.duration * 60000));
+            console.log(`Exam ${index + 1}: ${exam.title}`);
+            console.log(`  Status: ${exam.status}`);
+            console.log(`  Start: ${startTime.toISOString()}`);
+            console.log(`  End: ${endTime.toISOString()}`);
+            console.log(`  Now: ${now.toISOString()}`);
+            console.log(`  Time state: ${now < startTime ? 'FUTURE' : now > endTime ? 'PAST' : 'CURRENT'}`);
+        });
         
         return exams;
     } catch (error) {

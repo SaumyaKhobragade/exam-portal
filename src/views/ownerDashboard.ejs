@@ -29,9 +29,6 @@
                 </a>
             </nav>
             <div class="user-actions">
-                <span id="ownerName">
-                    <i class="fas fa-crown"></i> <%= user ? user.fullname || user.username : 'Owner' %>
-                </span>
                 <button class="action-btn logout-btn" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
@@ -42,7 +39,7 @@
         <div class="dashboard-container">
             <!-- Owner Header -->
             <div class="owner-header slide-up">
-                <div class="owner-title">
+                <div class="owner-title">       
                     <i class="fas fa-crown"></i> Owner Dashboard
                 </div>
                 <div class="owner-subtitle">
@@ -71,12 +68,6 @@
                     <div class="stat-number" id="userCount">0</div>
                     <div class="stat-label">
                         <i class="fas fa-user-graduate"></i> Students
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="approvedRequests">0</div>
-                    <div class="stat-label">
-                        <i class="fas fa-handshake"></i> Approved Access Requests
                     </div>
                 </div>
             </div>

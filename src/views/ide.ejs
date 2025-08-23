@@ -296,45 +296,7 @@ console.log(solve(testInput)); // Expected: 15</textarea>
               <a href="#" class="run-tests-btn" onclick="runTests(); return false;">Run Tests</a>
             </div>
             <div class="test-cases" id="testCasesContainer">
-              <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions[0] && exam.questions[0].testCases) { %>
-                <% exam.questions[0].testCases.forEach((testCase, index) => { %>
-                  <div class="test-case" data-test-index="<%= index %>">
-                    <div class="test-header">
-                      <span class="test-name">Test Case <%= index + 1 %></span>
-                      <span class="test-status pending">Pending</span>
-                    </div>
-                    <div class="test-details">
-                      <p><strong>Input:</strong> <%= testCase.input %></p>
-                      <p><strong>Expected:</strong> <%= testCase.expectedOutput %></p>
-                      <p><strong>Output:</strong> -</p>
-                    </div>
-                  </div>
-                <% }); %>
-              <% } else { %>
-                <!-- Default test cases -->
-                <div class="test-case" data-test-index="0">
-                  <div class="test-header">
-                    <span class="test-name">Test Case 1</span>
-                    <span class="test-status pending">Pending</span>
-                  </div>
-                  <div class="test-details">
-                    <p><strong>Input:</strong> nums = [2,7,11,15], target = 9</p>
-                    <p><strong>Expected:</strong> [0,1]</p>
-                    <p><strong>Output:</strong> -</p>
-                  </div>
-                </div>
-                <div class="test-case" data-test-index="1">
-                  <div class="test-header">
-                    <span class="test-name">Test Case 2</span>
-                    <span class="test-status pending">Pending</span>
-                  </div>
-                  <div class="test-details">
-                    <p><strong>Input:</strong> nums = [3,2,4], target = 6</p>
-                    <p><strong>Expected:</strong> [1,2]</p>
-                    <p><strong>Output:</strong> -</p>
-                  </div>
-                </div>
-              <% } %>
+              <!-- Test cases will be loaded dynamically by JavaScript -->
             </div>
           </div>
         </section>

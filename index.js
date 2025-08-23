@@ -449,9 +449,32 @@ app.get('/owner-dashboard', noCacheMiddleware, verifyOwnerSession, (req,res)=>{
 
 app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
     try {
+        // Debug user object
+        console.log('User object:', {
+            id: req.user._id,
+            email: req.user.email,
+            domain: req.user.domain,
+            username: req.user.username
+        });
+        
         // Get user's domain
-        const userDomain = req.user.domain;
+        let userDomain = req.user.domain;
+        
+        // If domain is not set, extract it from email
+        if (!userDomain && req.user.email) {
+            userDomain = req.user.email.split('@')[1];
+            console.log(`Domain extracted from email: ${userDomain}`);
+        }
+        
         console.log(`User dashboard requested for domain: ${userDomain}`);
+        
+        if (!userDomain) {
+            console.log('No domain found for user, showing empty exams list');
+            return res.render('userDashboard', { 
+                user: req.user,
+                exams: [] 
+            });
+        }
         
         // Get exams for the user's organization
         const organizationExams = await getNonExpiredExamsForOrganization(userDomain);
@@ -472,9 +495,32 @@ app.get('/user-dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=
 
 app.get('/dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
     try {
+        // Debug user object
+        console.log('Dashboard - User object:', {
+            id: req.user._id,
+            email: req.user.email,
+            domain: req.user.domain,
+            username: req.user.username
+        });
+        
         // Get user's domain
-        const userDomain = req.user.domain;
+        let userDomain = req.user.domain;
+        
+        // If domain is not set, extract it from email
+        if (!userDomain && req.user.email) {
+            userDomain = req.user.email.split('@')[1];
+            console.log(`Dashboard - Domain extracted from email: ${userDomain}`);
+        }
+        
         console.log(`Dashboard requested for domain: ${userDomain}`);
+        
+        if (!userDomain) {
+            console.log('Dashboard - No domain found for user, showing empty exams list');
+            return res.render('userDashboard', { 
+                user: req.user,
+                exams: [] 
+            });
+        }
         
         // Get exams for the user's organization
         const organizationExams = await getNonExpiredExamsForOrganization(userDomain);

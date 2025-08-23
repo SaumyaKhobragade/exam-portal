@@ -13,14 +13,7 @@ function loadExamData() {
       window.examData = data;
       examData = data;
       timeRemaining = data.initialTimeRemaining || 2732;
-      
-      // Set total questions from exam data
-      if (data.exam && data.exam.questions && data.exam.questions.length > 0) {
-        totalQuestions = data.exam.questions.length;
-      }
-      
       console.log('Exam data loaded:', data);
-      console.log('Total questions set to:', totalQuestions);
     }
   } catch (error) {
     console.error('Error loading exam data:', error);
@@ -31,7 +24,6 @@ function loadExamData() {
       isExamMode: false
     };
     examData = window.examData;
-    totalQuestions = 5; // Fallback value
   }
 }
 
@@ -193,53 +185,11 @@ function updateQuestionDisplay() {
     totalQuestionsElement.textContent = totalQuestions;
   }
 
-  // Update progress bar with dynamic styling
+  // Update progress bar
   const progressFill = document.querySelector('.progress-fill');
-  const progressBar = document.querySelector('.progress-bar');
-  if (progressFill && progressBar) {
+  if (progressFill) {
     const progress = (currentQuestion / totalQuestions) * 100;
     progressFill.style.width = Math.round(progress) + '%';
-    
-    // Dynamic styling based on number of questions
-    if (totalQuestions <= 3) {
-      // For few questions, make segments more visible
-      progressBar.style.background = 'linear-gradient(to right, #e3e3e3 33%, #d0d0d0 33%, #d0d0d0 66%, #e3e3e3 66%)';
-      progressFill.style.transition = 'width 0.5s ease-in-out';
-    } else if (totalQuestions <= 5) {
-      // Standard styling for medium number of questions
-      progressBar.style.background = 'linear-gradient(to right, #e3e3e3 20%, #d0d0d0 20%, #d0d0d0 40%, #e3e3e3 40%, #e3e3e3 60%, #d0d0d0 60%, #d0d0d0 80%, #e3e3e3 80%)';
-      progressFill.style.transition = 'width 0.4s ease-in-out';
-    } else if (totalQuestions <= 10) {
-      // More granular for larger number of questions
-      let gradientStops = [];
-      for (let i = 0; i < totalQuestions; i++) {
-        const percent = (i / totalQuestions) * 100;
-        const nextPercent = ((i + 1) / totalQuestions) * 100;
-        const color = i % 2 === 0 ? '#e8e8e8' : '#d8d8d8';
-        gradientStops.push(`${color} ${percent}%`, `${color} ${nextPercent}%`);
-      }
-      progressBar.style.background = `linear-gradient(to right, ${gradientStops.join(', ')})`;
-      progressFill.style.transition = 'width 0.3s ease-in-out';
-    } else {
-      // For many questions, use smooth gradient
-      progressBar.style.background = 'linear-gradient(to right, #f0f0f0, #e0e0e0, #f0f0f0)';
-      progressFill.style.transition = 'width 0.2s ease-in-out';
-    }
-    
-    // Add completion styling
-    if (currentQuestion === totalQuestions) {
-      progressFill.style.background = 'linear-gradient(90deg, #4CAF50, #45a049)';
-      progressFill.style.boxShadow = '0 2px 4px rgba(76, 175, 80, 0.3)';
-    } else if (progress >= 75) {
-      progressFill.style.background = 'linear-gradient(90deg, #2196F3, #1976D2)';
-      progressFill.style.boxShadow = '0 2px 4px rgba(33, 150, 243, 0.3)';
-    } else if (progress >= 50) {
-      progressFill.style.background = 'linear-gradient(90deg, #FF9800, #F57C00)';
-      progressFill.style.boxShadow = '0 2px 4px rgba(255, 152, 0, 0.3)';
-    } else {
-      progressFill.style.background = 'linear-gradient(90deg, #9C27B0, #7B1FA2)';
-      progressFill.style.boxShadow = '0 2px 4px rgba(156, 39, 176, 0.3)';
-    }
   }
 
   // Update button states
@@ -496,7 +446,10 @@ async function runTests() {
   const codeEditor = document.querySelector('.code-editor');
   const languageSelect = document.querySelector('.language-select') || document.getElementById('language-select');
   
-  if (!codeEditor || testCases.length === 0) return;
+  if (!codeEditor || testCases.length === 0) {
+    console.log('No code editor or test cases found');
+    return;
+  }
   
   const sourceCode = codeEditor.value;
   const selectedLanguage = languageSelect ? languageSelect.value : 'javascript';
@@ -516,6 +469,7 @@ async function runTests() {
   };
   
   if (!sourceCode.trim()) {
+    console.log('No source code provided');
     testCases.forEach(testCase => {
       const status = testCase.querySelector('.test-status');
       if (status) {
@@ -529,32 +483,42 @@ async function runTests() {
   
   switchTab('tests');
   
-  // Get test cases data from exam or use fallback
+  // Get test cases data from exam
   let testData = [];
   
   if (window.examData && window.examData.exam && window.examData.exam.questions) {
     const questionIndex = currentQuestion - 1;
     const question = window.examData.exam.questions[questionIndex];
     
-    if (question && question.testCases) {
+    if (question && question.testCases && question.testCases.length > 0) {
       testData = question.testCases.map(testCase => ({
-        input: testCase.input || testCase.inputValue || '',
-        expected: testCase.output || testCase.expectedOutput || '',
-        stdin: testCase.stdin || testCase.input || ''
+        input: testCase.input || '',
+        expectedOutput: testCase.expectedOutput || '',
+        stdin: testCase.input || ''
       }));
+      console.log(`Running ${testData.length} test cases from database`);
     }
   }
   
-  // Fallback test data if no exam data available
   if (testData.length === 0) {
-    testData = [
-      { input: 'nums = [2,7,11,15], target = 9', expected: '[0,1]', stdin: '' },
-      { input: 'nums = [3,2,4], target = 6', expected: '[1,2]', stdin: '' }
-    ];
-  }  for (let i = 0; i < testCases.length; i++) {
+    console.log('No test cases available from database');
+    testCases.forEach(testCase => {
+      const status = testCase.querySelector('.test-status');
+      if (status) {
+        status.textContent = 'No Tests';
+        status.className = 'test-status failed';
+      }
+    });
+    return;
+  }
+
+  // Run each test case
+  for (let i = 0; i < testCases.length && i < testData.length; i++) {
     const testCase = testCases[i];
+    const testInfo = testData[i];
     const status = testCase.querySelector('.test-status');
-    const outputElement = testCase.querySelector('.test-details p:last-child');
+    const actualOutputDiv = testCase.querySelector('.test-actual');
+    const actualOutputPre = actualOutputDiv ? actualOutputDiv.querySelector('.test-content') : null;
     
     if (status) {
       status.textContent = 'Running...';
@@ -562,6 +526,8 @@ async function runTests() {
     }
     
     try {
+      console.log(`Running test case ${i + 1}:`, testInfo);
+      
       const response = await fetch('/api/v1/execute', {
         method: 'POST',
         headers: {
@@ -570,48 +536,62 @@ async function runTests() {
         body: JSON.stringify({
           source_code: sourceCode,
           language_id: languageMap[selectedLanguage] || 63,
-          stdin: testData[i] ? testData[i].stdin : ''
+          stdin: testInfo.stdin
         })
       });
       
       const result = await response.json();
-      const data = result.data || result;
+      console.log(`Test case ${i + 1} result:`, result);
       
-      if ((result.success || data.stdout) && status && outputElement) {
-        const output = data.stdout ? data.stdout.trim() : '';
-        outputElement.innerHTML = `<strong>Output:</strong> ${output}`;
+      if (result.success && result.data) {
+        const actualOutput = (result.data.stdout || '').trim();
+        const expectedOutput = testInfo.expectedOutput.trim();
+        const passed = actualOutput === expectedOutput;
         
-        // Simple output comparison (this can be enhanced)
-        const expectedOutput = testData[i] ? testData[i].expected : '';
-        const passed = output.includes(expectedOutput.replace(/[\[\]]/g, ''));
+        if (status) {
+          status.textContent = passed ? 'Passed' : 'Failed';
+          status.className = passed ? 'test-status passed' : 'test-status failed';
+        }
         
-        status.textContent = passed ? 'Passed' : 'Failed';
-        status.className = 'test-status ' + (passed ? 'passed' : 'failed');
-      } else if (data && data.stderr && status && outputElement) {
-        outputElement.innerHTML = `<strong>Error:</strong> ${data.stderr}`;
-        status.textContent = 'Failed';
-        status.className = 'test-status failed';
-      } else if (status && outputElement) {
-        outputElement.innerHTML = `<strong>Output:</strong> No output or error`;
-        status.textContent = 'Failed';
-        status.className = 'test-status failed';
+        // Show actual output
+        if (actualOutputDiv && actualOutputPre) {
+          actualOutputDiv.style.display = 'block';
+          actualOutputPre.textContent = actualOutput || '(no output)';
+        }
+        
+        if (!passed) {
+          console.log(`Test case ${i + 1} failed:`);
+          console.log('Expected:', expectedOutput);
+          console.log('Actual:', actualOutput);
+        }
+      } else {
+        if (status) {
+          status.textContent = 'Error';
+          status.className = 'test-status failed';
+        }
+        
+        if (actualOutputDiv && actualOutputPre) {
+          actualOutputDiv.style.display = 'block';
+          actualOutputPre.textContent = result.error || 'Execution error';
+        }
+        
+        console.error(`Test case ${i + 1} execution error:`, result.error);
       }
     } catch (error) {
-      console.error('Error running test:', error);
-      if (outputElement) outputElement.innerHTML = `<strong>Error:</strong> Failed to run test`;
       if (status) {
-        status.textContent = 'Failed';
+        status.textContent = 'Error';
         status.className = 'test-status failed';
       }
-    }
-    
-    // Add a small delay between test executions
-    if (i < testCases.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      if (actualOutputDiv && actualOutputPre) {
+        actualOutputDiv.style.display = 'block';
+        actualOutputPre.textContent = 'Network error';
+      }
+      
+      console.error(`Test case ${i + 1} network error:`, error);
     }
   }
 }
-
 function clearConsole() {
   const consoleOutput = document.querySelector('.console-output');
   if (consoleOutput) {
@@ -860,31 +840,43 @@ function loadTestCases() {
     const questionIndex = currentQuestion - 1;
     const question = window.examData.exam.questions[questionIndex];
     
-    if (question && question.testCases) {
+    if (question && question.testCases && question.testCases.length > 0) {
       testCases = question.testCases;
+      console.log(`Loaded ${testCases.length} test cases for question ${currentQuestion}`);
     }
   }
   
-  // Fallback test cases if no exam data
+  // If no test cases from database, show a message
   if (testCases.length === 0) {
-    testCases = [
-      { input: '[2,7,11,15], target = 9', output: '[0,1]' },
-      { input: '[3,2,4], target = 6', output: '[1,2]' },
-      { input: '[3,3], target = 6', output: '[0,1]' }
-    ];
+    testCasesContainer.innerHTML = `
+      <div class="no-test-cases">
+        <p>No test cases available for this question.</p>
+        <p>Please contact your instructor if this is unexpected.</p>
+      </div>
+    `;
+    return;
   }
 
-  let testCasesHTML = '<h3 class="section-subtitle">Test Cases</h3>';
+  let testCasesHTML = '';
   testCases.forEach((testCase, index) => {
     testCasesHTML += `
-      <div class="test-case-item">
-        <h4 class="test-case-title">Test Case ${index + 1}:</h4>
-        <div class="test-case-content">
+      <div class="test-case" data-test-index="${index}">
+        <div class="test-header">
+          <span class="test-name">Test Case ${index + 1}</span>
+          <span class="test-status pending">Pending</span>
+        </div>
+        <div class="test-details">
           <div class="test-input">
-            <strong>Input:</strong> ${testCase.input || testCase.inputValue || 'No input provided'}
+            <p><strong>Input:</strong></p>
+            <pre class="test-content">${escapeHtml(testCase.input || 'No input provided')}</pre>
           </div>
-          <div class="test-output">
-            <strong>Expected Output:</strong> ${testCase.output || testCase.expectedOutput || 'No expected output provided'}
+          <div class="test-expected">
+            <p><strong>Expected Output:</strong></p>
+            <pre class="test-content">${escapeHtml(testCase.expectedOutput || 'No expected output provided')}</pre>
+          </div>
+          <div class="test-actual" style="display: none;">
+            <p><strong>Actual Output:</strong></p>
+            <pre class="test-content"></pre>
           </div>
         </div>
       </div>
@@ -892,6 +884,13 @@ function loadTestCases() {
   });
 
   testCasesContainer.innerHTML = testCasesHTML;
+}
+
+// Helper function to escape HTML
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Initialize the IDE when the page loads
