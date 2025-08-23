@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Grading System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .result-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #555; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 AI Code Grading System Test Dashboard</h1>
+        <p style="text-align: center; color: #666;">Test the multi-layered AI grading system: OpenAI → Hugging Face → Rule-based fallback</p>
+        
+        <div class="test-section">
+            <h2>🔵 OpenAI Grading Test</h2>
+            <p>Test the primary OpenAI GPT-4o-mini grading system</p>
+            <button class="test-button" onclick="testOpenAI()">Test OpenAI Grading</button>
+            <div id="openai-status" class="status" style="display: none;"></div>
+            <div id="openai-result" class="result-box" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🤗 Hugging Face Grading Test</h2>
+            <p>Test the Hugging Face transformer models fallback system</p>
+            <button class="test-button" onclick="testHuggingFace()">Test Hugging Face Grading</button>
+            <div id="hf-status" class="status" style="display: none;"></div>
+            <div id="hf-result" class="result-box" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>⚙️ Complete Fallback Chain Test</h2>
+            <p>Test the complete fallback chain: OpenAI → Hugging Face → Rule-based</p>
+            <button class="test-button" onclick="testFullChain()">Test Complete Chain</button>
+            <div id="chain-status" class="status" style="display: none;"></div>
+            <div id="chain-result" class="result-box" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Live Demo Code Grading</h2>
+            <p>Test with actual code input</p>
+            <textarea id="demo-code" rows="10" cols="80" style="width: 100%; font-family: monospace;">def fibonacci(n):
+    if n <= 1:
+        return n
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
+print(fibonacci(10))</textarea>
+            <br>
+            <select id="demo-language">
+                <option value="python">Python</option>
+                <option value="javascript">JavaScript</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+            </select>
+            <button class="test-button" onclick="testLiveDemo()">Grade This Code</button>
+            <div id="demo-status" class="status" style="display: none;"></div>
+            <div id="demo-result" class="result-box" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function testOpenAI() {
+            showStatus('openai', 'info', 'Testing OpenAI grading system...');
+            try {
+                const response = await fetch('/api/v1/test-ai-grading', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                showResult('openai', result);
+                showStatus('openai', result.success ? 'success' : 'error', 
+                    result.success ? 'OpenAI test completed successfully!' : 'OpenAI test failed');
+            } catch (error) {
+                showStatus('openai', 'error', 'Error: ' + error.message);
+                showResult('openai', { error: error.message });
+            }
+        }
+
+        async function testHuggingFace() {
+            showStatus('hf', 'info', 'Testing Hugging Face grading system...');
+            try {
+                const response = await fetch('/api/v1/test-hf-grading', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const result = await response.json();
+                showResult('hf', result);
+                showStatus('hf', result.success ? 'success' : 'error', 
+                    result.success ? 'Hugging Face test completed!' : 'Hugging Face test failed');
+            } catch (error) {
+                showStatus('hf', 'error', 'Error: ' + error.message);
+                showResult('hf', { error: error.message });
+            }
+        }
+
+        async function testFullChain() {
+            showStatus('chain', 'info', 'Testing complete fallback chain...');
+            try {
+                const response = await fetch('/api/v1/grade-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        source_code: `def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+print(quicksort([3,6,8,10,1,2,1]))`,
+                        language: 'python',
+                        problem_title: 'Quicksort Algorithm',
+                        problem_statement: 'Implement quicksort algorithm',
+                        constraints: 'Should handle empty arrays and duplicates',
+                        test_results: [
+                            { status: 'Accepted', time: '0.1s', memory: '256KB' },
+                            { status: 'Accepted', time: '0.2s', memory: '512KB' }
+                        ]
+                    })
+                });
+                const result = await response.json();
+                showResult('chain', result);
+                showStatus('chain', result.success ? 'success' : 'error', 
+                    result.success ? 'Fallback chain test completed!' : 'Fallback chain test failed');
+            } catch (error) {
+                showStatus('chain', 'error', 'Error: ' + error.message);
+                showResult('chain', { error: error.message });
+            }
+        }
+
+        async function testLiveDemo() {
+            const code = document.getElementById('demo-code').value;
+            const language = document.getElementById('demo-language').value;
+            
+            showStatus('demo', 'info', 'Grading your code...');
+            try {
+                const response = await fetch('/api/v1/grade-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        source_code: code,
+                        language: language,
+                        problem_title: 'Custom Code Analysis',
+                        problem_statement: 'Analyze the provided code',
+                        constraints: 'General coding best practices',
+                        test_results: [{ status: 'Accepted', time: '0.1s', memory: '256KB' }]
+                    })
+                });
+                const result = await response.json();
+                showResult('demo', result);
+                showStatus('demo', result.success ? 'success' : 'error', 
+                    result.success ? 'Code analysis completed!' : 'Code analysis failed');
+            } catch (error) {
+                showStatus('demo', 'error', 'Error: ' + error.message);
+                showResult('demo', { error: error.message });
+            }
+        }
+
+        function showStatus(section, type, message) {
+            const statusDiv = document.getElementById(section + '-status');
+            statusDiv.className = 'status ' + type;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+        }
+
+        function showResult(section, result) {
+            const resultDiv = document.getElementById(section + '-result');
+            resultDiv.textContent = JSON.stringify(result, null, 2);
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -13,7 +13,15 @@ function loadExamData() {
       window.examData = data;
       examData = data;
       timeRemaining = data.initialTimeRemaining || 2732;
-      console.log('Exam data loaded:', data);
+      console.log('Exam data loaded successfully:', data);
+      console.log('Number of questions:', data.exam?.questions?.length || 0);
+      if (data.exam?.questions?.length > 0) {
+        console.log('First question:', data.exam.questions[0]);
+        console.log('First question test cases:', data.exam.questions[0].testCases?.length || 0);
+        console.log('First question constraints:', data.exam.questions[0].constraints?.length || 0);
+      }
+    } else {
+      console.warn('No exam-data script tag found');
     }
   } catch (error) {
     console.error('Error loading exam data:', error);
@@ -201,14 +209,22 @@ function updateQuestionDisplay() {
 }
 
 function loadQuestionData() {
+  console.log('loadQuestionData called, currentQuestion:', currentQuestion);
+  
   if (!window.examData || !window.examData.exam || !window.examData.exam.questions) {
+    console.warn('No exam data available in loadQuestionData');
     return; // No exam data available
   }
   
   const questionIndex = currentQuestion - 1;
   const question = window.examData.exam.questions[questionIndex];
   
-  if (!question) return;
+  console.log('Loading question data for index:', questionIndex, 'question:', question);
+  
+  if (!question) {
+    console.warn('No question found at index:', questionIndex);
+    return;
+  }
   
   // Update problem title
   const titleElement = document.getElementById('problemTitle');
@@ -248,14 +264,45 @@ function loadQuestionData() {
   
   // Update constraints
   const constraintsElement = document.getElementById('problemConstraints');
-  if (constraintsElement && question.constraints) {
-    let constraintsHtml = '<h3 class="section-subtitle">Constraints</h3><ul>';
-    question.constraints.forEach(constraint => {
-      constraintsHtml += `<li>${constraint}</li>`;
-    });
-    constraintsHtml += '</ul>';
-    constraintsElement.innerHTML = constraintsHtml;
+  console.log('=== CONSTRAINTS DEBUG ===');
+  console.log('Constraints element found:', !!constraintsElement);
+  console.log('Constraints element:', constraintsElement);
+  console.log('Question constraints type:', typeof question.constraints);
+  console.log('Question constraints value:', question.constraints);
+  console.log('Question constraints truthy:', !!question.constraints);
+  
+  if (constraintsElement) {
+    if (question.constraints) {
+      console.log('Loading constraints:', question.constraints);
+      let constraintsHtml = '<h3 class="section-subtitle">Constraints</h3><ul>';
+      if (Array.isArray(question.constraints)) {
+        console.log('Constraints is array, length:', question.constraints.length);
+        question.constraints.forEach(constraint => {
+          constraintsHtml += `<li>${constraint}</li>`;
+        });
+      } else {
+        console.log('Constraints is not array, treating as string');
+        constraintsHtml += `<li>${question.constraints}</li>`;
+      }
+      constraintsHtml += '</ul>';
+      console.log('Generated constraints HTML:', constraintsHtml);
+      constraintsElement.innerHTML = constraintsHtml;
+      console.log('Constraints updated successfully');
+      console.log('Element content after update:', constraintsElement.innerHTML);
+    } else {
+      console.log('No constraints found, using default');
+      constraintsElement.innerHTML = `
+        <h3 class="section-subtitle">Constraints</h3>
+        <ul>
+          <li>Standard problem constraints apply</li>
+          <li>Optimize for time and space complexity</li>
+        </ul>
+      `;
+    }
+  } else {
+    console.error('problemConstraints element not found in DOM!');
   }
+  console.log('=== END CONSTRAINTS DEBUG ===');
   
   // Update test cases
   loadTestCases();
@@ -493,7 +540,7 @@ async function runTests() {
     if (question && question.testCases && question.testCases.length > 0) {
       testData = question.testCases.map(testCase => ({
         input: testCase.input || '',
-        expectedOutput: testCase.expectedOutput || '',
+        expected_output: testCase.expectedOutput || '',
         stdin: testCase.input || ''
       }));
       console.log(`Running ${testData.length} test cases from database`);
@@ -512,86 +559,305 @@ async function runTests() {
     return;
   }
 
-  // Run each test case
-  for (let i = 0; i < testCases.length && i < testData.length; i++) {
-    const testCase = testCases[i];
-    const testInfo = testData[i];
-    const status = testCase.querySelector('.test-status');
-    const actualOutputDiv = testCase.querySelector('.test-actual');
-    const actualOutputPre = actualOutputDiv ? actualOutputDiv.querySelector('.test-content') : null;
+  // Use the enhanced API endpoint for multiple test cases
+  try {
+    console.log('Sending test cases to Judge0:', testData);
     
-    if (status) {
-      status.textContent = 'Running...';
-      status.className = 'test-status running';
-    }
+    const response = await fetch('/api/v1/execute', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        source_code: sourceCode,
+        language_id: languageMap[selectedLanguage] || 63,
+        test_cases: testData
+      })
+    });
     
-    try {
-      console.log(`Running test case ${i + 1}:`, testInfo);
+    const result = await response.json();
+    console.log('Judge0 API response:', result);
+    
+    if (result.success && result.test_results) {
+      // Store test results for AI grading
+      window.lastTestResults = result.test_results;
       
-      const response = await fetch('/api/v1/execute', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          source_code: sourceCode,
-          language_id: languageMap[selectedLanguage] || 63,
-          stdin: testInfo.stdin
-        })
+      // Update each test case with results
+      result.test_results.forEach((testResult, index) => {
+        if (index < testCases.length) {
+          const testCase = testCases[index];
+          const status = testCase.querySelector('.test-status');
+          const actualOutputDiv = testCase.querySelector('.test-actual');
+          const actualOutputPre = actualOutputDiv ? actualOutputDiv.querySelector('.test-content') : null;
+          
+          if (status) {
+            status.textContent = testResult.passed ? 'Passed' : 'Failed';
+            status.className = testResult.passed ? 'test-status passed' : 'test-status failed';
+          }
+          
+          // Show actual output
+          if (actualOutputDiv && actualOutputPre) {
+            actualOutputDiv.style.display = 'block';
+            actualOutputPre.textContent = testResult.actual_output || '(no output)';
+          }
+          
+          if (!testResult.passed) {
+            console.log(`Test case ${index + 1} failed:`);
+            console.log('Expected:', testResult.expected_output);
+            console.log('Actual:', testResult.actual_output);
+          }
+        }
       });
       
-      const result = await response.json();
-      console.log(`Test case ${i + 1} result:`, result);
-      
-      if (result.success && result.data) {
-        const actualOutput = (result.data.stdout || '').trim();
-        const expectedOutput = testInfo.expectedOutput.trim();
-        const passed = actualOutput === expectedOutput;
+      // Show summary
+      if (result.summary) {
+        console.log(`Test Summary: ${result.summary.passed_tests}/${result.summary.total_tests} passed (${result.summary.pass_rate}%)`);
         
-        if (status) {
-          status.textContent = passed ? 'Passed' : 'Failed';
-          status.className = passed ? 'test-status passed' : 'test-status failed';
+        // Enable AI grading button if we have results
+        const aiGradeBtn = document.getElementById('aiGradeBtn');
+        if (aiGradeBtn) {
+          aiGradeBtn.disabled = false;
+          aiGradeBtn.textContent = 'Get AI Feedback';
         }
-        
-        // Show actual output
-        if (actualOutputDiv && actualOutputPre) {
-          actualOutputDiv.style.display = 'block';
-          actualOutputPre.textContent = actualOutput || '(no output)';
-        }
-        
-        if (!passed) {
-          console.log(`Test case ${i + 1} failed:`);
-          console.log('Expected:', expectedOutput);
-          console.log('Actual:', actualOutput);
-        }
-      } else {
+      }
+    } else {
+      console.error('Failed to execute test cases:', result.error);
+      testCases.forEach(testCase => {
+        const status = testCase.querySelector('.test-status');
         if (status) {
           status.textContent = 'Error';
           status.className = 'test-status failed';
         }
-        
-        if (actualOutputDiv && actualOutputPre) {
-          actualOutputDiv.style.display = 'block';
-          actualOutputPre.textContent = result.error || 'Execution error';
-        }
-        
-        console.error(`Test case ${i + 1} execution error:`, result.error);
-      }
-    } catch (error) {
+      });
+    }
+  } catch (error) {
+    console.error('Network error running tests:', error);
+    testCases.forEach(testCase => {
+      const status = testCase.querySelector('.test-status');
       if (status) {
         status.textContent = 'Error';
         status.className = 'test-status failed';
       }
-      
-      if (actualOutputDiv && actualOutputPre) {
-        actualOutputDiv.style.display = 'block';
-        actualOutputPre.textContent = 'Network error';
-      }
-      
-      console.error(`Test case ${i + 1} network error:`, error);
+    });
+  }
+}
+
+// AI Code Grading Function
+async function getAIFeedback() {
+  const codeEditor = document.querySelector('.code-editor');
+  const languageSelect = document.querySelector('.language-select') || document.getElementById('language-select');
+  
+  if (!codeEditor || !codeEditor.value.trim()) {
+    showNotification('Please write some code before requesting AI feedback.');
+    return;
+  }
+  
+  const sourceCode = codeEditor.value;
+  const selectedLanguage = languageSelect ? languageSelect.value : 'javascript';
+  
+  // Get current question data
+  let questionData = {};
+  if (window.examData && window.examData.exam && window.examData.exam.questions) {
+    const questionIndex = currentQuestion - 1;
+    const question = window.examData.exam.questions[questionIndex];
+    if (question) {
+      questionData = {
+        title: question.title || 'Coding Problem',
+        statement: question.statement || question.description || 'No description provided',
+        constraints: question.constraints || 'No constraints specified'
+      };
+    }
+  }
+  
+  const aiGradeBtn = document.getElementById('aiGradeBtn');
+  const originalText = aiGradeBtn ? aiGradeBtn.textContent : '';
+  
+  try {
+    if (aiGradeBtn) {
+      aiGradeBtn.textContent = 'Getting AI Feedback...';
+      aiGradeBtn.disabled = true;
+    }
+    
+    showNotification('Requesting AI feedback on your code...');
+    
+    const response = await fetch('/api/v1/grade-code', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        source_code: sourceCode,
+        language: selectedLanguage,
+        problem_title: questionData.title,
+        problem_statement: questionData.statement,
+        constraints: questionData.constraints,
+        test_results: window.lastTestResults || []
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('AI Grading Response:', result);
+    
+    if (result.success && result.aiGrading) {
+      displayAIGrading(result.aiGrading);
+      showNotification('AI feedback received!');
+    } else {
+      console.error('AI Grading failed:', result);
+      showNotification('Failed to get AI feedback: ' + (result.error || 'Unknown error'));
+    }
+    
+  } catch (error) {
+    console.error('AI grading error:', error);
+    showNotification('Error getting AI feedback. Please try again.');
+  } finally {
+    if (aiGradeBtn) {
+      aiGradeBtn.textContent = originalText || 'Get AI Feedback';
+      aiGradeBtn.disabled = false;
     }
   }
 }
+
+// Display AI Grading Results
+function displayAIGrading(grading) {
+  // Create or update AI feedback section
+  let feedbackSection = document.getElementById('aiFeedbackSection');
+  
+  if (!feedbackSection) {
+    feedbackSection = document.createElement('div');
+    feedbackSection.id = 'aiFeedbackSection';
+    feedbackSection.className = 'ai-feedback-section';
+    
+    // Insert after test cases or in the results area
+    const testCasesContainer = document.getElementById('testCasesContainer');
+    if (testCasesContainer && testCasesContainer.parentNode) {
+      testCasesContainer.parentNode.insertBefore(feedbackSection, testCasesContainer.nextSibling);
+    } else {
+      document.querySelector('.tabbed-section').appendChild(feedbackSection);
+    }
+  }
+  
+  // Handle both old format (grading.grade) and new format (grading.data)
+  const gradingData = grading.data || grading;
+  const overallScore = gradingData.overallScore || grading.score || 0;
+  const categoryScores = gradingData.categoryScores || {};
+  const feedback = gradingData.feedback || [];
+  const summary = gradingData.summary || grading.overallFeedback || 'Analysis completed';
+  const suggestions = gradingData.suggestions || grading.improvements || [];
+  const gradingMethod = gradingData.gradingMethod || 'AI Analysis';
+  const note = gradingData.note || '';
+  
+  const gradeColor = getGradeColorFromScore(overallScore);
+  const letterGrade = getLetterGrade(overallScore);
+  
+  feedbackSection.innerHTML = `
+    <div class="ai-feedback-header">
+      <h3>🤖 AI Code Feedback</h3>
+      <div class="ai-grade-badge" style="background-color: ${gradeColor}">
+        Score: ${overallScore}/100 (${letterGrade})
+      </div>
+      ${note ? `<div class="grading-method">${note}</div>` : ''}
+    </div>
+    
+    <div class="ai-feedback-content">
+      <div class="feedback-section">
+        <h4>📋 Overall Assessment</h4>
+        <p>${summary}</p>
+      </div>
+      
+      <div class="feedback-grid">
+        <div class="feedback-item">
+          <h5>✅ Correctness (${categoryScores.correctness || 0}/30)</h5>
+          <div class="score-bar">
+            <div class="score-fill" style="width: ${(categoryScores.correctness || 0) / 30 * 100}%"></div>
+          </div>
+        </div>
+        
+        <div class="feedback-item">
+          <h5>🎨 Code Quality (${categoryScores.codeQuality || 0}/25)</h5>
+          <div class="score-bar">
+            <div class="score-fill" style="width: ${(categoryScores.codeQuality || 0) / 25 * 100}%"></div>
+          </div>
+        </div>
+        
+        <div class="feedback-item">
+          <h5>⚡ Efficiency (${categoryScores.efficiency || 0}/25)</h5>
+          <div class="score-bar">
+            <div class="score-fill" style="width: ${(categoryScores.efficiency || 0) / 25 * 100}%"></div>
+          </div>
+        </div>
+        
+        <div class="feedback-item">
+          <h5>📖 Best Practices (${categoryScores.bestPractices || 0}/20)</h5>
+          <div class="score-bar">
+            <div class="score-fill" style="width: ${(categoryScores.bestPractices || 0) / 20 * 100}%"></div>
+          </div>
+        </div>
+      </div>
+      
+      ${feedback && feedback.length > 0 ? `
+        <div class="feedback-section">
+          <h4>📝 Detailed Feedback</h4>
+          <ul>
+            ${feedback.map(item => `<li>${item}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+      
+      ${suggestions && suggestions.length > 0 ? `
+        <div class="feedback-section">
+          <h4>� Suggestions for Improvement</h4>
+          <ul>
+            ${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+      
+      <div class="feedback-section">
+        <small style="color: #666; font-style: italic;">
+          Powered by ${gradingMethod} • Feedback generated in real-time
+        </small>
+      </div>
+    </div>
+  `;
+  
+  // Scroll to feedback section
+  feedbackSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Helper function to get grade colors from score
+function getGradeColorFromScore(score) {
+  if (score >= 90) return '#4CAF50';
+  if (score >= 80) return '#8BC34A';
+  if (score >= 70) return '#FFC107';
+  if (score >= 60) return '#FF9800';
+  return '#F44336';
+}
+
+// Helper function to get letter grade from score
+function getLetterGrade(score) {
+  if (score >= 90) return 'A';
+  if (score >= 80) return 'B';
+  if (score >= 70) return 'C';
+  if (score >= 60) return 'D';
+  return 'F';
+}
+
+// Helper function to get grade colors
+function getGradeColor(grade) {
+  switch(grade) {
+    case 'A': return '#4CAF50';
+    case 'B': return '#8BC34A';
+    case 'C': return '#FFC107';
+    case 'D': return '#FF9800';
+    case 'F': return '#F44336';
+    default: return '#9E9E9E';
+  }
+}
+
 function clearConsole() {
   const consoleOutput = document.querySelector('.console-output');
   if (consoleOutput) {
@@ -830,8 +1096,15 @@ function addSubmitButton() {
 
 // Enhanced test cases loading function
 function loadTestCases() {
+  console.log('loadTestCases called, currentQuestion:', currentQuestion);
+  
   const testCasesContainer = document.getElementById('testCasesContainer');
-  if (!testCasesContainer) return;
+  console.log('Test cases container found:', !!testCasesContainer);
+  
+  if (!testCasesContainer) {
+    console.error('testCasesContainer not found');
+    return;
+  }
 
   let testCases = [];
   
@@ -840,14 +1113,22 @@ function loadTestCases() {
     const questionIndex = currentQuestion - 1;
     const question = window.examData.exam.questions[questionIndex];
     
+    console.log('Question for test cases:', question);
+    console.log('Question test cases:', question?.testCases);
+    
     if (question && question.testCases && question.testCases.length > 0) {
       testCases = question.testCases;
-      console.log(`Loaded ${testCases.length} test cases for question ${currentQuestion}`);
+      console.log(`Successfully loaded ${testCases.length} test cases for question ${currentQuestion}`);
+    } else {
+      console.warn('No test cases found for question', currentQuestion);
     }
+  } else {
+    console.warn('No exam data available for test cases');
   }
   
   // If no test cases from database, show a message
   if (testCases.length === 0) {
+    console.log('Displaying no test cases message');
     testCasesContainer.innerHTML = `
       <div class="no-test-cases">
         <p>No test cases available for this question.</p>
@@ -906,8 +1187,51 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load the first question if available
     if (window.examData.exam && window.examData.exam.questions && window.examData.exam.questions.length > 0) {
-      loadQuestion(0);
+      console.log('Loading first question...');
+      currentQuestion = 1; // Set to first question
+      loadQuestionData(); // Load question content, constraints, and test cases
+      
+      // Test if constraints and test cases are properly loaded
+      setTimeout(() => {
+        console.log('=== IDE Integration Test ===');
+        
+        // Check if constraints are loaded
+        const constraintsElement = document.getElementById('problemConstraints');
+        if (constraintsElement && constraintsElement.innerHTML.includes('Constraints')) {
+          console.log('✅ Constraints loaded successfully');
+        } else {
+          console.log('❌ Constraints not loaded');
+        }
+        
+        // Check if test cases are loaded
+        const testCasesContainer = document.getElementById('testCasesContainer');
+        const testCases = testCasesContainer ? testCasesContainer.querySelectorAll('.test-case') : [];
+        if (testCases.length > 0) {
+          console.log(`✅ ${testCases.length} test cases loaded successfully`);
+          
+          // Check first test case content
+          const firstTestCase = testCases[0];
+          const inputContent = firstTestCase.querySelector('.test-input .test-content');
+          const expectedContent = firstTestCase.querySelector('.test-expected .test-content');
+          
+          if (inputContent && expectedContent) {
+            console.log('✅ Test case structure is correct');
+            console.log('First test case input:', inputContent.textContent);
+            console.log('First test case expected output:', expectedContent.textContent);
+          } else {
+            console.log('❌ Test case structure is incorrect');
+          }
+        } else {
+          console.log('❌ No test cases found in container');
+        }
+        
+        console.log('=== End Integration Test ===');
+      }, 500);
+    } else {
+      console.log('No questions available in exam data');
     }
+  } else {
+    console.log('No exam data available');
   }
   
   // Initialize line numbers

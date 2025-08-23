@@ -1,5 +1,7 @@
 
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import connectDB from './src/db/index.js';
 import app from './app.js';
 import userRouter from "./src/routes/user.routes.js";
@@ -8,6 +10,12 @@ import ownerRouter from "./src/routes/owner.routes.js";
 import adminRouter from "./src/routes/admin.routes.js";
 import examRequestRouter from "./src/routes/examRequest.routes.js";
 import runCode from './src/utils/judge0.js';
+import OpenAICodeGrader from './src/services/openaiGrader.js';
+
+// ES6 module __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import { verifyOwner, verifyAdminOrOwner, verifyJWT } from './src/middlewares/auth.middleware.js';
 import { handleLogout } from './src/middlewares/logout.middleware.js';
 import { verifyOwnerSession, verifyJWTSession, noCacheMiddleware } from './src/middlewares/sessionValidation.middleware.js';
@@ -178,6 +186,20 @@ app.get('/ide', async (req,res)=>{
                         "-10⁹ ≤ nums[i] ≤ 10⁹", 
                         "-10⁹ ≤ target ≤ 10⁹",
                         "Only one valid answer exists."
+                    ],
+                    testCases: [
+                        {
+                            input: "nums = [2,7,11,15], target = 9",
+                            expectedOutput: "[0,1]"
+                        },
+                        {
+                            input: "nums = [3,2,4], target = 6",
+                            expectedOutput: "[1,2]"
+                        },
+                        {
+                            input: "nums = [3,3], target = 6",
+                            expectedOutput: "[0,1]"
+                        }
                     ]
                 }]
             };
@@ -202,7 +224,13 @@ app.get('/ide', async (req,res)=>{
                 description: "This is a fallback sample problem due to database error.",
                 points: 50,
                 examples: [],
-                constraints: []
+                constraints: ["Standard problem constraints apply"],
+                testCases: [
+                    {
+                        input: "sample input",
+                        expectedOutput: "expected output"
+                    }
+                ]
             }]
         };
         
@@ -214,6 +242,41 @@ app.get('/ide', async (req,res)=>{
         });
     }
 })
+
+// Test route for Judge0 integration
+app.get('/test-judge0', (req, res) => {
+    res.sendFile(__dirname + '/test-judge0.html');
+});
+
+// Debug route to show exam data being passed to IDE
+app.get('/debug-exam-data', async (req, res) => {
+    try {
+        const Exam = (await import('./src/models/exam.model.js')).default;
+        const exam = await Exam.findOne({ status: 'active' }).populate('questions');
+        
+        if (exam) {
+            const examData = {
+                exam: {
+                    id: exam._id,
+                    title: exam.title,
+                    description: exam.description || "",
+                    duration: exam.duration,
+                    totalMarks: exam.totalMarks || 0,
+                    questions: exam.questions || []
+                },
+                currentQuestionIndex: 0,
+                isExamMode: true,
+                initialTimeRemaining: exam.duration * 60
+            };
+            
+            res.json(examData);
+        } else {
+            res.json({ error: 'No active exam found' });
+        }
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+});
 
 // Debug route to see available exams
 app.get('/debug/exams', async (req, res) => {
@@ -626,6 +689,292 @@ app.post('/api/v1/execute', async (req, res) => {
         res.status(500).json({
             success: false,
             error: error.message || 'Internal server error'
+        });
+    }
+});
+
+// OpenAI Code Grading API
+const openaiGrader = new OpenAICodeGrader();
+
+// AI Code Grading endpoint
+app.post('/api/v1/grade-code', async (req, res) => {
+    try {
+        const {
+            source_code,
+            language,
+            problem_title,
+            problem_statement,
+            constraints,
+            test_results,
+            expected_output,
+            actual_output
+        } = req.body;
+
+        if (!source_code || !language) {
+            return res.status(400).json({
+                success: false,
+                error: 'Source code and language are required'
+            });
+        }
+
+        console.log('AI Grading request received for language:', language);
+
+        const gradingResult = await openaiGrader.gradeCode({
+            sourceCode: source_code,
+            language: language,
+            problemTitle: problem_title || 'Coding Problem',
+            problemStatement: problem_statement || 'No description provided',
+            constraints: constraints || 'No constraints specified',
+            testResults: test_results || [],
+            expectedOutput: expected_output,
+            actualOutput: actual_output
+        });
+
+        console.log('AI Grading completed:', gradingResult.success ? 'Success' : 'Failed');
+
+        if (gradingResult.success) {
+            res.json({
+                success: true,
+                aiGrading: gradingResult.data || gradingResult
+            });
+        } else {
+            res.json(gradingResult);
+        }
+
+    } catch (error) {
+        console.error('AI Grading error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error during code grading'
+        });
+    }
+});
+
+// Test page for AI grading systems
+app.get('/test-ai-grading', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test-ai-grading.html'));
+});
+
+// Test Hugging Face Grading endpoint
+app.post('/api/v1/test-hf-grading', async (req, res) => {
+    try {
+        console.log('Testing Hugging Face grading system...');
+        
+        const testData = {
+            sourceCode: `def add_numbers(a, b):
+    return a + b
+
+result = add_numbers(5, 3)
+print(result)`,
+            language: 'python',
+            problemTitle: 'Add Two Numbers',
+            problemStatement: 'Write a function that adds two numbers',
+            constraints: 'Numbers should be integers',
+            testResults: [
+                { status: 'Accepted', time: '0.1s', memory: '256KB' }
+            ]
+        };
+
+        // Test Hugging Face directly
+        const hfGrader = new (await import('./src/services/huggingfaceGrader.js')).default();
+        const gradingResult = await hfGrader.gradeCode(testData);
+        
+        console.log('Hugging Face test result:', JSON.stringify(gradingResult, null, 2));
+
+        res.json({
+            success: true,
+            message: 'Hugging Face grading test completed',
+            result: gradingResult
+        });
+
+    } catch (error) {
+        console.error('Test Hugging Face Grading error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Test failed: ' + error.message
+        });
+    }
+});
+
+// Test AI Grading endpoint
+app.post('/api/v1/test-ai-grading', async (req, res) => {
+    try {
+        console.log('Testing AI grading system...');
+        
+        const testData = {
+            sourceCode: `def fibonacci(n):
+    if n <= 1:
+        return n
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+
+print(fibonacci(10))`,
+            language: 'python',
+            problemTitle: 'Fibonacci Sequence',
+            problemStatement: 'Write a function to calculate the nth Fibonacci number',
+            constraints: 'n should be a positive integer',
+            testResults: [
+                { status: 'Accepted', time: '0.1s', memory: '256KB' },
+                { status: 'Accepted', time: '0.2s', memory: '256KB' }
+            ]
+        };
+
+        const gradingResult = await openaiGrader.gradeCode(testData);
+        console.log('Test grading result:', JSON.stringify(gradingResult, null, 2));
+
+        if (gradingResult.success) {
+            res.json({
+                success: true,
+                message: 'AI grading test successful',
+                aiGrading: gradingResult.data || gradingResult
+            });
+        } else {
+            res.json({
+                success: false,
+                message: 'AI grading test failed',
+                error: gradingResult.error
+            });
+        }
+
+    } catch (error) {
+        console.error('Test AI Grading error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Test failed: ' + error.message
+        });
+    }
+});
+
+// Quick Code Review endpoint
+app.post('/api/v1/review-code', async (req, res) => {
+    try {
+        const { source_code, language } = req.body;
+
+        if (!source_code || !language) {
+            return res.status(400).json({
+                success: false,
+                error: 'Source code and language are required'
+            });
+        }
+
+        const reviewResult = await openaiGrader.quickCodeReview(source_code, language);
+        res.json(reviewResult);
+
+    } catch (error) {
+        console.error('Code review error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Internal server error during code review'
+        });
+    }
+});
+
+// Enhanced Judge0 execution with AI grading
+app.post('/api/v1/execute-and-grade', async (req, res) => {
+    try {
+        const {
+            source_code,
+            language_id,
+            test_cases,
+            problem_title,
+            problem_statement,
+            constraints
+        } = req.body;
+
+        if (!source_code) {
+            return res.status(400).json({
+                success: false,
+                error: 'Source code is required'
+            });
+        }
+
+        // First, execute the code with Judge0
+        let executionResult;
+        
+        if (test_cases && Array.isArray(test_cases)) {
+            const results = [];
+            
+            for (const testCase of test_cases) {
+                try {
+                    const result = await runCode(source_code, language_id, testCase.stdin || '');
+                    
+                    const actualOutput = (result.stdout || '').trim();
+                    const expectedOutput = (testCase.expected_output || '').trim();
+                    const passed = actualOutput === expectedOutput;
+                    
+                    results.push({
+                        input: testCase.input || testCase.stdin,
+                        expected_output: expectedOutput,
+                        actual_output: actualOutput,
+                        passed: passed,
+                        execution_time: result.time,
+                        memory_used: result.memory,
+                        stderr: result.stderr,
+                        compile_output: result.compile_output
+                    });
+                } catch (testError) {
+                    results.push({
+                        input: testCase.input || testCase.stdin,
+                        expected_output: testCase.expected_output,
+                        actual_output: '',
+                        passed: false,
+                        error: testError.message,
+                        stderr: testError.message
+                    });
+                }
+            }
+            
+            executionResult = {
+                success: true,
+                test_results: results,
+                summary: {
+                    total_tests: results.length,
+                    passed_tests: results.filter(r => r.passed).length,
+                    failed_tests: results.filter(r => !r.passed).length
+                }
+            };
+        } else {
+            // Single execution
+            const result = await runCode(source_code, language_id, '');
+            executionResult = {
+                success: true,
+                data: result
+            };
+        }
+
+        // Then, get AI grading
+        const languageMap = {
+            63: 'javascript',
+            71: 'python',
+            62: 'java',
+            54: 'cpp',
+            51: 'csharp'
+        };
+
+        const gradingResult = await openaiGrader.gradeCode({
+            sourceCode: source_code,
+            language: languageMap[language_id] || 'javascript',
+            problemTitle: problem_title || 'Coding Problem',
+            problemStatement: problem_statement || 'No description provided',
+            constraints: constraints || 'No constraints specified',
+            testResults: executionResult.test_results || [],
+            expectedOutput: test_cases?.[0]?.expected_output,
+            actualOutput: executionResult.test_results?.[0]?.actual_output || executionResult.data?.stdout
+        });
+
+        // Combine execution and grading results
+        res.json({
+            success: true,
+            execution: executionResult,
+            grading: gradingResult,
+            timestamp: new Date().toISOString()
+        });
+
+    } catch (error) {
+        console.error('Execute and grade error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to execute and grade code'
         });
     }
 });

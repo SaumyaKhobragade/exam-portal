@@ -44,6 +44,7 @@
             <a href="#" class="action-btn" onclick="saveCode(); return false;">Save</a>
             <a href="#" class="action-btn run-btn" onclick="runCode(); return false;">Run Code</a>
             <a href="#" class="action-btn test-btn" onclick="runTests(); return false;">Run Tests</a>
+            <a href="#" class="action-btn ai-btn" id="aiGradeBtn" onclick="getAIFeedback(); return false;" disabled>Get AI Feedback</a>
             <a href="#" class="action-btn submit-btn" onclick="submitCode(); return false;">Submit</a>
           </div>
           <div class="exam-timer">
@@ -127,28 +128,13 @@
                   </div>
                 <% } %>
 
-                <% if (exam.questions[0].constraints) { %>
-                  <div class="problem-constraints" id="problemConstraints">
-                    <h3 class="section-subtitle">Constraints</h3>
-                    <ul>
-                      <% if (Array.isArray(exam.questions[0].constraints)) { %>
-                        <% exam.questions[0].constraints.forEach(constraint => { %>
-                          <li><%- constraint %></li>
-                        <% }); %>
-                      <% } else { %>
-                        <li><%- exam.questions[0].constraints %></li>
-                      <% } %>
-                    </ul>
-                  </div>
-                <% } else { %>
-                  <div class="problem-constraints" id="problemConstraints">
-                    <h3 class="section-subtitle">Constraints</h3>
-                    <ul>
-                      <li>Standard problem constraints apply</li>
-                      <li>Optimize for time and space complexity</li>
-                    </ul>
-                  </div>
-                <% } %>
+                <!-- Constraints will be loaded dynamically by JavaScript -->
+                <div class="problem-constraints" id="problemConstraints">
+                  <h3 class="section-subtitle">Constraints</h3>
+                  <ul>
+                    <li>Loading constraints...</li>
+                  </ul>
+                </div>
               <% } else { %>
                 <!-- Default problem content for demo -->
                 <div class="problem-description">
