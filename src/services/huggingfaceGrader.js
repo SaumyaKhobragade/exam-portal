@@ -158,46 +158,37 @@ export default class HuggingFaceCodeGrader {
      * Build grading prompt for Hugging Face models
      */
     buildGradingPrompt({ sourceCode, language, problemTitle, problemStatement, constraints, testResults }) {
-        const passedTests = testResults.filter(t => t.status === 'Accepted').length;
-        const totalTests = testResults.length;
+    const passedTests = testResults.filter(t => t.status === 'Accepted').length;
+    const totalTests = testResults.length;
 
-<<<<<<< HEAD
-    return `Grade this ${language} code solution:
-=======
-        return `Code Review: ${language} solution for "${problemTitle}"
->>>>>>> 6dfa95fbe754b5ed7f3143d38aa5109af5d159fd
+        return `Grade this ${language} code solution for the problem: "${problemTitle}"
 
-Code:
-${sourceCode}
+    Code:
+    ${sourceCode}
 
-Tests passed: ${passedTests}/${totalTests}
+    Tests passed: ${passedTests}/${totalTests}
 
-<<<<<<< HEAD
-Please provide a comprehensive code review with scores out of 40 and specific feedback. Rate the code in these categories:
-1. Correctness (10 points): Based on test results and logic
-2. Code Quality (10 points): Readability, structure, naming
-3. Efficiency (10 points): Algorithm complexity and optimization
-4. Best Practices (10 points): Following language conventions
+    Please provide a comprehensive code review with scores strictly out of 10 and specific feedback. Rate the code in these categories:
+    1. Correctness (out of 10): Based on test results and logic
+    2. Code Quality (out of 10): Readability, structure, naming
+    3. Efficiency (out of 10): Algorithm complexity and optimization
+    4. Best Practices (out of 10): Following language conventions
 
-Format your response as a structured analysis with:
-- Overall score out of 40
-- Category scores
-- Specific feedback and suggestions
-- Summary of strengths and improvements needed
+    Additionally, include:
+    - A paragraph describing the weaknesses of the code
+    - The time and space complexity of the main solution (in Big O notation)
 
-Focus on being educational and constructive.`;
-=======
-Grade this code (0-100) and provide feedback on:
-1. Correctness
-2. Code quality  
-3. Efficiency
-4. Best practices
+    Format your response as a structured analysis with:
+    - Overall score out of 10
+    - Category scores (each out of 10)
+    - Specific feedback and suggestions
+    - Summary of strengths and improvements needed
+    - Weaknesses: <paragraph>
+    - Time Complexity: <Big O>
+    - Space Complexity: <Big O>
 
-Response format:
-Score: [number]/100
-Feedback: [brief assessment]
-Suggestions: [improvements]`;
->>>>>>> 6dfa95fbe754b5ed7f3143d38aa5109af5d159fd
+    Focus on being educational and constructive.`;
+
     }
 
     /**
@@ -218,42 +209,51 @@ Suggestions: [improvements]`;
             const totalTests = testResults.length;
             const testPassRate = totalTests > 0 ? passedTests / totalTests : 0;
 
-            // Extract scores from AI response or use intelligent defaults
-            const overallScore = this.extractScore(text, 'overall|total|score') || 
-                               Math.round(testPassRate * 70 + 20); // 20-90 range
+
+            // Helper to normalize a score to 10
+            function normalizeTo10(score) {
+                if (!score) return 0;
+                if (score > 10 && score <= 25) return Math.round(score / 2.5 * 10) / 10; // out of 25
+                if (score > 10 && score <= 40) return Math.round(score / 4 * 10) / 10; // out of 40
+                if (score > 40 && score <= 100) return Math.round(score / 10 * 10) / 10; // out of 100
+                return Math.round(score * 10) / 10;
+            }
+
+            // Extract and normalize scores
+            let overallScoreRaw = this.extractScore(text, 'overall|total|score');
+            let overallScore = overallScoreRaw ? normalizeTo10(overallScoreRaw) : Math.round(testPassRate * 10 * 10) / 10;
 
             const categoryScores = {
-                correctness: this.extractScore(text, 'correctness') || 
-                           Math.round(testPassRate * this.gradingRubric.correctness),
-                codeQuality: this.extractScore(text, 'quality|readability') || 
-                           Math.round(this.gradingRubric.codeQuality * 0.8),
-                efficiency: this.extractScore(text, 'efficiency|performance') || 
-                          Math.round(this.gradingRubric.efficiency * 0.75),
-                bestPractices: this.extractScore(text, 'practices|conventions') || 
-                             Math.round(this.gradingRubric.bestPractices * 0.8)
+                correctness: normalizeTo10(this.extractScore(text, 'correctness')) || Math.round(testPassRate * this.gradingRubric.correctness * 10) / 10,
+                codeQuality: normalizeTo10(this.extractScore(text, 'quality|readability')) || Math.round(this.gradingRubric.codeQuality * 0.8 * 10) / 10,
+                efficiency: normalizeTo10(this.extractScore(text, 'efficiency|performance')) || Math.round(this.gradingRubric.efficiency * 0.75 * 10) / 10,
+                bestPractices: normalizeTo10(this.extractScore(text, 'practices|conventions')) || Math.round(this.gradingRubric.bestPractices * 0.8 * 10) / 10
             };
 
             // Extract feedback sections
             const feedback = this.extractFeedback(text);
             const suggestions = this.extractSuggestions(text);
             const summary = this.extractSummary(text, overallScore);
+            const weaknesses = this.extractSection(text, 'weakness(es)?');
+            const timeComplexity = this.extractSection(text, 'time complexity');
+            const spaceComplexity = this.extractSection(text, 'space complexity');
 
             return {
                 overallScore: Math.min(100, overallScore),
                 categoryScores,
                 feedback,
                 suggestions,
-                summary
+                summary,
+                weaknesses,
+                timeComplexity,
+                spaceComplexity
             };
-
         } catch (error) {
             console.error('Error parsing Hugging Face response:', error);
-            
             // Fallback scoring based on test results
             const passedTests = testResults.filter(t => t.status === 'Accepted').length;
             const totalTests = testResults.length;
             const testPassRate = totalTests > 0 ? passedTests / totalTests : 0;
-            
             return {
                 overallScore: Math.round(testPassRate * 70 + 20),
                 categoryScores: {
@@ -264,9 +264,21 @@ Suggestions: [improvements]`;
                 },
                 feedback: ['Hugging Face analysis completed with basic scoring'],
                 suggestions: ['Review your code structure and test more edge cases'],
-                summary: 'Code analysis completed using Hugging Face AI models'
+                summary: 'Code analysis completed using Hugging Face AI models',
+                weaknesses: '',
+                timeComplexity: '',
+                spaceComplexity: ''
             };
         }
+    }
+
+    /**
+     * Extract a specific section (e.g., weaknesses, time/space complexity) from the AI response
+     */
+    extractSection(text, sectionName) {
+        const regex = new RegExp(`${sectionName}[:\s]+([^\n]+)`, 'i');
+        const match = text.match(regex);
+        return match && match[1] ? match[1].trim() : '';
     }
 
     /**
@@ -277,7 +289,12 @@ Suggestions: [improvements]`;
         const match = text.match(regex);
         if (match) {
             const score = parseInt(match[1]);
-            return score > 100 ? Math.round(score / 10) : score; // Handle percentage cases
+                // Normalize any score above 10 to 10-scale
+                if (score > 10 && score <= 25) return Math.round((score / 2.5) * 10) / 10;
+                if (score > 10 && score <= 30) return Math.round((score / 3) * 10) / 10;
+                if (score > 10 && score <= 40) return Math.round((score / 4) * 10) / 10;
+                if (score > 40 && score <= 100) return Math.round((score / 10) * 10) / 10;
+                return score;
         }
         return null;
     }

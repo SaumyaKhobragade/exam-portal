@@ -159,7 +159,7 @@ ${testResults ? testResults.map((test, i) =>
 
 Please provide a comprehensive evaluation in the following JSON format:
 {
-    "score": <number between 0-40>,
+    "score": <number between 0-10>,
     "grade": "<letter grade A-F>",
     "correctness": {
         "score": <0-10>,
@@ -190,22 +190,28 @@ Also provide a brief summary of the code's strengths and areas for improvement.
         try {
             // Try to parse JSON response
             const gradingData = JSON.parse(feedback);
-            
-            // Validate the response structure
-            if (!gradingData.score || !gradingData.grade) {
-                throw new Error('Invalid response structure');
+            // Normalize all scores to 10 scale
+            function normalizeTo10(score) {
+                if (!score) return 0;
+                if (score > 10 && score <= 25) return Math.round((score / 2.5) * 10) / 10;
+                if (score > 10 && score <= 30) return Math.round((score / 3) * 10) / 10;
+                if (score > 10 && score <= 40) return Math.round((score / 4) * 10) / 10;
+                if (score > 40 && score <= 100) return Math.round((score / 10) * 10) / 10;
+                return Math.round(score * 10) / 10;
             }
-
+            gradingData.score = normalizeTo10(gradingData.score);
+            if (gradingData.correctness && gradingData.correctness.score !== undefined) gradingData.correctness.score = normalizeTo10(gradingData.correctness.score);
+            if (gradingData.codeQuality && gradingData.codeQuality.score !== undefined) gradingData.codeQuality.score = normalizeTo10(gradingData.codeQuality.score);
+            if (gradingData.efficiency && gradingData.efficiency.score !== undefined) gradingData.efficiency.score = normalizeTo10(gradingData.efficiency.score);
+            if (gradingData.bestPractices && gradingData.bestPractices.score !== undefined) gradingData.bestPractices.score = normalizeTo10(gradingData.bestPractices.score);
             return {
                 success: true,
                 aiGrading: gradingData,
                 testResults: testResults,
                 timestamp: new Date().toISOString()
             };
-
         } catch (parseError) {
             console.error('Failed to parse AI response:', parseError);
-            
             // Fallback to extracting key information
             return {
                 success: true,
@@ -230,22 +236,23 @@ Also provide a brief summary of the code's strengths and areas for improvement.
 
     extractScore(text) {
         const scoreMatch = text.match(/score["\s]*:["\s]*(\d+)/i);
-        return scoreMatch ? parseInt(scoreMatch[1]) : null;
+        if (scoreMatch) {
+            const score = parseInt(scoreMatch[1]);
+            if (score > 10 && score <= 25) return Math.round((score / 2.5) * 10) / 10;
+            if (score > 10 && score <= 30) return Math.round((score / 3) * 10) / 10;
+            if (score > 10 && score <= 40) return Math.round((score / 4) * 10) / 10;
+            if (score > 40 && score <= 100) return Math.round((score / 10) * 10) / 10;
+            return score;
+        }
+        return null;
     }
 
     calculateFallbackGrade(testResults) {
-        if (!testResults || testResults.length === 0) return 0;
-        
-        const passedTests = testResults.filter(t => t.passed).length;
-        const passRate = (passedTests / testResults.length) * 100;
-        
-        // Basic grading based on test passage
-        if (passRate >= 90) return 85;
-        if (passRate >= 80) return 75;
-        if (passRate >= 70) return 65;
-        if (passRate >= 60) return 55;
-        if (passRate >= 50) return 45;
-        return Math.max(20, passRate * 0.4);
+    if (!testResults || testResults.length === 0) return 0;
+    const passedTests = testResults.filter(t => t.passed).length;
+    const passRate = (passedTests / testResults.length);
+    // Basic grading out of 10 based on test passage
+    return Math.round(passRate * 10 * 10) / 10;
     }
 
     calculateLetterGrade(score) {

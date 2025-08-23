@@ -757,7 +757,7 @@ function displayAIGrading(grading) {
     <div class="ai-feedback-header">
       <h3>🤖 AI Code Feedback</h3>
       <div class="ai-grade-badge" style="background-color: ${gradeColor}">
-        Score: ${overallScore}/100 (${letterGrade})
+  Score: ${overallScore}/10 (${letterGrade})
       </div>
       ${note ? `<div class="grading-method">${note}</div>` : ''}
     </div>
@@ -770,30 +770,30 @@ function displayAIGrading(grading) {
       
       <div class="feedback-grid">
         <div class="feedback-item">
-          <h5>✅ Correctness (${categoryScores.correctness || 0}/30)</h5>
+          <h5>✅ Correctness (${categoryScores.correctness || 0}/10)</h5>
           <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.correctness || 0) / 30 * 100}%"></div>
+            <div class="score-fill" style="width: ${(categoryScores.correctness || 0) / 10 * 100}%"></div>
           </div>
         </div>
         
         <div class="feedback-item">
-          <h5>🎨 Code Quality (${categoryScores.codeQuality || 0}/25)</h5>
+          <h5>🎨 Code Quality (${categoryScores.codeQuality || 0}/10)</h5>
           <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.codeQuality || 0) / 25 * 100}%"></div>
+            <div class="score-fill" style="width: ${(categoryScores.codeQuality || 0) / 10 * 100}%"></div>
           </div>
         </div>
         
         <div class="feedback-item">
-          <h5>⚡ Efficiency (${categoryScores.efficiency || 0}/25)</h5>
+          <h5>⚡ Efficiency (${categoryScores.efficiency || 0}/10)</h5>
           <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.efficiency || 0) / 25 * 100}%"></div>
+            <div class="score-fill" style="width: ${(categoryScores.efficiency || 0) / 10 * 100}%"></div>
           </div>
         </div>
         
         <div class="feedback-item">
-          <h5>📖 Best Practices (${categoryScores.bestPractices || 0}/20)</h5>
+          <h5>📖 Best Practices (${categoryScores.bestPractices || 0}/10)</h5>
           <div class="score-bar">
-            <div class="score-fill" style="width: ${(categoryScores.bestPractices || 0) / 20 * 100}%"></div>
+            <div class="score-fill" style="width: ${(categoryScores.bestPractices || 0) / 10 * 100}%"></div>
           </div>
         </div>
       </div>

@@ -12,10 +12,10 @@ export default class GeminiCodeGrader {
         this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
         this.gradingRubric = {
-            correctness: 30,
-            codeQuality: 25,
-            efficiency: 25,
-            bestPractices: 20
+            correctness: 10,
+            codeQuality: 10,
+            efficiency: 10,
+            bestPractices: 10
         };
     }
 
@@ -94,7 +94,7 @@ export default class GeminiCodeGrader {
         const passedTests = testResults.filter(t => t.status === 'Accepted').length;
         const totalTests = testResults.length;
 
-        return `You are an expert programming instructor. Grade this ${language} code solution:
+    return `You are an expert programming instructor. Grade this ${language} code solution:
 
 PROBLEM: ${problemTitle}
 DESCRIPTION: ${problemStatement}
@@ -109,11 +109,11 @@ TEST RESULTS: ${passedTests}/${totalTests} tests passed
 
 Please provide a comprehensive evaluation. Respond in this EXACT format:
 
-OVERALL_SCORE: [number 0-100]
-CORRECTNESS_SCORE: [number 0-30]
-QUALITY_SCORE: [number 0-25]
-EFFICIENCY_SCORE: [number 0-25]
-PRACTICES_SCORE: [number 0-20]
+OVERALL_SCORE: [number 0-10]
+CORRECTNESS_SCORE: [number 0-10]
+QUALITY_SCORE: [number 0-10]
+EFFICIENCY_SCORE: [number 0-10]
+PRACTICES_SCORE: [number 0-10]
 
 FEEDBACK:
 - [specific feedback about correctness]
@@ -140,12 +140,21 @@ SUMMARY: [one paragraph overall assessment]`;
             const overallScore = this.extractScore(text, 'OVERALL_SCORE') || 
                                this.calculateFallbackScore(testResults);
             
+            // Normalize all scores to 10 scale
+            function normalizeTo10(score) {
+                if (!score) return 0;
+                if (score > 10 && score <= 25) return Math.round((score / 2.5) * 10) / 10;
+                if (score > 10 && score <= 30) return Math.round((score / 3) * 10) / 10;
+                if (score > 10 && score <= 40) return Math.round((score / 4) * 10) / 10;
+                if (score > 40 && score <= 100) return Math.round((score / 10) * 10) / 10;
+                return Math.round(score * 10) / 10;
+            }
             const categoryScores = {
-                correctness: this.extractScore(text, 'CORRECTNESS_SCORE') || 
-                           Math.round((testResults.filter(t => t.status === 'Accepted').length / Math.max(testResults.length, 1)) * 30),
-                codeQuality: this.extractScore(text, 'QUALITY_SCORE') || 20,
-                efficiency: this.extractScore(text, 'EFFICIENCY_SCORE') || 20,
-                bestPractices: this.extractScore(text, 'PRACTICES_SCORE') || 16
+                correctness: normalizeTo10(this.extractScore(text, 'CORRECTNESS_SCORE')) || 
+                           Math.round((testResults.filter(t => t.status === 'Accepted').length / Math.max(testResults.length, 1)) * 10),
+                codeQuality: normalizeTo10(this.extractScore(text, 'QUALITY_SCORE')) || 8,
+                efficiency: normalizeTo10(this.extractScore(text, 'EFFICIENCY_SCORE')) || 8,
+                bestPractices: normalizeTo10(this.extractScore(text, 'PRACTICES_SCORE')) || 8
             };
 
             // Extract feedback sections
@@ -155,7 +164,7 @@ SUMMARY: [one paragraph overall assessment]`;
                           this.generateDefaultSummary(overallScore);
 
             return {
-                overallScore: Math.min(100, Math.max(0, overallScore)),
+                overallScore: normalizeTo10(overallScore),
                 categoryScores,
                 feedback: feedback.length > 0 ? feedback : ['AI analysis completed with scoring'],
                 suggestions: suggestions.length > 0 ? suggestions : this.getDefaultSuggestions(),
@@ -171,16 +180,16 @@ SUMMARY: [one paragraph overall assessment]`;
             const testPassRate = passedTests / totalTests;
             
             return {
-                overallScore: Math.round(testPassRate * 70 + 20), // 20-90 range
+                overallScore: Math.round(testPassRate * 10),
                 categoryScores: {
-                    correctness: Math.round(testPassRate * 30),
-                    codeQuality: 20,
-                    efficiency: 20,
-                    bestPractices: 16
+                    correctness: Math.round(testPassRate * 10),
+                    codeQuality: 8,
+                    efficiency: 8,
+                    bestPractices: 8
                 },
                 feedback: ['Google Gemini AI analysis completed'],
                 suggestions: this.getDefaultSuggestions(),
-                summary: this.generateDefaultSummary(Math.round(testPassRate * 70 + 20))
+                summary: this.generateDefaultSummary(Math.round(testPassRate * 10))
             };
         }
     }

@@ -248,46 +248,46 @@ export default class FallbackCodeGrader {
      * Calculate scores based on analysis
      */
     calculateScores(analysis, testResults) {
-        // Correctness score based on test results
-        const totalTests = testResults.length;
-        const passedTests = testResults.filter(result => result.status === 'Accepted').length;
-        const correctnessScore = totalTests > 0 ? (passedTests / totalTests) * this.gradingRubric.correctness : 0;
+    // Correctness score based on test results
+    const totalTests = testResults.length;
+    const passedTests = testResults.filter(result => result.status === 'Accepted').length;
+    const correctnessScore = totalTests > 0 ? (passedTests / totalTests) * this.gradingRubric.correctness : 0;
 
-        // Code quality score
-        let qualityScore = this.gradingRubric.codeQuality;
-        if (!analysis.hasProperIndentation) qualityScore -= 5;
-        if (!analysis.hasVariableNaming) qualityScore -= 5;
-        if (!analysis.hasComments && analysis.lineCount > 10) qualityScore -= 3;
-        if (analysis.complexityIssues.length > 0) qualityScore -= analysis.complexityIssues.length * 2;
+    // Code quality score
+    let qualityScore = this.gradingRubric.codeQuality;
+    if (!analysis.hasProperIndentation) qualityScore -= 5;
+    if (!analysis.hasVariableNaming) qualityScore -= 5;
+    if (!analysis.hasComments && analysis.lineCount > 10) qualityScore -= 3;
+    if (analysis.complexityIssues.length > 0) qualityScore -= analysis.complexityIssues.length * 2;
 
-        // Efficiency score
-        let efficiencyScore = this.gradingRubric.efficiency;
-        if (analysis.complexityIssues.includes('Deeply nested code structure')) efficiencyScore -= 8;
-        if (analysis.complexityIssues.includes('Function too long')) efficiencyScore -= 5;
-        if (!analysis.algorithmicApproach.loops && !analysis.algorithmicApproach.recursion && analysis.lineCount > 5) {
-            efficiencyScore -= 5;
-        }
+    // Efficiency score
+    let efficiencyScore = this.gradingRubric.efficiency;
+    if (analysis.complexityIssues.includes('Deeply nested code structure')) efficiencyScore -= 8;
+    if (analysis.complexityIssues.includes('Function too long')) efficiencyScore -= 5;
+    if (!analysis.algorithmicApproach.loops && !analysis.algorithmicApproach.recursion && analysis.lineCount > 5) {
+        efficiencyScore -= 5;
+    }
 
-        // Best practices score
-        let practicesScore = this.gradingRubric.bestPractices;
-        practicesScore -= analysis.bestPracticeViolations.length * 3;
-        if (!analysis.hasFunctionStructure.hasFunctions && analysis.lineCount > 10) practicesScore -= 5;
-        if (!analysis.errorHandling && analysis.lineCount > 15) practicesScore -= 3;
+    // Best practices score
+    let practicesScore = this.gradingRubric.bestPractices;
+    practicesScore -= analysis.bestPracticeViolations.length * 3;
+    if (!analysis.hasFunctionStructure.hasFunctions && analysis.lineCount > 10) practicesScore -= 5;
+    if (!analysis.errorHandling && analysis.lineCount > 15) practicesScore -= 3;
 
-        // Ensure scores don't go below 0
-        qualityScore = Math.max(0, qualityScore);
-        efficiencyScore = Math.max(0, efficiencyScore);
-        practicesScore = Math.max(0, practicesScore);
+    // Ensure scores don't go below 0 and don't exceed 10
+    qualityScore = Math.max(0, Math.min(10, qualityScore));
+    efficiencyScore = Math.max(0, Math.min(10, efficiencyScore));
+    practicesScore = Math.max(0, Math.min(10, practicesScore));
 
-        const overall = correctnessScore + qualityScore + efficiencyScore + practicesScore;
+    const overall = Math.max(0, Math.min(10, correctnessScore + qualityScore + efficiencyScore + practicesScore) / 4);
 
-        return {
-            correctness: Math.round(correctnessScore),
-            codeQuality: Math.round(qualityScore),
-            efficiency: Math.round(efficiencyScore),
-            bestPractices: Math.round(practicesScore),
-            overall: Math.round(overall)
-        };
+    return {
+        correctness: Math.round(correctnessScore * 10) / 10,
+        codeQuality: Math.round(qualityScore * 10) / 10,
+        efficiency: Math.round(efficiencyScore * 10) / 10,
+        bestPractices: Math.round(practicesScore * 10) / 10,
+        overall: Math.round(overall * 10) / 10
+    };
     }
 
     /**
