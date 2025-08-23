@@ -10,19 +10,7 @@
 <body>
   <div class="main-container">
     <header class="header-section">
-<<<<<<< HEAD
-      <div class="navbar-flex">
-        <div class="org-name extreme-left" id="organizationName">Loading...</div>
-        <nav class="navigation-menu navbar-center">
-          <a href="/admin-dashboard" class="nav-link">Dashboard</a>
-          <a href="/admin/exams/create" class="nav-link">Create Exam</a>
-          <a href="#" class="nav-link" onclick="showResults()">Results</a>
-        </nav>
-        <div class="user-actions extreme-right">
-          <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
-          <a href="/logout" class="action-btn logout-btn">Logout</a>
-        </div>
-=======
+
       <div class="brand-logo">CodeSecure</div>
       <div class="organization-header">
         <span class="org-name-header" id="organizationNameHeader">Loading...</span>
@@ -37,7 +25,6 @@
       <div class="user-actions">
         <span id="adminName"><%= user ? user.fullname || user.username : 'Admin' %></span>
         <a href="/logout" class="action-btn logout-btn">Logout</a>
->>>>>>> 1088214fdbea8bc6e3830c1c3cee22d41c96a7dc
       </div>
     </header>
 
@@ -67,17 +54,13 @@
         </div>
       <% } %>
 
-<<<<<<< HEAD
 
-
-
-=======
       <!-- Welcome Section -->
       <section class="welcome-card">
         <h1 class="welcome-title">Welcome to Admin Dashboard</h1>
         <p class="welcome-description">Manage your organization's exams, view results, and monitor student performance</p>
       </section>
->>>>>>> 1088214fdbea8bc6e3830c1c3cee22d41c96a7dc
+
 
       <!-- Exam Management Options -->
       <div class="exam-management">
@@ -93,6 +76,14 @@
           <button class="btn btn-success" onclick="showResults()">View Results</button>
         </div>
       </div>
+
+      <!-- Current Exams Management -->
+      <section class="current-exams">
+        <h2 class="section-title">Your Exams</h2>
+        <div class="exams-container" id="examsContainer">
+          <p>Loading exams...</p>
+        </div>
+      </section>
 
       <!-- Assigned Exams Section -->
       <!-- <div class="assigned-exams">

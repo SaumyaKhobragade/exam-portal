@@ -38,6 +38,3 @@ document.getElementById('requestForm').addEventListener('submit', async function
         submitBtn.textContent = 'Submit Request';
     }
 });
-
-// Set minimum date to today
-document.getElementById('examDate').min = new Date().toISOString().split('T')[0];

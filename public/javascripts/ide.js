@@ -1,18 +1,27 @@
 // IDE JavaScript Functions
 
-// Timer functionality
-let timeRemaining = 45 * 60 + 32; // 45:32 in seconds
-
+// Timer functionality - use global timeRemaining from template
 function updateTimer() {
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;
   const formattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
   
-  const timerElements = document.querySelectorAll('.timer');
+  const timerElements = document.querySelectorAll('.timer, #examTimer');
   timerElements.forEach(el => el.textContent = formattedTime);
+  
+  // Change color when time is running out
+  if (timeRemaining <= 300) { // 5 minutes
+    timerElements.forEach(el => el.style.color = '#ff4757');
+  } else if (timeRemaining <= 600) { // 10 minutes
+    timerElements.forEach(el => el.style.color = '#ffa726');
+  }
   
   if (timeRemaining > 0) {
     timeRemaining--;
+  } else if (window.examData && window.examData.isExamMode) {
+    // Auto-submit when time runs out in exam mode
+    alert('Time is up! Your exam will be submitted automatically.');
+    submitCode();
   }
 }
 
@@ -103,14 +112,20 @@ function switchTab(tabName) {
   activeTab = tabName;
 }
 
-// Question navigation
-let currentQuestion = 2; // Starting at question 2 as shown in the design
-const totalQuestions = 5;
+// Question navigation - Enhanced for exam mode
+let currentQuestion = 1; // Starting at question 1
+let totalQuestions = 5;
+
+// Initialize question data from exam if available
+if (window.examData && window.examData.exam && window.examData.exam.questions) {
+  totalQuestions = window.examData.exam.questions.length;
+}
 
 function nextQuestion() {
   if (currentQuestion < totalQuestions) {
     currentQuestion++;
     updateQuestionDisplay();
+    loadQuestionData();
   }
 }
 
@@ -118,19 +133,28 @@ function previousQuestion() {
   if (currentQuestion > 1) {
     currentQuestion--;
     updateQuestionDisplay();
+    loadQuestionData();
   }
 }
 
 function goToQuestion(questionNum) {
-  currentQuestion = questionNum;
-  updateQuestionDisplay();
+  if (questionNum >= 1 && questionNum <= totalQuestions) {
+    currentQuestion = questionNum;
+    updateQuestionDisplay();
+    loadQuestionData();
+  }
 }
 
 function updateQuestionDisplay() {
   // Update current question text
-  const currentQuestionElement = document.querySelector('.current-question');
+  const currentQuestionElement = document.querySelector('.current-question #currentQuestionNum') || 
+                                 document.querySelector('.current-question');
   if (currentQuestionElement) {
-    currentQuestionElement.textContent = `Question ${currentQuestion} of ${totalQuestions}`;
+    if (currentQuestionElement.tagName === 'SPAN') {
+      currentQuestionElement.textContent = currentQuestion;
+    } else {
+      currentQuestionElement.textContent = `Question ${currentQuestion} of ${totalQuestions}`;
+    }
   }
 
   // Update progress bar
@@ -146,6 +170,70 @@ function updateQuestionDisplay() {
     buttons[0].disabled = currentQuestion === 1;
     buttons[1].disabled = currentQuestion === totalQuestions;
   }
+}
+
+function loadQuestionData() {
+  if (!window.examData || !window.examData.exam || !window.examData.exam.questions) {
+    return; // No exam data available
+  }
+  
+  const questionIndex = currentQuestion - 1;
+  const question = window.examData.exam.questions[questionIndex];
+  
+  if (!question) return;
+  
+  // Update problem title
+  const titleElement = document.getElementById('problemTitle');
+  if (titleElement) {
+    titleElement.textContent = question.title || `Question ${currentQuestion}`;
+  }
+  
+  // Update problem points
+  const pointsElement = document.getElementById('problemPoints');
+  if (pointsElement) {
+    pointsElement.textContent = `${question.points || 25} Points`;
+  }
+  
+  // Update problem description
+  const descElement = document.getElementById('problemDescription');
+  if (descElement) {
+    descElement.innerHTML = question.description || 'No description available.';
+  }
+  
+  // Update examples
+  const examplesElement = document.getElementById('problemExamples');
+  if (examplesElement && question.examples) {
+    let examplesHtml = '<h3 class="section-subtitle">Examples</h3>';
+    question.examples.forEach((example, index) => {
+      examplesHtml += `
+        <div class="example-item">
+          <h4 class="example-title">Example ${index + 1}:</h4>
+          <div class="code-block">
+            <strong>Input:</strong> ${example.input}<br>
+            <strong>Output:</strong> ${example.output}${example.explanation ? '<br><strong>Explanation:</strong> ' + example.explanation : ''}
+          </div>
+        </div>
+      `;
+    });
+    examplesElement.innerHTML = examplesHtml;
+  }
+  
+  // Update constraints
+  const constraintsElement = document.getElementById('problemConstraints');
+  if (constraintsElement && question.constraints) {
+    let constraintsHtml = '<h3 class="section-subtitle">Constraints</h3><ul>';
+    question.constraints.forEach(constraint => {
+      constraintsHtml += `<li>${constraint}</li>`;
+    });
+    constraintsHtml += '</ul>';
+    constraintsElement.innerHTML = constraintsHtml;
+  }
+  
+  // Update test cases
+  loadTestCases();
+  
+  // Load saved code for this question if available
+  loadSavedCodeForQuestion();
 }
 
 // Collapsible functionality
@@ -361,13 +449,29 @@ async function runTests() {
   
   switchTab('tests');
   
-  // Test cases data
-  const testData = [
-    { input: 'nums = [2,7,11,15], target = 9', expected: '[0,1]', stdin: '' },
-    { input: 'nums = [3,2,4], target = 6', expected: '[1,2]', stdin: '' }
-  ];
+  // Get test cases data from exam or use fallback
+  let testData = [];
   
-  for (let i = 0; i < testCases.length; i++) {
+  if (window.examData && window.examData.exam && window.examData.exam.questions) {
+    const questionIndex = currentQuestion - 1;
+    const question = window.examData.exam.questions[questionIndex];
+    
+    if (question && question.testCases) {
+      testData = question.testCases.map(testCase => ({
+        input: testCase.input || testCase.inputValue || '',
+        expected: testCase.output || testCase.expectedOutput || '',
+        stdin: testCase.stdin || testCase.input || ''
+      }));
+    }
+  }
+  
+  // Fallback test data if no exam data available
+  if (testData.length === 0) {
+    testData = [
+      { input: 'nums = [2,7,11,15], target = 9', expected: '[0,1]', stdin: '' },
+      { input: 'nums = [3,2,4], target = 6', expected: '[1,2]', stdin: '' }
+    ];
+  }  for (let i = 0; i < testCases.length; i++) {
     const testCase = testCases[i];
     const status = testCase.querySelector('.test-status');
     const outputElement = testCase.querySelector('.test-details p:last-child');
@@ -458,8 +562,48 @@ function showNotification(message) {
   }, 3000);
 }
 
-// Basic IDE integration for Judge0 API (backwards compatibility)
-document.addEventListener('DOMContentLoaded', function () {
+// Enhanced DOM ready initialization
+document.addEventListener('DOMContentLoaded', function() {
+  // Initialize exam mode if exam data is available
+  if (window.examData) {
+    console.log('Exam mode initialized with data:', window.examData);
+    
+    // Set up exam timer if available
+    if (window.examData.exam && window.examData.exam.duration) {
+      setupExamTimer();
+    }
+    
+    // Load first question data
+    loadQuestionData();
+  }
+  
+  // Initialize test cases display
+  loadTestCases();
+  
+  // Initialize code editor functionality
+  updateLineNumbers();
+  
+  // Add auto-save for code changes
+  const codeEditor = document.querySelector('.code-editor');
+  if (codeEditor) {
+    codeEditor.addEventListener('input', autoSaveCode);
+  }
+  
+  // Add language change listener for auto-save
+  const languageSelect = document.querySelector('.language-select') || document.getElementById('language-select');
+  if (languageSelect) {
+    languageSelect.addEventListener('change', function() {
+      autoSaveCode();
+    });
+  }
+  
+  // Initialize question navigation
+  updateQuestionDisplay();
+  
+  // Add submit button functionality
+  addSubmitButton();
+  
+  // Basic IDE integration for Judge0 API (backwards compatibility)
   const runBtn = document.querySelector('.run-btn');
   const codeInput = document.querySelector('.code-editor');
   const langSelect = document.getElementById('language-select');
@@ -472,10 +616,200 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Load saved code on page load
-  const savedCode = localStorage.getItem('savedCode');
-  if (savedCode && codeInput) {
-    codeInput.value = savedCode;
-    updateLineNumbers();
+  // Load saved code on page load (fallback for non-exam mode)
+  if (!window.examData) {
+    const savedCode = localStorage.getItem('savedCode');
+    if (savedCode && codeInput) {
+      codeInput.value = savedCode;
+      updateLineNumbers();
+    }
   }
 });
+
+// Exam timer functionality
+function setupExamTimer() {
+  if (!window.examData || !window.examData.exam || !window.examData.exam.duration) return;
+  
+  const duration = window.examData.exam.duration; // Duration in minutes
+  const startTime = window.examData.startTime ? new Date(window.examData.startTime) : new Date();
+  const endTime = new Date(startTime.getTime() + (duration * 60 * 1000));
+  
+  function updateTimer() {
+    const now = new Date();
+    const timeLeft = endTime - now;
+    
+    if (timeLeft <= 0) {
+      // Time's up - auto-submit exam
+      autoSubmitExam();
+      return;
+    }
+    
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    
+    const timerDisplay = document.querySelector('.timer') || document.getElementById('timer');
+    if (timerDisplay) {
+      timerDisplay.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Add warning styles when time is running low
+      if (timeLeft < 5 * 60 * 1000) { // Less than 5 minutes
+        timerDisplay.classList.add('timer-warning');
+      }
+    }
+  }
+  
+  // Update timer every second
+  updateTimer();
+  setInterval(updateTimer, 1000);
+}
+
+// Exam submission functionality
+async function submitExam() {
+  if (!window.examData) {
+    alert('No exam data available for submission.');
+    return;
+  }
+  
+  if (!confirm('Are you sure you want to submit your exam? This action cannot be undone.')) {
+    return;
+  }
+  
+  try {
+    // Collect all saved code for each question
+    const examId = window.examData.exam._id;
+    const answers = [];
+    
+    for (let i = 1; i <= totalQuestions; i++) {
+      const key = `exam_${examId}_question_${i}`;
+      try {
+        const savedData = localStorage.getItem(key);
+        if (savedData) {
+          const codeData = JSON.parse(savedData);
+          answers.push({
+            questionIndex: i - 1,
+            code: codeData.code || '',
+            language: codeData.language || 'python',
+            timestamp: codeData.timestamp
+          });
+        } else {
+          answers.push({
+            questionIndex: i - 1,
+            code: '',
+            language: 'python',
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (e) {
+        console.warn(`Could not retrieve answer for question ${i}:`, e);
+        answers.push({
+          questionIndex: i - 1,
+          code: '',
+          language: 'python',
+          timestamp: new Date().toISOString()
+        });
+      }
+    }
+    
+    const submissionData = {
+      examId: examId,
+      answers: answers,
+      submittedAt: new Date().toISOString(),
+      timeTaken: calculateTimeTaken()
+    };
+    
+    // Submit to server
+    const response = await fetch('/exams/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(submissionData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Clear saved code from localStorage
+      for (let i = 1; i <= totalQuestions; i++) {
+        const key = `exam_${examId}_question_${i}`;
+        localStorage.removeItem(key);
+      }
+      
+      alert('Exam submitted successfully!');
+      window.location.href = '/user/dashboard';
+    } else {
+      alert('Failed to submit exam: ' + (result.message || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error submitting exam:', error);
+    alert('Failed to submit exam. Please try again.');
+  }
+}
+
+function calculateTimeTaken() {
+  if (!window.examData || !window.examData.startTime) {
+    return 0;
+  }
+  
+  const startTime = new Date(window.examData.startTime);
+  const now = new Date();
+  return Math.round((now - startTime) / 1000 / 60); // Time taken in minutes
+}
+
+// Add submit button functionality
+function addSubmitButton() {
+  const submitBtn = document.querySelector('.submit-exam-btn') || document.getElementById('submit-exam');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      submitExam();
+    });
+  }
+}
+
+// Enhanced test cases loading function
+function loadTestCases() {
+  const testCasesContainer = document.getElementById('testCasesContainer');
+  if (!testCasesContainer) return;
+
+  let testCases = [];
+  
+  // Get test cases from exam data if available
+  if (window.examData && window.examData.exam && window.examData.exam.questions) {
+    const questionIndex = currentQuestion - 1;
+    const question = window.examData.exam.questions[questionIndex];
+    
+    if (question && question.testCases) {
+      testCases = question.testCases;
+    }
+  }
+  
+  // Fallback test cases if no exam data
+  if (testCases.length === 0) {
+    testCases = [
+      { input: '[2,7,11,15], target = 9', output: '[0,1]' },
+      { input: '[3,2,4], target = 6', output: '[1,2]' },
+      { input: '[3,3], target = 6', output: '[0,1]' }
+    ];
+  }
+
+  let testCasesHTML = '<h3 class="section-subtitle">Test Cases</h3>';
+  testCases.forEach((testCase, index) => {
+    testCasesHTML += `
+      <div class="test-case-item">
+        <h4 class="test-case-title">Test Case ${index + 1}:</h4>
+        <div class="test-case-content">
+          <div class="test-input">
+            <strong>Input:</strong> ${testCase.input || testCase.inputValue || 'No input provided'}
+          </div>
+          <div class="test-output">
+            <strong>Expected Output:</strong> ${testCase.output || testCase.expectedOutput || 'No expected output provided'}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  testCasesContainer.innerHTML = testCasesHTML;
+}

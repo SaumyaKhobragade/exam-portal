@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,6 +9,16 @@
     <link rel="stylesheet" href="/stylesheets/adminDashboard.css">
     <style>
         /* Header section styling - matching admin dashboard */
+        .dashboard-container {
+            padding: 24px 18px 18px 18px;
+        }
+        .dashboard-section {
+            padding: 18px 12px 12px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
         .header-section {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -117,12 +128,13 @@
         }
 
         .owner-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #fff;
+            color: #764ba2;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
             text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         }
         
         .owner-title {
@@ -138,10 +150,13 @@
         
         .admin-management-section {
             background: white;
-            padding: 30px;
+            padding: 56px 56px 48px 56px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             margin-bottom: 30px;
+            width: 100%;
+            max-width: 900px;
+            align-self: center;
         }
         
         .section-title {
@@ -272,18 +287,25 @@
         }
         
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 32px;
             margin-bottom: 30px;
+            padding: 16px 12px 8px 12px;
         }
         
         .stat-card {
             background: white;
-            padding: 25px;
+            padding: 18px 24px 18px 24px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             text-align: center;
+            min-width: 120px;
+            width: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .stat-number {
@@ -345,7 +367,7 @@
                 <div class="section-header upgraded-header">
                     <div style="display:flex;align-items:center;gap:12px;">
                         <img src="https://cdn-icons-png.flaticon.com/512/3039/3039434.png" alt="Exam Requests" style="width:32px;opacity:0.85;">
-                        <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#4a4a4a;">📋 Exam Request Management</h2>
+                        <h2 style="margin:0;font-size:1.5rem;font-weight:700;color:#4a4a4a;">Exam Request Management</h2>
                     </div>
                 </div>
                 <div class="stats-grid">
@@ -397,11 +419,33 @@
         </div>
     <style>
     .upgraded-section {
-        background: #f7f9fb;
-        border-radius: 16px;
-        box-shadow: 0 2px 12px rgba(102,126,234,0.07);
-        padding: 32px 24px 24px 24px;
-        margin-top: 32px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(102,126,234,0.10);
+        padding: 56px 56px 48px 56px;
+        margin-top: 36px;
+        width: 100%;
+        max-width: 900px;
+        align-self: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .upgraded-section .section-header {
+        justify-content: center;
+    }
+    .upgraded-section .stats-grid {
+        justify-content: center;
+    }
+    .exam-requests-section {
+        padding: 18px 12px 12px 12px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .exam-requests-section {
+        padding: 18px 12px 12px 12px;
     }
     .upgraded-header {
         display: flex;
@@ -477,16 +521,21 @@
             background: white;
             border: 1px solid #e1e5e9;
             border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 15px;
+            padding: 20px 28px;
+            margin-bottom: 18px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 32px;
+            justify-content: space-between;
         }
         
         .request-header {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 180px;
         }
         
         .request-title {
@@ -524,10 +573,13 @@
         }
         
         .request-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 18px 32px;
+            margin-bottom: 0;
+            align-items: flex-start;
+            min-width: 320px;
         }
         
         .detail-item {
@@ -549,7 +601,10 @@
         
         .request-actions {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-end;
+            min-width: 120px;
         }
         
         .modal {
