@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CodeSecure - <% if (typeof exam !== 'undefined' && exam) { %><%= exam.title %><% } else { %>Coding IDE<% } %></title>
@@ -27,7 +26,7 @@
               <% if (typeof exam !== 'undefined' && exam && exam.questions) { %>
                 <span class="current-question">Question <span id="currentQuestionNum">1</span> of <%= exam.questions.length %></span>
                 <div class="progress-bar">
-                  <div class="progress-fill" style="width: <%= Math.round((1 / exam.questions.length) * 100) %>%"></div>
+                  <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                 </div>
               <% } else { %>
                 <span class="current-question">Question 2 of 5</span>
@@ -105,7 +104,7 @@
                     <div>
                       <ul>
                         <li>Standard input format for the problem</li>
-                        <li>Check examples below for specific input structure</li>
+                        <li>Check problem description for specific input structure</li>
                       </ul>
                     </div>
                   </div>
@@ -122,7 +121,7 @@
                     <div>
                       <ul>
                         <li>Output the result as required by the problem</li>
-                        <li>Follow the format shown in examples</li>
+                        <li>Follow the format specified in the problem description</li>
                       </ul>
                     </div>
                   </div>
@@ -227,19 +226,26 @@
                 <div class="line-number">14</div>
                 <div class="line-number">15</div>
               </div>
-              <textarea class="code-editor" placeholder="Write your solution here...">/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-var twoSum = function(nums, target) {
-    // Your solution here
-    
-};
+              <textarea class="code-editor" placeholder="Write your solution here...">// Array Sum Problem
+// Input: n (array length), followed by n elements
+// Output: Sum of all elements
 
-// Test cases
-console.log(twoSum([2,7,11,15], 9)); // Expected: [0,1]
-console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
+function solve(input) {
+    const lines = input.trim().split('\n');
+    const n = parseInt(lines[0]);
+    const arr = lines[1].split(',').map(Number);
+    
+    let sum = 0;
+    for (let i = 0; i < n; i++) {
+        sum += arr[i];
+    }
+    
+    return sum;
+}
+
+// Test with sample input
+const testInput = "5\n1,2,3,4,5";
+console.log(solve(testInput)); // Expected: 15</textarea>
             </div>
 
             <!-- Input Section -->
@@ -248,8 +254,8 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
                 <h3 class="input-title">Input (stdin)</h3>
                 <span class="input-info">Provide input for your program here</span>
               </div>
-              <textarea class="input-editor" placeholder="Enter input here (for JavaScript, input is typically handled differently):&#10;&#10;For testing array problems, modify the test cases in the code editor directly.">// For JavaScript, input is typically handled through function parameters
-// Modify the test cases in the code editor above</textarea>
+              <textarea class="input-editor" placeholder="Enter input here:&#10;5&#10;1,2,3,4,5">5
+1,2,3,4,5</textarea>
             </div>
           </section>
         </div>
@@ -337,30 +343,28 @@ console.log(twoSum([3,2,4], 6));     // Expected: [1,2]</textarea>
   </div>
 
   <!-- Pass exam data to JavaScript -->
-  <script>
-    // Global exam data for JavaScript
+  <script type="application/json" id="exam-data">
     <% if (typeof exam !== 'undefined' && exam) { %>
-    window.examData = {
+    <%- JSON.stringify({
       exam: {
-        id: '<%= exam._id %>',
-        title: '<%= exam.title %>',
-        description: '<%= exam.description || "" %>',
-        duration: <%= exam.duration %>,
-        totalMarks: <%= exam.totalMarks || 0 %>,
-        questions: <%- JSON.stringify(exam.questions || []) %>,
-        timeRemaining: <%= typeof timeRemaining !== 'undefined' ? timeRemaining : 0 %>
+        id: exam._id,
+        title: exam.title,
+        description: exam.description || "",
+        duration: exam.duration,
+        totalMarks: exam.totalMarks || 0,
+        questions: exam.questions || []
       },
       currentQuestionIndex: 0,
-      isExamMode: true
-    };
-    let timeRemaining = <%= typeof timeRemaining !== 'undefined' ? timeRemaining : 2732 %>;
+      isExamMode: true,
+      initialTimeRemaining: typeof timeRemaining !== 'undefined' ? timeRemaining : (exam.duration ? exam.duration * 60 : 2732)
+    }) %>
     <% } else { %>
-    window.examData = {
-      exam: null,
-      currentQuestionIndex: 0,
-      isExamMode: false
-    };
-    let timeRemaining = 45 * 60 + 32; // Default fallback time
+    {
+      "exam": null,
+      "currentQuestionIndex": 0,
+      "isExamMode": false,
+      "initialTimeRemaining": 2732
+    }
     <% } %>
   </script>
   

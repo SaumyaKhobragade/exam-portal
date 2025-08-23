@@ -1,6 +1,41 @@
 // IDE JavaScript Functions
 
-// Timer functionality - use global timeRemaining from template
+// Initialize timer and exam data from JSON script tag
+let timeRemaining = 2732; // Default fallback
+let examData = null;
+
+// Load data from script tag
+function loadExamData() {
+  try {
+    const dataScript = document.getElementById('exam-data');
+    if (dataScript) {
+      const data = JSON.parse(dataScript.textContent);
+      window.examData = data;
+      examData = data;
+      timeRemaining = data.initialTimeRemaining || 2732;
+      
+      // Set total questions from exam data
+      if (data.exam && data.exam.questions && data.exam.questions.length > 0) {
+        totalQuestions = data.exam.questions.length;
+      }
+      
+      console.log('Exam data loaded:', data);
+      console.log('Total questions set to:', totalQuestions);
+    }
+  } catch (error) {
+    console.error('Error loading exam data:', error);
+    // Set fallback data
+    window.examData = {
+      exam: null,
+      currentQuestionIndex: 0,
+      isExamMode: false
+    };
+    examData = window.examData;
+    totalQuestions = 5; // Fallback value
+  }
+}
+
+// Timer functionality
 function updateTimer() {
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;
@@ -146,22 +181,65 @@ function goToQuestion(questionNum) {
 }
 
 function updateQuestionDisplay() {
-  // Update current question text
-  const currentQuestionElement = document.querySelector('.current-question #currentQuestionNum') || 
-                                 document.querySelector('.current-question');
+  // Update current question number
+  const currentQuestionElement = document.getElementById('currentQuestionNum');
   if (currentQuestionElement) {
-    if (currentQuestionElement.tagName === 'SPAN') {
-      currentQuestionElement.textContent = currentQuestion;
-    } else {
-      currentQuestionElement.textContent = `Question ${currentQuestion} of ${totalQuestions}`;
-    }
+    currentQuestionElement.textContent = currentQuestion;
   }
 
-  // Update progress bar
+  // Update total questions
+  const totalQuestionsElement = document.getElementById('totalQuestions');
+  if (totalQuestionsElement) {
+    totalQuestionsElement.textContent = totalQuestions;
+  }
+
+  // Update progress bar with dynamic styling
   const progressFill = document.querySelector('.progress-fill');
-  if (progressFill) {
+  const progressBar = document.querySelector('.progress-bar');
+  if (progressFill && progressBar) {
     const progress = (currentQuestion / totalQuestions) * 100;
-    progressFill.style.width = progress + '%';
+    progressFill.style.width = Math.round(progress) + '%';
+    
+    // Dynamic styling based on number of questions
+    if (totalQuestions <= 3) {
+      // For few questions, make segments more visible
+      progressBar.style.background = 'linear-gradient(to right, #e3e3e3 33%, #d0d0d0 33%, #d0d0d0 66%, #e3e3e3 66%)';
+      progressFill.style.transition = 'width 0.5s ease-in-out';
+    } else if (totalQuestions <= 5) {
+      // Standard styling for medium number of questions
+      progressBar.style.background = 'linear-gradient(to right, #e3e3e3 20%, #d0d0d0 20%, #d0d0d0 40%, #e3e3e3 40%, #e3e3e3 60%, #d0d0d0 60%, #d0d0d0 80%, #e3e3e3 80%)';
+      progressFill.style.transition = 'width 0.4s ease-in-out';
+    } else if (totalQuestions <= 10) {
+      // More granular for larger number of questions
+      let gradientStops = [];
+      for (let i = 0; i < totalQuestions; i++) {
+        const percent = (i / totalQuestions) * 100;
+        const nextPercent = ((i + 1) / totalQuestions) * 100;
+        const color = i % 2 === 0 ? '#e8e8e8' : '#d8d8d8';
+        gradientStops.push(`${color} ${percent}%`, `${color} ${nextPercent}%`);
+      }
+      progressBar.style.background = `linear-gradient(to right, ${gradientStops.join(', ')})`;
+      progressFill.style.transition = 'width 0.3s ease-in-out';
+    } else {
+      // For many questions, use smooth gradient
+      progressBar.style.background = 'linear-gradient(to right, #f0f0f0, #e0e0e0, #f0f0f0)';
+      progressFill.style.transition = 'width 0.2s ease-in-out';
+    }
+    
+    // Add completion styling
+    if (currentQuestion === totalQuestions) {
+      progressFill.style.background = 'linear-gradient(90deg, #4CAF50, #45a049)';
+      progressFill.style.boxShadow = '0 2px 4px rgba(76, 175, 80, 0.3)';
+    } else if (progress >= 75) {
+      progressFill.style.background = 'linear-gradient(90deg, #2196F3, #1976D2)';
+      progressFill.style.boxShadow = '0 2px 4px rgba(33, 150, 243, 0.3)';
+    } else if (progress >= 50) {
+      progressFill.style.background = 'linear-gradient(90deg, #FF9800, #F57C00)';
+      progressFill.style.boxShadow = '0 2px 4px rgba(255, 152, 0, 0.3)';
+    } else {
+      progressFill.style.background = 'linear-gradient(90deg, #9C27B0, #7B1FA2)';
+      progressFill.style.boxShadow = '0 2px 4px rgba(156, 39, 176, 0.3)';
+    }
   }
 
   // Update button states
@@ -815,3 +893,29 @@ function loadTestCases() {
 
   testCasesContainer.innerHTML = testCasesHTML;
 }
+
+// Initialize the IDE when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('IDE initializing...');
+  
+  // Load exam data from JSON script tag
+  loadExamData();
+  
+  // Initialize exam data
+  if (window.examData) {
+    console.log('Exam data loaded:', window.examData);
+    
+    // Load the first question if available
+    if (window.examData.exam && window.examData.exam.questions && window.examData.exam.questions.length > 0) {
+      loadQuestion(0);
+    }
+  }
+  
+  // Initialize line numbers
+  updateLineNumbers();
+  
+  // Initialize progress display
+  updateQuestionDisplay();
+  
+  console.log('IDE initialization complete');
+});
