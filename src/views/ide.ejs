@@ -83,13 +83,31 @@
               <% if (typeof exam !== 'undefined' && exam && exam.questions && exam.questions.length > 0) { %>
                 <div class="problem-description">
                   <h3 class="section-subtitle">Problem Description</h3>
-                  <div id="problemDescription"><%- exam.questions[0].description || 'No description available.' %></div>
+                  <div id="problemDescription">
+                    <% if ((exam.questions[0].description && exam.questions[0].description.trim()) || (exam.questions[0].statement && exam.questions[0].statement.trim())) { %>
+                      <%- exam.questions[0].description || exam.questions[0].statement %>
+                    <% } else { %>
+                      <p>Given an array of integers, solve the <strong><%= exam.questions[0].title || 'coding problem' %></strong>.</p>
+                      <p>Write an efficient solution that meets the given constraints.</p>
+                      <p><em>Note: Complete problem description is not available. Please refer to examples and constraints for requirements.</em></p>
+                    <% } %>
+                  </div>
                 </div>
 
                 <% if (exam.questions[0].inputFormat) { %>
                   <div class="problem-input-format" id="problemInputFormat">
                     <h3 class="section-subtitle">Input Format</h3>
                     <div><%- exam.questions[0].inputFormat %></div>
+                  </div>
+                <% } else { %>
+                  <div class="problem-input-format" id="problemInputFormat">
+                    <h3 class="section-subtitle">Input Format</h3>
+                    <div>
+                      <ul>
+                        <li>Standard input format for the problem</li>
+                        <li>Check examples below for specific input structure</li>
+                      </ul>
+                    </div>
                   </div>
                 <% } %>
 
@@ -98,23 +116,15 @@
                     <h3 class="section-subtitle">Output Format</h3>
                     <div><%- exam.questions[0].outputFormat %></div>
                   </div>
-                <% } %>
-
-                <% if (exam.questions[0].examples && exam.questions[0].examples.length > 0) { %>
-                  <div class="problem-examples" id="problemExamples">
-                    <h3 class="section-subtitle">Examples</h3>
-                    <% exam.questions[0].examples.forEach((example, index) => { %>
-                      <div class="example-item">
-                        <h4 class="example-title">Example <%= index + 1 %>:</h4>
-                        <div class="code-block">
-                          <strong>Input:</strong> <%= example.input %><br>
-                          <strong>Output:</strong> <%= example.output %><br>
-                          <% if (example.explanation) { %>
-                            <strong>Explanation:</strong> <%= example.explanation %>
-                          <% } %>
-                        </div>
-                      </div>
-                    <% }); %>
+                <% } else { %>
+                  <div class="problem-output-format" id="problemOutputFormat">
+                    <h3 class="section-subtitle">Output Format</h3>
+                    <div>
+                      <ul>
+                        <li>Output the result as required by the problem</li>
+                        <li>Follow the format shown in examples</li>
+                      </ul>
+                    </div>
                   </div>
                 <% } %>
 
@@ -129,6 +139,14 @@
                       <% } else { %>
                         <li><%- exam.questions[0].constraints %></li>
                       <% } %>
+                    </ul>
+                  </div>
+                <% } else { %>
+                  <div class="problem-constraints" id="problemConstraints">
+                    <h3 class="section-subtitle">Constraints</h3>
+                    <ul>
+                      <li>Standard problem constraints apply</li>
+                      <li>Optimize for time and space complexity</li>
                     </ul>
                   </div>
                 <% } %>
@@ -155,25 +173,6 @@
                     <li>Return an array of two integers representing the indices</li>
                     <li>The indices should be in ascending order</li>
                   </ul>
-                </div>
-
-                <div class="problem-examples">
-                  <h3 class="section-subtitle">Examples</h3>
-                  <div class="example-item">
-                    <h4 class="example-title">Example 1:</h4>
-                    <div class="code-block">
-                      <strong>Input:</strong> nums = [2,7,11,15], target = 9<br>
-                      <strong>Output:</strong> [0,1]<br>
-                      <strong>Explanation:</strong> Because nums[0] + nums[1] == 9, we return [0, 1].
-                    </div>
-                  </div>
-                  <div class="example-item">
-                    <h4 class="example-title">Example 2:</h4>
-                    <div class="code-block">
-                      <strong>Input:</strong> nums = [3,2,4], target = 6<br>
-                      <strong>Output:</strong> [1,2]
-                    </div>
-                  </div>
                 </div>
 
                 <div class="problem-constraints">

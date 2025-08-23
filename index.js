@@ -106,7 +106,14 @@ app.get('/ide', async (req,res)=>{
         if (exam && exam.questions && exam.questions.length > 0) {
             console.log('IDE route: Using real exam data');
             console.log('First question title:', exam.questions[0].title);
-            console.log('First question description length:', exam.questions[0].description?.length || 0);
+            console.log('First question description:', exam.questions[0].description || 'NO DESCRIPTION');
+            console.log('First question statement:', exam.questions[0].statement || 'NO STATEMENT');
+            console.log('First question constraints:', exam.questions[0].constraints || 'NO CONSTRAINTS');
+            console.log('Constraints type:', typeof exam.questions[0].constraints);
+            console.log('Constraints value:', JSON.stringify(exam.questions[0].constraints));
+            console.log('First question examples:', exam.questions[0].examples || 'NO EXAMPLES');
+            console.log('Full question object keys:', Object.keys(exam.questions[0]));
+            console.log('Full question object:', JSON.stringify(exam.questions[0], null, 2));
             
             // Calculate remaining time (for demo purposes, show full duration)
             const now = new Date();
