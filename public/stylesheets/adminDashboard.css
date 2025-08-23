@@ -261,10 +261,16 @@ body, html {
 }
 
 .welcome-title {
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: #357ABD;
-  margin-bottom: 0.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-title i {
   background: linear-gradient(135deg, #4a90e2, #357ABD);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -272,9 +278,43 @@ body, html {
 }
 
 .welcome-description {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: #666;
-  line-height: 1.6;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.admin-quick-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.quick-action-link {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #4a90e2, #357ABD);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.quick-action-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(74, 144, 226, 0.3);
+  color: white;
+}
+
+.welcome-illustration {
+  font-size: 4rem;
+  color: #4a90e2;
+  opacity: 0.3;
 }
 
 /* Exam Management Section */
