@@ -4,6 +4,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+.env 
+owner.txt 
+
 # Environment Variables
 *.env
 *.env.local
