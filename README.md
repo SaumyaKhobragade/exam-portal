@@ -1,4 +1,4 @@
-# CodeSecure - Online Examination Platform (Coding Focus)
+# CodeSecure - Online Examination Platform
 
 ## Overview
 This project is a secure online coding examination platform designe---
