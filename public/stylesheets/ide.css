@@ -905,20 +905,20 @@ body, html {
 
 /* AI Feedback Styles */
 .ai-feedback-section {
-    background: #ffffff;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border: 2px solid #4CAF50;
     border-radius: 12px;
     margin: 20px 0;
     padding: 0;
-    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     animation: slideInUp 0.5s ease-out;
-    overflow: hidden;
 }
 
 .ai-feedback-header {
     background: linear-gradient(135deg, #4CAF50, #45a049);
     color: white;
-    padding: 20px;
+    padding: 15px 20px;
+    border-radius: 10px 10px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -926,42 +926,34 @@ body, html {
 
 .ai-feedback-header h3 {
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .ai-grade-badge {
-    background: rgba(255, 255, 255, 0.9);
-    color: #2E7D32;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
     padding: 8px 16px;
     border-radius: 20px;
     font-weight: 600;
-    font-size: 0.95rem;
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .ai-feedback-content {
     padding: 20px;
-    background: #ffffff;
 }
 
 .feedback-section {
     margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #4CAF50;
 }
 
 .feedback-section h4 {
     color: #2c3e50;
     margin-bottom: 10px;
     font-size: 1.1rem;
-    font-weight: 600;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 5px;
 }
 
 .feedback-section p {
@@ -982,19 +974,13 @@ body, html {
     padding: 15px;
     border-radius: 8px;
     border-left: 4px solid #4CAF50;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
-}
-
-.feedback-item:hover {
-    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .feedback-item h5 {
     color: #2c3e50;
     margin-bottom: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.95rem;
 }
 
 .feedback-item p {
@@ -1016,117 +1002,43 @@ body, html {
     border-left: 3px solid #4CAF50;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     position: relative;
-    padding-left: 25px;
 }
 
 .feedback-section li:before {
-    content: "✓";
+    content: "•";
     color: #4CAF50;
     font-weight: bold;
     position: absolute;
     left: 8px;
-    top: 10px;
+}
+
+.feedback-section li {
+    padding-left: 25px;
 }
 
 /* Score bars for AI feedback */
 .score-bar {
     width: 100%;
-    height: 10px;
-    background: #e8e8e8;
-    border-radius: 5px;
-    margin-top: 8px;
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin-top: 5px;
     overflow: hidden;
 }
 
 .score-fill {
     height: 100%;
-    background: linear-gradient(90deg, #FF5722 0%, #FF9800 25%, #FFC107 50%, #8BC34A 75%, #4CAF50 100%);
-    border-radius: 5px;
-    transition: width 1s ease-in-out;
+    background: linear-gradient(90deg, #ff6b6b 0%, #ffa500 50%, #4ecdc4 100%);
+    border-radius: 4px;
+    transition: width 0.8s ease-in-out;
 }
 
 .grading-method {
-    font-size: 0.9rem;
+    font-size: 0.9em;
     color: #666;
     font-style: italic;
-    margin-top: 15px;
+    margin-top: 5px;
     text-align: center;
-    padding: 10px;
-    background: #f8f9fa;
-    border-radius: 6px;
-}
-
-/* AI Feedback Tab Styles */
-.ai-feedback-container {
-    padding: 20px;
-    min-height: 300px;
-}
-
-.feedback-placeholder {
-    text-align: center;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, #f8f9fa, #ffffff);
-    border: 2px dashed #4CAF50;
-    border-radius: 12px;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.placeholder-icon {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-.feedback-placeholder h4 {
-    color: #2c3e50;
-    font-size: 1.4rem;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-.feedback-placeholder p {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 25px;
-    font-size: 1rem;
-}
-
-.feedback-features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.feature-item {
-    background: white;
-    padding: 12px 16px;
-    border-radius: 8px;
-    border-left: 4px solid #4CAF50;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #2c3e50;
-    transition: transform 0.2s ease;
-}
-
-.feature-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Tab bar responsive for 3 tabs */
-.tab-bar {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-
-.tab-btn {
-    flex: 1;
-    max-width: 200px;
-    min-width: 120px;
 }
 
 /* AI Button Styles */
@@ -1169,19 +1081,10 @@ body, html {
         flex-direction: column;
         gap: 10px;
         text-align: center;
-        padding: 15px;
     }
     
-    .ai-feedback-content {
-        padding: 15px;
-    }
-    
-    .feedback-section {
-        padding: 12px;
-    }
-    
-    .ai-feedback-section {
-        margin: 15px 0;
+    .ai-grade-badge {
+        align-self: center;
     }
 }
 
@@ -1473,21 +1376,4 @@ input, textarea, .code-editor {
 @keyframes violationAlert {
     0%, 100% { background: rgba(196, 40, 40, 0.95); }
     50% { background: rgba(244, 67, 54, 0.95); }
-}
-
-@keyframes fadeInHighlight {
-    0% { 
-        opacity: 0; 
-        transform: translateY(20px); 
-        box-shadow: 0 0 0 rgba(76, 175, 80, 0);
-    }
-    50% {
-        opacity: 0.8;
-        box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
-    }
-    100% { 
-        opacity: 1; 
-        transform: translateY(0); 
-        box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
-    }
 }

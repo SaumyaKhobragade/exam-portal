@@ -4,7 +4,6 @@ import {ApiResponse} from "../utils/apiResponse.js"
 import User from "../models/user.model.js"
 import Admin from "../models/admin.model.js"
 import ApprovedDomain from "../models/approvedDomain.model.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 const registerUser = asyncHandler(async (req,res)=>{
     const { username, email, password, fullname } = req.body;
@@ -27,37 +26,14 @@ const registerUser = asyncHandler(async (req,res)=>{
         throw new ApiError(409, "User with email or username already exists");
     }
     
-    // Handle file uploads (optional)
-    const avatarLocalPath = req.files?.avatar?.[0]?.path;
-    let coverImageLocalPath;
-    
-    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-        coverImageLocalPath = req.files.coverImage[0].path;
-    }
-    
-    // Upload to cloudinary if files provided, otherwise use default
-    let avatarUrl = "https://res.cloudinary.com/dz89s3j1b/image/upload/v1735028282/default-avatar.png"; // Default avatar
-    let coverImageUrl = "";
-    
-    if(avatarLocalPath){
-        const avatar = await uploadOnCloudinary(avatarLocalPath);
-        if(avatar){
-            avatarUrl = avatar.url;
-        }
-    }
-    
-    if(coverImageLocalPath){
-        const coverImage = await uploadOnCloudinary(coverImageLocalPath);
-        if(coverImage){
-            coverImageUrl = coverImage.url;
-        }
-    }
+    // Use default avatar for all users
+    const avatarUrl = "https://res.cloudinary.com/dz89s3j1b/image/upload/v1735028282/default-avatar.png";
     
     // Create user
     const user = await User.create({
         fullname,
         avatar: avatarUrl,
-        coverImage: coverImageUrl,
+        coverImage: "",
         email,
         password,
         username: username.toLowerCase(),

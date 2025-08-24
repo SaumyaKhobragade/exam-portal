@@ -1,21 +1,8 @@
 import Router from 'express';
 import { registerUser, createAdminAccount, simpleRegisterUser } from '../controllers/user.controller.js';
 const router = Router();
-import upload from "../middlewares/multer.middleware.js";
 
-router.route('/register').post(
-    upload.fields([
-        {
-            name: 'avatar',
-            maxCount: 1
-        },
-        {
-            name: 'coverImage',
-            maxCount: 1
-        }
-    ]),
-    registerUser
-);
+router.route('/register').post(registerUser);
 
 // Route for creating admin accounts (no file upload required)
 router.route('/create-admin').post(createAdminAccount);

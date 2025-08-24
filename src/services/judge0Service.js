@@ -229,31 +229,13 @@ print(input_data)
         `.trim(),
         
         'java': `
-import java.util.*;
-
+import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        
-        // Read input
         if(scanner.hasNextLine()) {
             String input = scanner.nextLine();
-            
-            // Parse array from input (assuming space-separated integers)
-            String[] parts = input.split(" ");
-            int[] arr = new int[parts.length];
-            for(int i = 0; i < parts.length; i++) {
-                arr[i] = Integer.parseInt(parts[i]);
-            }
-            
-            // Calculate sum
-            int sum = 0;
-            for(int num : arr) {
-                sum += num;
-            }
-            
-            // Output result
-            System.out.println(sum);
+            System.out.println(input);
         }
         scanner.close();
     }

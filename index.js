@@ -647,48 +647,10 @@ app.get('/dashboard', noCacheMiddleware, verifyJWTSession, async (req,res)=>{
     }
 });
 
-// Function to preprocess Java code to ensure proper Main class structure
-function preprocessJavaCode(sourceCode, languageId) {
-    // Only preprocess for Java (language_id 62)
-    if (languageId === 62 || languageId === '62') {
-        // Check if the code already has a proper Main class structure
-        if (sourceCode.includes('class Main') && sourceCode.includes('public static void main')) {
-            return sourceCode;
-        }
-        
-        // If the code looks like it's just the logic without class wrapper, wrap it
-        const trimmedCode = sourceCode.trim();
-        
-        // Check if it's just a method or logic without class
-        if (!trimmedCode.includes('class ') && !trimmedCode.includes('public class ')) {
-            return `
-import java.util.*;
-import java.io.*;
-
-public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        
-        ${trimmedCode}
-        
-        scanner.close();
-    }
-}`.trim();
-        }
-        
-        // If it has a class but not Main, try to rename it to Main
-        if (trimmedCode.includes('public class ') && !trimmedCode.includes('public class Main')) {
-            return trimmedCode.replace(/public class \w+/g, 'public class Main');
-        }
-    }
-    
-    return sourceCode;
-}
-
 // Judge0 code execution route with enhanced functionality
 app.post('/api/v1/execute', async (req, res) => {
     try {
-        let { source_code, language_id, stdin, expected_output, test_cases } = req.body;
+        const { source_code, language_id, stdin, expected_output, test_cases } = req.body;
         
         if (!source_code) {
             return res.status(400).json({
@@ -696,9 +658,6 @@ app.post('/api/v1/execute', async (req, res) => {
                 error: 'Source code is required'
             });
         }
-        
-        // Preprocess Java code to ensure proper structure
-        source_code = preprocessJavaCode(source_code, language_id);
         
         // If test_cases are provided, run multiple test cases
         if (test_cases && Array.isArray(test_cases)) {
@@ -1004,7 +963,7 @@ app.post('/api/v1/review-code', async (req, res) => {
 // Enhanced Judge0 execution with AI grading
 app.post('/api/v1/execute-and-grade', async (req, res) => {
     try {
-        let {
+        const {
             source_code,
             language_id,
             test_cases,
@@ -1019,9 +978,6 @@ app.post('/api/v1/execute-and-grade', async (req, res) => {
                 error: 'Source code is required'
             });
         }
-
-        // Preprocess Java code to ensure proper structure
-        source_code = preprocessJavaCode(source_code, language_id);
 
         // First, execute the code with Judge0
         let executionResult;
