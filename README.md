@@ -235,35 +235,6 @@ CORS_ORIGIN=http://localhost:3000
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions from the community! Here's how you can help:
-
-### **How to Contribute**
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-### **Areas for Contribution**
-- 🐛 Bug fixes and improvements
-- ✨ New features and enhancements
-- 📝 Documentation improvements
-- 🧪 Test coverage expansion
-- 🎨 UI/UX improvements
-- 🔒 Security enhancements
-
-### **Development Guidelines**
-- Follow existing code style and conventions
-- Add tests for new features
-- Update documentation as needed
-- Ensure all tests pass before submitting PR
-
-Contributions are welcome! Please open issues or pull requests for bug fixes, enhancements, or feature requests.
-
----
-
 ## License
 
 This project is licensed under the MIT License.
