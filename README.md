@@ -253,4 +253,4 @@ For questions or support, please contact:
 
 ---
 
-*Built with ❤️ during the iTechRoots Hackathon 2025.*
+*Built with ❤️ during the iTechRoots (YCCE College) Hackathon 2025.*
